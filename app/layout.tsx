@@ -6,12 +6,12 @@ import { Analytics } from "./components/analytics";
 
 export const metadata: Metadata = {
   title: {
-    default: "chronark.com",
-    template: "%s | chronark.com",
+    default: "BrainChild",
+    template: "%s | BrainChild",
   },
   description: "Co-founder of unkey.dev and founder of planetfall.io",
   openGraph: {
-    title: "chronark.com",
+    title: "BrainChild",
     description:
       "Co-founder of unkey.dev and founder of planetfall.io",
     url: "https://brainchild.vercel.app/",
