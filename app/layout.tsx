@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "chronark.com",
     description:
       "Co-founder of unkey.dev and founder of planetfall.io",
-    url: "https://chronark.com",
-    siteName: "chronark.com",
+    url: "https://brainchild.vercel.app/",
+    siteName: "BrainChild",
     images: [
       {
-        url: "https://chronark.com/og.png",
+        url: "https://watiya.github.io/BrainChild/op.png",
         width: 1920,
         height: 1080,
       },
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: "Chronark",
+    title: "Brainchild",
     card: "summary_large_image",
   },
   icons: {
