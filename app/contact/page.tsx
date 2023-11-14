@@ -19,9 +19,9 @@ const socials = [
 	},
 	{
 		icon: <Github size={20} />,
-		href: "https://github.com/chronark",
+		href: "https://github.com/watiya",
 		label: "Github",
-		handle: "chronark",
+		handle: "watiya",
 	},
 ];
 
