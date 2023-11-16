@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "BrainChild",
     description:
       "Co-founder of unkey.dev and founder of planetfall.io",
-    url: "https://brainchild.vercel.app/",
+    url: "https://brainchild.kr",
     siteName: "BrainChild",
     images: [
       {
-        url: "https://watiya.github.io/BrainChild/op.png",
+        url: "https://watiya.github.io/BrainChild/content/op.png",
         width: 1920,
         height: 1080,
       },
