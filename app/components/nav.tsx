@@ -35,16 +35,16 @@ export const Navigation: React.FC = () => {
 							Projects
 						</Link>
 						<Link
-							href="https://watiya.github.io/BrainChild/portfolio2/portfolio.html"
+							href="https://watiya.github.io/BrainChild/resume/index.html"
 							className="duration-200 text-zinc-400 hover:text-zinc-100"
 						>
-							Portfolio1
+							<a target="_blank" rel="noopener noreferrer">About</a>
 						</Link>
 						<Link
-							href="https://watiya.github.io/BrainChild/portfolio2/portfolio.html"
+							href="https://watiya.github.io/BrainChild/portfolio/index.html"
 							className="duration-200 text-zinc-400 hover:text-zinc-100"
 						>
-							Portfolio2
+							<a target="_blank" rel="noopener noreferrer">Portfolio</a>
 						</Link>
 						<Link
 							href="/contact"
