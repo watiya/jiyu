@@ -4,6 +4,7 @@ import Particles from "./components/particles";
 
 const navigation = [
   { name: "Projects", href: "/projects" },
+  { name: "About", href: "https://watiya.github.io/BrainChild/portfolio/index.html" },
   { name: "Portfolio", href: "https://watiya.github.io/BrainChild/portfolio3/index.html" },
   { name: "Contact", href: "/contact" },
 ];
