@@ -30,12 +30,6 @@ export const Header: React.FC<Props> = ({ project, views }) => {
 			href: project.url,
 		});
 	}
-	if (project.url) {
-		links.push({
-			label: "Figma",
-			href: project.url,
-		});
-	}
 	useEffect(() => {
 		if (!ref.current) return;
 		const observer = new IntersectionObserver(([entry]) =>
