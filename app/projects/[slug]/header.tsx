@@ -30,7 +30,7 @@ export const Header: React.FC<Props> = ({ project, views }) => {
 			href: project.url,
 		});
 	}
-	if (project.figma) {
+	if (project.url) {
 		links.push({
 			label: "Figma",
 			href: project.url,
