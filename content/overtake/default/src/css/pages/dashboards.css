@@ -1,0 +1,97 @@
+.rounded-bars .apexcharts-bar-series.apexcharts-plot-series .apexcharts-series path {
+    clip-path: inset(0 0 5% 0 round 20px);
+}
+
+.rounded-circle .apexcharts-pie-area {
+    clip-path: inset(0 13% 33% 11% round 61px);
+}
+
+body .apexcharts-tooltip {
+    border-radius: 16px;
+}
+
+body .apexcharts-tooltip-marker {
+    border-radius: 4px;
+    width: 12px;
+    height: 4px;
+}
+
+body .apexcharts-tooltip.apexcharts-theme-dark {
+    background: rgba(17, 28, 45, 0.8);
+
+    .apexcharts-tooltip-title {
+        border-bottom: 0;
+        background: rgba(17, 28, 45, 0.7);
+    }
+}
+
+select:not([size]):not([multiple]) {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.75em 0.75em;
+    padding-right: 2.5rem;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+body .apexcharts-tooltip-series-group {
+    padding: 0 14px;
+}
+
+@media (min-width: 1024px){
+    .tables-position{
+        left: unset;
+        right: 100%;
+    }
+    html[dir="rtl"] .tables-position{
+        right: unset;
+        left: 100%;
+    }
+}
+
+body .apexcharts-tooltip-title {
+    padding: 10px 14px;
+}
+
+.timeline-tabs .timeline .timeline-icon {
+    position: relative;
+}
+.timeline-tabs .timeline .timeline-icon:after {
+    content: "";
+    position: absolute;
+    top: 40px;
+    height: 20px;
+    width: 1px;
+    background-color: var(--border);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+.timeline-tabs .timeline:last-child .timeline-icon:after {
+    height: 0;
+}
+.timeline-tabs .timeline-list {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+.timeline-tabs .timeline-list:last-child {
+    border-bottom: 0 !important;
+}
+
+#vector-map svg .dxm-background{
+    stroke: transparent !important;
+}
+#vector-map svg path{
+    fill: #C9D6DE !important;
+    stroke-width: 0.2px;
+}
+.dxm-tooltip svg path{
+    fill: var(--color-dark) !important;
+    stroke-width: 0;
+}
+.dxm-tooltip div{
+    color: #fff !important;
+    font-family: inherit !important;
+}

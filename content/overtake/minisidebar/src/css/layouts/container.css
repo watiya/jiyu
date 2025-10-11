@@ -1,0 +1,11 @@
+.page-wrapper {
+    margin-left: calc(80px + 240px);
+    transition: .2s ease-in;
+}
+
+@media screen and (max-width:1279px) {
+    .page-wrapper{
+        margin-left: 0;
+    }
+}
+

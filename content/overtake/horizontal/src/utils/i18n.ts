@@ -1,10 +1,9 @@
-"use client";
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import english from "../utils/languages/en.json";
-import french from "../utils/languages/fr.json";
-import arabic from "../utils/languages/ar.json";
-import chinese from "../utils/languages/ch.json";
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import english from './languages/en.json';
+import french from "./languages/fr.json";
+import arabic from "./languages/ar.json";
+import chinese from "./languages/ch.json";
 
 const resources = {
   en: {
@@ -25,7 +24,7 @@ i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources,
-    lng: "en",
+    lng: 'en',
     interpolation: {
       escapeValue: false, // react already safes from xss
     },

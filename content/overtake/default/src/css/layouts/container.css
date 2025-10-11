@@ -1,0 +1,11 @@
+.page-wrapper {
+    margin-left: 16rem;
+    transition: .2s ease-in;
+}
+
+@media screen and (max-width:1279px) {
+    .page-wrapper{
+        margin-left: 0;
+    }
+}
+

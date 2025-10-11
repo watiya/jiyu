@@ -1,0 +1,21 @@
+.page-wrapper {
+    margin-left: calc(80px + 240px);
+    transition: .2s ease-in;
+}
+
+@media screen and (max-width:1279px) {
+    .page-wrapper{
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 1024px){
+    .tables-position{
+        left: unset;
+        right: 100%;
+    }
+    html[dir="rtl"] .tables-position{
+        right: unset;
+        left: 100%;
+    }
+}

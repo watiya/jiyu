@@ -1,0 +1,97 @@
+.minisidebar-icon {
+    position: fixed;
+    left: 0;
+    width: 80px;
+    height: 100%;
+    top: 0;
+}
+
+.menu-sidebar {
+    height: 100%;
+    width: 240px !important;
+    background: var(--bs-white);
+    top: 0;
+    box-shadow: 7px 7px 10px rgba(0, 0, 0, .03);
+    left: 80px;
+    transition: left .4s ease-in-out;
+}
+
+.logo img {
+    margin: 0 auto;
+}
+
+.miniicons {
+    height: calc(100vh - 150px);
+}
+
+.sidebar-nav .caption {
+    padding-top: 20px !important;
+    margin-top: 20px !important;
+    border-top: 1px dashed var(--border);
+}
+
+.sidebar-nav .caption:first-child {
+    padding-top: 0 !important;
+    margin-top: 0px !important;
+    border-top: 0 !important;
+}
+
+.sidebar-dropdown li a {
+    opacity: 0.9;
+    padding: 8px 16px;
+}
+
+.sidebar-dropdown li a {
+    background-color: transparent !important;
+}
+
+.sidebar-dropdown li a:hover {
+    background-color: transparent !important;
+    opacity: 1;
+}
+.sidebar-dropdown li button{
+    width: 100%;
+}
+
+.sidebar-dropdown li button:hover {
+    background-color: transparent !important;
+}
+
+.sidebar-dropdown li .iconify--fad {
+    height: 9px;
+    width: 9px;
+    margin: 0 4px;
+}
+
+[data-sidebar-type="mini-sidebar"] .page-wrapper {
+    margin-left: 80px;
+}
+
+
+/* For Minisidebar Tooltip Fix */
+.miniicons [data-testid="flowbite-tooltip"] {
+    width: max-content;
+    background-color: var(--primary);
+}
+
+.miniicons [data-testid="flowbite-tooltip-arrow"] {
+    background-color: var(--primary);
+}
+.miniicons .flowbite-tooltip{
+  position: fixed !important;
+}
+
+
+@media (min-width: 1199px) {
+    [data-sidebar-type="mini-sidebar"] .menu-sidebar {
+        width: 0px !important;
+        overflow: hidden;
+        left: -240px;
+        padding: 0 !important;
+    }
+
+    [data-sidebar-type="mini-sidebar"] .menu-sidebar .hide-menu {
+        display: none;
+    }
+
+}
