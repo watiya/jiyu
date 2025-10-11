@@ -1,0 +1,102 @@
+.megamenu {
+  transform: translateY(38px) !important;
+}
+
+.simplebar-scrollbar:before {
+  background: var(--border) !important;
+}
+
+.translate {
+  transform: translate(-88%, 40px) !important;
+  transition: 0.5s;
+}
+
+.translate-lng {
+  transform: translate(-81%, 40px) !important;
+  transition: 0.5s;
+}
+
+.h-n80 {
+  height: calc(100vh - 80px);
+}
+
+  /* Button Hover Color Set */
+  button.bg-primary:hover {
+    background-color: var(--primary-emphasis) !important;
+  }
+  button.bg-secondary:hover {
+    background-color: var(--secondary-emphasis) !important;
+  }
+  button.bg-info:hover {
+    background-color: var(--info-emphasis) !important;
+  }
+  button.bg-error:hover {
+    background-color: var(--error-emphasis) !important;
+  }
+  button.bg-success:hover {
+    background-color: var(--success-emphasis) !important;
+  }
+  button.bg-warning:hover {
+    background-color: var(--warning-emphasis) !important;
+  }
+
+
+/* styles/globals.css */
+.dropdown-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: translate(0);
+  transition: opacity 150ms, transform 150ms;
+}
+
+.dropdown-leave {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dropdown-leave-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 150ms, transform 150ms;
+}
+
+.two-cols {
+  -webkit-columns: 4;
+  -moz-columns: 4;
+  columns: 4;
+}
+[data-simplebar], .simplebar-offset, .simplebar-content,.simplebar-wrapper,.simplebar-mask,.simplebar-content-wrapper{
+  outline:none !important;
+  border:none !important
+}
+
+[type='checkbox'], [type='radio']{
+  color: var(--primary) !important;
+}
+.flowbite-tooltip{
+  position: fixed !important;
+}
+
+/* Code-modal */
+pre{
+  border-radius: 16px !important;
+}
+
+
+
+/* .miniicons-box .simplebar-content-wrapper {
+  overflow: visible !important;
+}
+
+.miniicons-box .simplebar-offset {
+  overflow: visible !important;
+  position: initial !important;
+}
+
+.miniicons-box .simplebar-mask{
+  overflow: visible !important;
+} */
