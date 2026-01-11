@@ -2,7 +2,7 @@
 
 /////////// Add your own email below //////////////// 
 
-	define("WEBMASTER_EMAIL", 'jiyuwork@gmail.com');
+	define("WEBMASTER_EMAIL", 'brainchild.jiyu@gmail.com');
 	
 	error_reporting (E_ALL ^ E_NOTICE);
 
