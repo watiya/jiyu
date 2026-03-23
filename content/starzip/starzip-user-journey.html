@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — User Journey Scenarios</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f9f9f7;padding:24px;color:#1a1917}
+
+.uj-root{padding:1rem 0;color:#1a1917;font-size:13px;max-width:900px;margin:0 auto}
+
+.persona-tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.p-tab{padding:8px 18px;border-radius:20px;border:0.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .15s}
+.p-tab.active-user{background:#E6F1FB;color:#0C447C;border-color:#B5D4F4}
+.p-tab.active-owner{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.p-tab.active-partner{background:#FAEEDA;color:#633806;border-color:#FAC775}
+
+.journey-panel{display:none}
+.journey-panel.active{display:block}
+
+.persona-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:1.5rem;padding:1rem 1.25rem;background:#fff;border:0.5px solid #e3e2dc;border-radius:12px}
+.persona-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;flex-shrink:0}
+.av-user{background:#E6F1FB;color:#0C447C}
+.av-owner{background:#EAF3DE;color:#27500A}
+.av-partner{background:#FAEEDA;color:#633806}
+.persona-meta h3{font-size:14px;font-weight:500;margin-bottom:3px}
+.persona-meta p{font-size:12px;color:#6b6a65;line-height:1.5;margin:0}
+.persona-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ptag{font-size:11px;padding:2px 8px;border-radius:12px;border:0.5px solid #e3e2dc;color:#6b6a65;background:#f9f9f7}
+
+.section-label{font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:#6b6a65;margin-bottom:10px}
+
+.emotion-track{margin-bottom:1.5rem}
+.emo-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.emo-cell{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 4px;border-radius:8px;border:0.5px solid transparent;transition:border-color .15s;text-align:center}
+.emo-cell:hover{border-color:#d0cfc8;background:#f2f1ed}
+.emo-cell.selected{border-color:#1a1917;background:#f2f1ed}
+.emo-bar-wrap{width:32px;height:48px;display:flex;align-items:flex-end;justify-content:center}
+.emo-bar{width:12px;border-radius:3px 3px 0 0;transition:height .3s}
+.emo-stage{font-size:10px;color:#6b6a65;line-height:1.3}
+
+.steps-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem}
+.step-row{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#fff;border:0.5px solid #e3e2dc;border-radius:8px;cursor:pointer;transition:border-color .15s}
+.step-row:hover{border-color:#d0cfc8;background:#f9f9f7}
+.step-row.active-step{border-color:#1a1917}
+.step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.num-user{background:#E6F1FB;color:#0C447C}
+.num-owner{background:#EAF3DE;color:#27500A}
+.num-partner{background:#FAEEDA;color:#633806}
+.step-content{flex:1;min-width:0}
+.step-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.step-sub{font-size:12px;color:#6b6a65;line-height:1.4}
+.step-badge{font-size:10px;padding:2px 7px;border-radius:10px;border:0.5px solid #e3e2dc;white-space:nowrap;flex-shrink:0;align-self:center;color:#6b6a65;background:#f9f9f7}
+
+.detail-box{background:#f2f1ed;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;min-height:80px}
+.detail-box h4{font-size:13px;font-weight:500;margin-bottom:6px;color:#1a1917}
+.detail-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.detail-col h5{font-size:11px;font-weight:500;color:#6b6a65;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.detail-col ul{list-style:none;padding:0}
+.detail-col li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.detail-col li::before{content:"·";margin-right:5px;color:#a8a7a2}
+
+.pain-gain-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
+.pg-card{padding:12px;border-radius:8px;border:0.5px solid #e3e2dc}
+.pg-card.pain{background:#FCEBEB;border-color:#F7C1C1}
+.pg-card.gain{background:#EAF3DE;border-color:#C0DD97}
+.pg-card h5{font-size:11px;font-weight:500;margin-bottom:6px}
+.pg-card.pain h5{color:#791F1F}
+.pg-card.gain h5{color:#27500A}
+.pg-card ul{list-style:none;padding:0}
+.pg-card li{font-size:12px;padding:2px 0;line-height:1.4}
+.pg-card.pain li{color:#A32D2D}
+.pg-card.gain li{color:#3B6D11}
+.pg-card li::before{content:"·";margin-right:4px}
+
+.opp-row{display:flex;flex-direction:column;gap:6px}
+.opp-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:0.5px solid #e3e2dc;border-radius:8px;background:#fff}
+.opp-tag{font-size:10px;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.opp-tag.ux{background:#EEEDFE;color:#3C3489}
+.opp-tag.product{background:#E6F1FB;color:#0C447C}
+.opp-tag.growth{background:#EAF3DE;color:#27500A}
+.opp-item p{font-size:12px;color:#6b6a65;line-height:1.4}
+
+.title-bar{margin-bottom:24px}
+.title-bar h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.title-bar p{font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+
+<div class="uj-root">
+
+<div class="title-bar">
+  <h1>Starzip — 사용자 여정 상세 시나리오</h1>
+  <p>3개 페르소나 · 각 5단계 · 감정 곡선 · 페인 포인트 · 개선 기회</p>
+</div>
+
+<div class="persona-tabs">
+  <button class="p-tab active-user" onclick="switchPersona('user',this)">일반 사용자 — 지민</button>
+  <button class="p-tab" onclick="switchPersona('owner',this)">사업주 — 카페 사장 형철</button>
+  <button class="p-tab" onclick="switchPersona('partner',this)">파트너 — 지역 코디네이터 수진</button>
+</div>
+
+<!-- USER -->
+<div class="journey-panel active" id="panel-user">
+  <div class="persona-header">
+    <div class="persona-avatar av-user">JM</div>
+    <div class="persona-meta">
+      <h3>박지민 — 크립토 투자자, 28세</h3>
+      <p>평소 DeFi와 DEX 거래를 즐기는 크립토 네이티브. 좋아하는 동네 카페와 음식점을 직접 '투자'하고 싶다는 생각을 해왔다. MetaMask 지갑 보유. Hyperliquid와 dYdX 사용 경험 있음.</p>
+      <div class="persona-tags">
+        <span class="ptag">크립토 네이티브</span><span class="ptag">MetaMask 보유</span><span class="ptag">DEX 경험 있음</span><span class="ptag">서울 마포구</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">감정 곡선 — 단계별 경험</div>
+  <div class="emotion-track">
+    <div class="emo-row" id="emo-user">
+      <div class="emo-cell" onclick="selectStep('user',0,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:55%;background:#97C459"></div></div>
+        <div style="font-size:16px">😐</div><div class="emo-stage">발견</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('user',1,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:70%;background:#639922"></div></div>
+        <div style="font-size:16px">😁</div><div class="emo-stage">가입·입금</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('user',2,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:85%;background:#3B6D11"></div></div>
+        <div style="font-size:16px">🤩</div><div class="emo-stage">런치패드</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('user',3,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:75%;background:#639922"></div></div>
+        <div style="font-size:16px">😄</div><div class="emo-stage">DEX 거래</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('user',4,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:90%;background:#3B6D11"></div></div>
+        <div style="font-size:16px">🥳</div><div class="emo-stage">DAO 참여</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">상세 여정 — 단계를 클릭하세요</div>
+  <div class="steps-list" id="steps-user">
+    <div class="step-row" onclick="showDetail('user',0,this)">
+      <div class="step-num num-user">1</div>
+      <div class="step-content"><div class="step-title">발견 — "동네 카페에 투자한다고?"</div><div class="step-sub">SNS·커뮤니티에서 Starzip을 알게 됨. 랜딩 페이지 방문, 개념 파악.</div></div>
+      <div class="step-badge">D-day</div>
+    </div>
+    <div class="step-row" onclick="showDetail('user',1,this)">
+      <div class="step-num num-user">2</div>
+      <div class="step-content"><div class="step-title">지갑 연결 & 입금</div><div class="step-sub">MetaMask 연결 → DUST +100 수령 → USDT 입금.</div></div>
+      <div class="step-badge">5분</div>
+    </div>
+    <div class="step-row" onclick="showDetail('user',2,this)">
+      <div class="step-num num-user">3</div>
+      <div class="step-content"><div class="step-title">런치패드 첫 참여 — CAFE 토큰</div><div class="step-sub">동네 카페의 런치패드 발견 → 상점 정보·OCT 공시 확인 → 참여.</div></div>
+      <div class="step-badge">런치패드 기간</div>
+    </div>
+    <div class="step-row" onclick="showDetail('user',3,this)">
+      <div class="step-num num-user">4</div>
+      <div class="step-content"><div class="step-title">DEX 거래 — 상장 후 트레이딩</div><div class="step-sub">CAFE/USDT 페어 오더북 확인 → 지정가 매수·매도 → DUST 적립.</div></div>
+      <div class="step-badge">상장 후</div>
+    </div>
+    <div class="step-row" onclick="showDetail('user',4,this)">
+      <div class="step-num num-user">5</div>
+      <div class="step-content"><div class="step-title">DAO 투표 & STAR 스테이킹</div><div class="step-sub">Store DAO 소각 투표 참여 → DEX DAO 수수료율 투표 → STAR 스테이킹.</div></div>
+      <div class="step-badge">지속</div>
+    </div>
+  </div>
+
+  <div class="detail-box" id="detail-user"><p style="font-size:12px;color:#a8a7a2">단계를 클릭하면 상세 시나리오가 표시됩니다.</p></div>
+
+  <div class="pain-gain-row">
+    <div class="pg-card pain"><h5>페인 포인트</h5><ul><li>Web3 개념을 모르는 친구에게 공유 어려움</li><li>소규모 토큰의 유동성 부족 우려</li><li>OCT 희석이 예상보다 빠를 수 있음</li><li>오더북 스프레드가 넓을 때 체결 지연</li></ul></div>
+    <div class="pg-card gain"><h5>게인 포인트</h5><ul><li>좋아하는 상점에 실제로 투자하는 경험</li><li>DUST → STAR 전환으로 장기 보상</li><li>거래할수록 수익 구조가 명확</li><li>DAO 투표로 상점 의사결정 참여</li></ul></div>
+  </div>
+
+  <div class="section-label">개선 기회</div>
+  <div class="opp-row">
+    <div class="opp-item"><span class="opp-tag ux">UX</span><p>런치패드 참여 전 "이 상점을 아시나요?" 온보딩 카드 — 메뉴·위치·리뷰를 DEX UI 안에서 바로 확인 가능하게</p></div>
+    <div class="opp-item"><span class="opp-tag product">제품</span><p>DUST 잔액 실시간 표시 + TGE까지 예상 STAR 전환량 시뮬레이터</p></div>
+    <div class="opp-item"><span class="opp-tag growth">성장</span><p>친구 추천 시 추천인·피추천인 모두 DUST 지급 — 크립토 비전문가 유입 경로로 활용</p></div>
+  </div>
+</div>
+
+<!-- OWNER -->
+<div class="journey-panel" id="panel-owner">
+  <div class="persona-header">
+    <div class="persona-avatar av-owner">HC</div>
+    <div class="persona-meta">
+      <h3>김형철 — 카페 사장, 41세</h3>
+      <p>서울 성수동에서 카페 '브루밍'을 운영 중. 2년째 단골 커뮤니티가 형성되어 있으나, 인테리어 리모델링 자금이 필요해 대출을 알아보던 중 Starzip 파트너로부터 연락을 받음. 스마트폰은 익숙하지만 블록체인은 처음.</p>
+      <div class="persona-tags">
+        <span class="ptag">블록체인 비전문가</span><span class="ptag">오프라인 상점 2년+</span><span class="ptag">단골 커뮤니티 보유</span><span class="ptag">자금 조달 필요</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">감정 곡선 — 단계별 경험</div>
+  <div class="emotion-track">
+    <div class="emo-row" id="emo-owner">
+      <div class="emo-cell" onclick="selectStep('owner',0,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:40%;background:#EF9F27"></div></div>
+        <div style="font-size:16px">😟</div><div class="emo-stage">첫 상담</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('owner',1,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:55%;background:#BA7517"></div></div>
+        <div style="font-size:16px">😐</div><div class="emo-stage">KYC·심사</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('owner',2,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:80%;background:#639922"></div></div>
+        <div style="font-size:16px">🤩</div><div class="emo-stage">토큰 발행</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('owner',3,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:90%;background:#3B6D11"></div></div>
+        <div style="font-size:16px">🥳</div><div class="emo-stage">런치패드</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('owner',4,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:70%;background:#639922"></div></div>
+        <div style="font-size:16px">😁</div><div class="emo-stage">운영·공시</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">상세 여정 — 단계를 클릭하세요</div>
+  <div class="steps-list" id="steps-owner">
+    <div class="step-row" onclick="showDetail('owner',0,this)">
+      <div class="step-num num-owner">1</div>
+      <div class="step-content"><div class="step-title">첫 상담 — "주식이랑 비슷한 건가요?"</div><div class="step-sub">파트너 수진에게 연락받음. 개념 설명 들음. 반신반의하며 신청 결정.</div></div>
+      <div class="step-badge">D-1주</div>
+    </div>
+    <div class="step-row" onclick="showDetail('owner',1,this)">
+      <div class="step-num num-owner">2</div>
+      <div class="step-content"><div class="step-title">KYC 서류 제출 & 심사 대기</div><div class="step-sub">사업자등록증 제출 → 파트너 1차 심사 → Starzip 최종 승인 대기.</div></div>
+      <div class="step-badge">2~4주</div>
+    </div>
+    <div class="step-row" onclick="showDetail('owner',2,this)">
+      <div class="step-num num-owner">3</div>
+      <div class="step-content"><div class="step-title">Passkey 등록 & 토큰 발행</div><div class="step-sub">지문 등록 → Smart Account 생성 → 공모금액·공급량 입력 → 발행.</div></div>
+      <div class="step-badge">30분</div>
+    </div>
+    <div class="step-row" onclick="showDetail('owner',3,this)">
+      <div class="step-num num-owner">4</div>
+      <div class="step-content"><div class="step-title">런치패드 & 상장 — "단골들이 샀어요!"</div><div class="step-sub">단골 고객에게 공유 → 소프트캡 달성 → $4,000 즉시 수령 → DEX 상장.</div></div>
+      <div class="step-badge">런치 기간</div>
+    </div>
+    <div class="step-row" onclick="showDetail('owner',4,this)">
+      <div class="step-num num-owner">5</div>
+      <div class="step-content"><div class="step-title">분기 공시 & 수수료 수령</div><div class="step-sub">거래마다 수수료 3% 자동 수령 → 분기 매출 보고서 제출 → 베스팅 해제.</div></div>
+      <div class="step-badge">분기마다</div>
+    </div>
+  </div>
+
+  <div class="detail-box" id="detail-owner"><p style="font-size:12px;color:#a8a7a2">단계를 클릭하면 상세 시나리오가 표시됩니다.</p></div>
+
+  <div class="pain-gain-row">
+    <div class="pg-card pain"><h5>페인 포인트</h5><ul><li>"토큰"과 "주식"의 차이 이해 어려움</li><li>심사 2~4주 대기 기간 불안</li><li>분기마다 공시 제출 부담</li><li>토큰 가격 하락 시 고객 항의 우려</li></ul></div>
+    <div class="pg-card gain"><h5>게인 포인트</h5><ul><li>담보·서류 없이 $10,000 자금 조달</li><li>지문 한 번으로 모든 온체인 처리</li><li>거래마다 수수료 3% 자동 입금</li><li>단골이 '주주'가 되는 경험</li></ul></div>
+  </div>
+
+  <div class="section-label">개선 기회</div>
+  <div class="opp-row">
+    <div class="opp-item"><span class="opp-tag ux">UX</span><p>심사 진행 상태 실시간 트래커 — "현재 파트너 검토 중 (예상 3일)"처럼 구체적인 상태 표시</p></div>
+    <div class="opp-item"><span class="opp-tag product">제품</span><p>공시 제출 원클릭 템플릿 — 매출 구간 선택 + 사진 첨부만으로 5분 이내 완료</p></div>
+    <div class="opp-item"><span class="opp-tag growth">성장</span><p>단골 고객 공유 전용 랜딩 — "브루밍 카페 CAFE 토큰, 내가 아는 그 카페" 커스텀 페이지</p></div>
+  </div>
+</div>
+
+<!-- PARTNER -->
+<div class="journey-panel" id="panel-partner">
+  <div class="persona-header">
+    <div class="persona-avatar av-partner">SJ</div>
+    <div class="persona-meta">
+      <h3>이수진 — 지역 비즈니스 코디네이터, 35세</h3>
+      <p>성동구·마포구 소상공인 지원 사업을 해왔던 경력자. Starzip 파트너로 합류해 월 2~5개 상점을 발굴·온보딩하는 것이 목표. 블록체인 기본 개념은 학습했으나, 콘솔 UX가 직관적이어야 실무에서 쓸 수 있다고 생각함.</p>
+      <div class="persona-tags">
+        <span class="ptag">소상공인 네트워크 보유</span><span class="ptag">영업·심사 경험</span><span class="ptag">월 2~5개 상점 목표</span><span class="ptag">서울 성동·마포</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">감정 곡선 — 단계별 경험</div>
+  <div class="emotion-track">
+    <div class="emo-row" id="emo-partner">
+      <div class="emo-cell" onclick="selectStep('partner',0,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:65%;background:#EF9F27"></div></div>
+        <div style="font-size:16px">😁</div><div class="emo-stage">상점 발굴</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('partner',1,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:50%;background:#BA7517"></div></div>
+        <div style="font-size:16px">😐</div><div class="emo-stage">KYC 심사</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('partner',2,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:75%;background:#639922"></div></div>
+        <div style="font-size:16px">😄</div><div class="emo-stage">온보딩 지원</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('partner',3,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:85%;background:#3B6D11"></div></div>
+        <div style="font-size:16px">🥳</div><div class="emo-stage">상장 성공</div>
+      </div>
+      <div class="emo-cell" onclick="selectStep('partner',4,this)">
+        <div class="emo-bar-wrap"><div class="emo-bar" style="height:70%;background:#639922"></div></div>
+        <div style="font-size:16px">😁</div><div class="emo-stage">모니터링</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">상세 여정 — 단계를 클릭하세요</div>
+  <div class="steps-list" id="steps-partner">
+    <div class="step-row" onclick="showDetail('partner',0,this)">
+      <div class="step-num num-partner">1</div>
+      <div class="step-content"><div class="step-title">상점 발굴 & 초기 상담</div><div class="step-sub">네트워크·직접 방문으로 후보 상점 발굴. 사업주에게 Starzip 개념 설명.</div></div>
+      <div class="step-badge">영업</div>
+    </div>
+    <div class="step-row" onclick="showDetail('partner',1,this)">
+      <div class="step-num num-partner">2</div>
+      <div class="step-content"><div class="step-title">서류 수집 & KYC 1차 심사</div><div class="step-sub">사업자등록증 수집 → 파트너 콘솔에서 업종·영업 기간 확인 → 1차 승인/거부.</div></div>
+      <div class="step-badge">1~3일</div>
+    </div>
+    <div class="step-row" onclick="showDetail('partner',2,this)">
+      <div class="step-num num-partner">3</div>
+      <div class="step-content"><div class="step-title">사업주 옆에서 함께 온보딩</div><div class="step-sub">승인 후 카페에서 노트북 들고 함께 Passkey 등록, 토큰 발행, 런치패드 설정.</div></div>
+      <div class="step-badge">1~2시간</div>
+    </div>
+    <div class="step-row" onclick="showDetail('partner',3,this)">
+      <div class="step-num num-partner">4</div>
+      <div class="step-content"><div class="step-title">소프트캡 달성 → 온보딩 보너스 $300 수령</div><div class="step-sub">CAFE 런치패드 5일 만에 소프트캡 달성. 파트너 보너스 $300 + 성과 쉐어 시작.</div></div>
+      <div class="step-badge">런치 완료</div>
+    </div>
+    <div class="step-row" onclick="showDetail('partner',4,this)">
+      <div class="step-num num-partner">5</div>
+      <div class="step-content"><div class="step-title">상장 후 모니터링 & 12개월 성과 쉐어</div><div class="step-sub">매 분기 CAFE 공시 상태 확인. 성과 쉐어 자동 지급. 신규 상점 발굴 병행.</div></div>
+      <div class="step-badge">12개월</div>
+    </div>
+  </div>
+
+  <div class="detail-box" id="detail-partner"><p style="font-size:12px;color:#a8a7a2">단계를 클릭하면 상세 시나리오가 표시됩니다.</p></div>
+
+  <div class="pain-gain-row">
+    <div class="pg-card pain"><h5>페인 포인트</h5><ul><li>사업주에게 Web3 개념 설명 반복 피로</li><li>심사 기준 모호성 — 어디까지 OK인지 불명확</li><li>소프트캡 미달 시 보너스 없음 → 허탕</li><li>모니터링 상점 수 증가 시 대시보드 과부하</li></ul></div>
+    <div class="pg-card gain"><h5>게인 포인트</h5><ul><li>온보딩 보너스 + 12개월 성과 쉐어</li><li>기존 소상공인 네트워크 직접 활용</li><li>파트너 콘솔로 모든 심사·모니터링 통합</li><li>지역 비즈니스 생태계 직접 기여</li></ul></div>
+  </div>
+
+  <div class="section-label">개선 기회</div>
+  <div class="opp-row">
+    <div class="opp-item"><span class="opp-tag ux">UX</span><p>심사 체크리스트 자동화 — 사업자등록증 업로드 시 업종 코드·영업 기간 자동 추출 및 기준 충족 여부 즉시 표시</p></div>
+    <div class="opp-item"><span class="opp-tag product">제품</span><p>파트너용 사업주 교육 슬라이드 자동 생성 — 상점명·토큰명이 반영된 커스텀 설명 자료</p></div>
+    <div class="opp-item"><span class="opp-tag growth">성장</span><p>파트너 리더보드 + 월별 우수 파트너 인센티브 — 상점 발굴 경쟁 동기 강화</p></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const details = {
+  user: [
+    {title:"1 · 발견 — SNS에서 'CAFE 토큰' 게시물을 봤다",desc:"지민은 트위터에서 '동네 카페 토큰을 샀더니 거래 수수료 일부를 받는다'는 게시물을 발견. Starzip 랜딩에 접속해 'Trade tokenized business assets' 문구를 읽고 흥미를 느낌.",touchpoints:["SNS 게시물","랜딩 페이지","DEX 개념 설명 섹션"],actions:["랜딩 페이지 방문","마켓 목록 둘러보기","Discord/커뮤니티 가입"]},
+    {title:"2 · 지갑 연결 & USDT 입금",desc:"MetaMask로 지갑 연결. 가입 즉시 DUST +100 수령. 기존 보유 USDT를 DEX 컨트랙트에 입금. 플랫폼 입금 수수료는 없고 네트워크 가스비만 부담.",touchpoints:["지갑 연결 팝업","DUST 수령 알림","입금 확인 화면"],actions:["MetaMask 연결","USDT 입금 트랜잭션 서명","잔액 확인"]},
+    {title:"3 · 런치패드 — 단골 카페 CAFE 토큰 참여",desc:"런치패드 목록에서 '브루밍 카페 CAFE' 발견. 상점 위치, 월 고객 수, OCT 희석(9.1%) 공시를 확인. STAR 스테이킹으로 1.4x 부스트 적용해 참여.",touchpoints:["런치패드 목록","상점 상세 페이지","OCT 공시 모달","참여 확인 화면"],actions:["상점 상세 정보 확인","OCT 희석 공시 확인","USDT 참여금 입력","지갑 서명"]},
+    {title:"4 · DEX 거래 — CAFE/USDT 오더북",desc:"상장 후 CAFE/USDT 페어를 오더북에서 확인. 캔들 차트와 호가창을 보며 지정가 매수. 체결 시 DUST를 거래금의 0.1% 추가 적립. 수수료는 0.39%.",touchpoints:["마켓 목록","토큰 상세 차트","오더북","주문 입력 패널","체결 내역"],actions:["페어 검색","지정가 주문 입력","체결 확인","DUST 적립 확인"]},
+    {title:"5 · Store DAO 투표 & STAR 스테이킹",desc:"CAFE 토큰 보유자로서 Store DAO 소각 투표 참여. STAR를 스테이킹해 DEX DAO 수수료율 변경안에도 투표. 스테이킹 보상으로 수수료 수익 일부 배분 수령.",touchpoints:["DAO 대시보드","투표 상세 페이지","스테이킹 화면","보상 내역"],actions:["Store DAO 투표","DEX DAO 투표","STAR 스테이킹 설정","보상 수령"]}
+  ],
+  owner: [
+    {title:"1 · 첫 상담 — '주식이랑 비슷한 건가요?'",desc:"파트너 수진에게 연락받아 카페에서 미팅. '고객이 주주가 된다'는 설명에 공감. 은행 대출 대비 장점(담보 없음, 즉시 자금)을 듣고 신청 결정.",touchpoints:["파트너 대면 미팅","Starzip 소개 자료","1페이지 요약 문서"],actions:["파트너 설명 듣기","FAQ 확인","신청 결정"]},
+    {title:"2 · KYC 서류 제출 & 2~4주 심사",desc:"콘솔에서 이메일 가입 후 사업자등록증 업로드. 파트너 수진이 1차 심사, Starzip이 최종 승인. 진행 상태 이메일로 수신.",touchpoints:["콘솔 가입 화면","서류 업로드 UI","심사 진행 상태 이메일"],actions:["이메일 가입","사업자등록증 업로드","심사 상태 확인"]},
+    {title:"3 · Passkey 등록 → 지문 한 번으로 토큰 발행",desc:"승인 후 콘솔에서 지문 등록 안내. Smart Account 자동 생성. 목표금액 $10,000 입력 → FDV $33,333 자동 계산 → 옵션 B(5억 개) 선택 → 토큰명 CAFE → 지문 → 발행 완료. 가스비 없음.",touchpoints:["Passkey 등록 팝업","공급량 추천 화면","발행 확인 화면","블록 탐색기 링크"],actions:["지문/FaceID 등록","공모금 입력","공급량 선택","토큰명 입력","지문으로 발행"]},
+    {title:"4 · 런치패드 & 상장 — 단골에게 공유",desc:"런치패드 링크를 카카오톡 단골 그룹에 공유. '카페 토큰 샀어요!'라는 반응에 감동. 5일 만에 소프트캡 달성. $4,000 즉시 수령. DEX 상장 당일 수진과 함께 오더북 확인.",touchpoints:["런치패드 공유 링크","달성률 대시보드","공모금 입금 알림","상장 알림"],actions:["런치패드 링크 공유","달성률 실시간 모니터링","공모금 수령 확인","상장 후 오더북 확인"]},
+    {title:"5 · 분기 공시 제출 & 수수료 자동 수령",desc:"CAFE 거래가 일어날 때마다 수수료 3%가 콘솔 대시보드에 실시간으로 쌓임. 분기 마감 14일 후 매출 보고서 원클릭 제출 → 지문 → 베스팅 해제. 매달 $833씩 추가 수령.",touchpoints:["수수료 실시간 대시보드","공시 제출 화면","베스팅 스케줄"],actions:["수수료 내역 확인","분기 매출 보고서 작성","공시 제출(지문)","베스팅 해제 확인"]}
+  ],
+  partner: [
+    {title:"1 · 상점 발굴 — 성수동 골목 상권 직접 방문",desc:"기존 소상공인 지원 네트워크를 활용해 후보 상점 리스트 작성. 카페·음식점 위주로 방문, 오너와 라포 형성. '은행 대신 단골 고객에게 투자받는다'는 개념으로 설명.",touchpoints:["직접 방문","파트너 소개 자료","Starzip 랜딩 페이지"],actions:["후보 상점 리스트 작성","방문 미팅","신청 의향 확인"]},
+    {title:"2 · 서류 수집 & 파트너 콘솔 KYC 1차 심사",desc:"사업자등록증 수집 후 파트너 콘솔 업로드. 업종 코드 확인(금지 업종 아닌지), 영업 기간 6개월+ 확인. 통과 시 '1차 승인' 처리.",touchpoints:["파트너 콘솔","서류 업로드 UI","심사 체크리스트"],actions:["서류 업로드","업종·영업 기간 확인","1차 승인/거부 처리"]},
+    {title:"3 · 사업주 옆에서 함께 온보딩",desc:"승인 후 카페에서 노트북 들고 함께 Passkey 등록, 토큰 발행, 런치패드 설정. 사업주가 '지문 하나로 끝난다'고 놀람. 단골 공유용 링크 생성까지 지원.",touchpoints:["파트너 콘솔 → 사업주 콘솔 전환","교육 체크리스트","런치패드 공유 링크"],actions:["Passkey 등록 도움","토큰 발행 과정 안내","런치패드 기간 설정","공유 링크 생성"]},
+    {title:"4 · 소프트캡 달성 → 온보딩 보너스 $300 수령",desc:"CAFE 런치패드 5일 만에 소프트캡 달성. 파트너 콘솔에서 성공 알림 수신. 온보딩 보너스 $300 지급 처리. 다음 달부터 CAFE 거래량의 5% 성과 쉐어 시작.",touchpoints:["달성 알림","파트너 리워드 화면","성과 쉐어 시작 알림"],actions:["달성 확인","보너스 수령","성과 쉐어 내역 확인"]},
+    {title:"5 · 상장 후 모니터링 & 12개월 성과 쉐어",desc:"매 분기 CAFE 공시 상태 파트너 대시보드에서 확인. 정상 공시 시 성과 쉐어 자동 지급. 신규 상점 발굴 병행. 월 2~3개 상점 성공 시 월 $2,000~$5,000 수준 수입 가능.",touchpoints:["파트너 모니터링 대시보드","공시 상태 알림","성과 쉐어 내역","신규 상점 파이프라인"],actions:["공시 상태 확인","이상 상점 체크","신규 상점 발굴 병행","수익 내역 정산"]}
+  ]
+};
+
+let currentPersona = 'user';
+
+function switchPersona(p, btn) {
+  document.querySelectorAll('.journey-panel').forEach(el=>el.classList.remove('active'));
+  document.getElementById('panel-'+p).classList.add('active');
+  document.querySelectorAll('.p-tab').forEach(el=>{el.classList.remove('active-user','active-owner','active-partner')});
+  btn.classList.add('active-'+p);
+  currentPersona = p;
+}
+
+function showDetail(persona, idx, row) {
+  document.querySelectorAll('#steps-'+persona+' .step-row').forEach(r=>r.classList.remove('active-step'));
+  row.classList.add('active-step');
+  const d = details[persona][idx];
+  const box = document.getElementById('detail-'+persona);
+  box.innerHTML = `<h4>${d.title}</h4><p style="font-size:12px;color:#6b6a65;line-height:1.5;margin-bottom:10px">${d.desc}</p><div class="detail-cols"><div class="detail-col"><h5>터치포인트</h5><ul>${d.touchpoints.map(t=>`<li>${t}</li>`).join('')}</ul></div><div class="detail-col"><h5>사용자 행동</h5><ul>${d.actions.map(a=>`<li>${a}</li>`).join('')}</ul></div></div>`;
+  selectStep(persona, idx, null);
+}
+
+function selectStep(persona, idx, cell) {
+  if(cell){
+    document.querySelectorAll('#emo-'+persona+' .emo-cell').forEach(c=>c.classList.remove('selected'));
+    cell.classList.add('selected');
+  }
+}
+</script>
+</body>
+</html>
