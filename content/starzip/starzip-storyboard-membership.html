@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 업데이트된 전체 플로우 (멤버십 가입 선행)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f9f9f7;padding:24px;color:#1a1917;font-size:13px}
+
+.sb{padding:1rem 0;max-width:1000px;margin:0 auto}
+.sb-heading{margin-bottom:20px}
+.sb-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sb-heading p{font-size:12px;color:#6b6a65}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:1.5rem}
+.li{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b6a65}
+.ld{width:10px;height:10px;border-radius:3px;border:0.5px solid transparent}
+
+.phase-div{display:flex;align-items:center;gap:8px;margin:20px 0 10px 120px;padding-left:12px}
+.phase-div span{font-size:10px;font-weight:500;color:#6b6a65;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.phase-div hr{flex:1;height:0.5px;border:none;background:#e3e2dc}
+.new-phase{background:#1A1917;color:white;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:600;letter-spacing:.04em;margin-left:6px}
+
+.lane{display:flex;align-items:stretch;border-top:0.5px solid #e3e2dc;min-height:108px}
+.lane:last-child{border-bottom:0.5px solid #e3e2dc}
+.lane-label{width:120px;min-width:120px;padding:14px 12px 14px 0;display:flex;flex-direction:column;justify-content:center;border-right:0.5px solid #e3e2dc;flex-shrink:0}
+.ab{font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;display:inline-block;margin-bottom:4px;width:fit-content}
+.an{font-size:11px;color:#6b6a65}
+.lane-body{flex:1;display:flex;align-items:center;padding:12px;gap:7px;flex-wrap:nowrap;overflow-x:auto}
+
+.step{display:flex;flex-direction:column;align-items:center;cursor:pointer;flex-shrink:0}
+.step-box{border-radius:8px;border:0.5px solid #d0cfc8;background:#fff;padding:8px 11px;font-size:12px;font-weight:500;text-align:center;min-width:96px;max-width:124px;line-height:1.3;transition:border-color .15s,background .15s}
+.step-box:hover{background:#f2f1ed;border-color:#a8a7a2}
+.step-sub{font-size:10px;font-weight:400;color:#6b6a65;margin-top:3px;text-align:center;max-width:114px;line-height:1.3}
+.arr{display:flex;align-items:center;color:#a8a7a2;font-size:13px;flex-shrink:0;padding:0 1px}
+
+/* Color schemes */
+.u-box{background:#E6F1FB;border-color:#B5D4F4;color:#0C447C}
+.o-box{background:#EAF3DE;border-color:#97C459;color:#27500A}
+.p-box{background:#FAEEDA;border-color:#FAC775;color:#633806}
+.s-box{background:#F1EFE8;border-color:#D3D1C7;color:#2C2C2A}
+.d-box{background:#EEEDFE;border-color:#CECBF6;color:#26215C}
+.m-box{background:#FBEAF0;border-color:#F4C0D1;color:#72243E}
+.g-box{background:#EAF3DE;border-color:#C0DD97;color:#27500A}
+.r-box{background:#FCEBEB;border-color:#F7C1C1;color:#A32D2D}
+.new-box{background:#1A1917;border-color:#1A1917;color:#FFFFFF;font-weight:600}
+.new-box:hover{background:#333;border-color:#333}
+
+/* Actor badge colors */
+.ab-user{background:#E6F1FB;color:#0C447C}
+.ab-owner{background:#EAF3DE;color:#27500A}
+.ab-partner{background:#FAEEDA;color:#633806}
+.ab-system{background:#F1EFE8;color:#444441}
+.ab-dao{background:#EEEDFE;color:#26215C}
+.ab-member{background:#FBEAF0;color:#72243E}
+
+/* Detail panel */
+.detail-panel{margin-top:20px;border:0.5px solid #e3e2dc;border-radius:12px;background:#f2f1ed;padding:1rem 1.25rem;font-size:13px;min-height:56px}
+.detail-panel h3{font-size:13px;font-weight:500;margin-bottom:6px;color:#1a1917}
+.detail-panel p{color:#6b6a65;line-height:1.6;font-size:12px}
+.detail-panel .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.tag{font-size:11px;padding:2px 7px;border-radius:10px;border:0.5px solid #e3e2dc;color:#6b6a65;background:#fff}
+
+/* Change callout */
+.change-note{display:inline-flex;align-items:center;gap:5px;background:#1A1917;color:white;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;font-weight:500}
+</style>
+</head>
+<body>
+<div class="sb">
+
+<div class="sb-heading">
+  <h1>Starzip DEX — 업데이트된 전체 플로우</h1>
+  <p>멤버십 가입(이메일·Google·Apple)이 Phase 0으로 선행됩니다. 검은색 박스 = 새로 추가된 단계</p>
+</div>
+
+<div class="legend">
+  <div class="li"><div class="ld" style="background:#FBEAF0;border-color:#F4C0D1"></div>멤버십 (신규)</div>
+  <div class="li"><div class="ld" style="background:#E6F1FB;border-color:#B5D4F4"></div>일반 사용자</div>
+  <div class="li"><div class="ld" style="background:#EAF3DE;border-color:#C0DD97"></div>사업주</div>
+  <div class="li"><div class="ld" style="background:#FAEEDA;border-color:#FAC775"></div>파트너</div>
+  <div class="li"><div class="ld" style="background:#F1EFE8;border-color:#D3D1C7"></div>시스템/자동</div>
+  <div class="li"><div class="ld" style="background:#EEEDFE;border-color:#CECBF6"></div>DAO/거버넌스</div>
+  <div class="li"><div class="ld" style="background:#1A1917;border-color:#1A1917"></div>변경/추가 단계</div>
+</div>
+
+<!-- ===== PHASE 0: NEW ===== -->
+<div class="phase-div">
+  <span>Phase 0 · 멤버십 가입 <span class="new-phase">NEW</span></span>
+  <hr>
+</div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-member">멤버십</span>
+    <span class="an">모든 사용자</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('m0','랜딩 & 가입 진입','Starzip 랜딩 페이지 방문. "거래 시작하기" 또는 "사업주 등록" CTA 클릭 시 멤버십 가입 화면으로 진입.','랜딩 페이지, CTA 버튼')">
+      <div class="step-box new-box">랜딩 방문</div>
+      <div class="step-sub">신규 진입점</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('m1','이메일 가입','이메일 + 비밀번호 입력 후 이메일 인증(6자리 코드). 닉네임 설정.','이메일 인증 필수, 닉네임 중복 검사')">
+      <div class="step-box new-box">이메일 가입</div>
+      <div class="step-sub">인증 코드 발송</div>
+    </div>
+    <div class="arr" style="font-size:11px;color:#a8a7a2">또는</div>
+    <div class="step" onclick="show('m2','소셜 로그인','Google 또는 Apple 계정으로 1-클릭 가입. OAuth 2.0 처리. 별도 이메일 인증 없음.','Google OAuth, Apple Sign In, 이메일 자동 연동')">
+      <div class="step-box new-box">Google / Apple</div>
+      <div class="step-sub">소셜 1-클릭</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('m3','역할 선택','가입 후 역할 선택: 일반 사용자(거래자) / 사업주(토큰 발행). 이후 다른 온보딩 경로로 분기.','역할은 나중에 변경 불가, 사업주는 추가 KYC 필요')">
+      <div class="step-box new-box">역할 선택</div>
+      <div class="step-sub">사용자 / 사업주</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('m4','멤버십 계정 생성 완료','Starzip 멤버십 ID 발급. DUST +100 지급(가입 보상). 프로필 생성.','멤버십 ID = Starzip 내 고유 식별자, DUST 즉시 지급')">
+      <div class="step-box s-box">멤버십 생성</div>
+      <div class="step-sub">DUST +100 지급</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHASE 1 ===== -->
+<div class="phase-div"><span>Phase 1 · 지갑 연결 & 온보딩</span><hr></div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-user">사용자</span>
+    <span class="an">지갑 연결</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('u1','지갑 연결 (선택)','멤버십 가입 후 지갑 연결은 필수가 아님. 거래하려면 연결 필요. MetaMask, WalletConnect 등 연결.','멤버십 계정 ↔ 지갑 주소 1:N 매핑 가능')">
+      <div class="step-box u-box">지갑 연결</div>
+      <div class="step-sub">MetaMask 등 (선택)</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('u2','USDT/USDC 입금','외부 지갑에서 USDT/USDC를 DEX 컨트랙트에 입금. 멤버십 계정에 잔액 표시.','플랫폼 입금 수수료 없음, 네트워크 가스비만')">
+      <div class="step-box u-box">입금</div>
+      <div class="step-sub">USDT/USDC</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('u3','마켓 탐색','멤버십 로그인 상태로 마켓 목록 접근. 즐겨찾기, 알림 설정, 포트폴리오 추적 가능.','로그인 없이도 시세 조회 가능, 거래/참여는 로그인+지갑 연결 필요')">
+      <div class="step-box u-box">마켓 탐색</div>
+      <div class="step-sub">로그인 상태</div>
+    </div>
+  </div>
+</div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-partner">파트너</span>
+    <span class="an">상점 온보딩</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('p1','상점 발굴','파트너가 오프라인 상점 발굴. 사업주에게 Starzip 소개 및 멤버십 가입 안내.','파트너 전용 레퍼럴 링크로 사업주 가입 추적')">
+      <div class="step-box p-box">상점 발굴</div>
+      <div class="step-sub">레퍼럴 링크 제공</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('p2','사업주 멤버십 가입 유도','사업주가 파트너 레퍼럴 링크로 멤버십 가입 → 역할 "사업주" 선택 → KYC 절차 시작.','레퍼럴 추적으로 파트너 온보딩 보너스 자동 귀속')">
+      <div class="step-box p-box">가입 유도</div>
+      <div class="step-sub">KYC 서류 수집</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('p3','1차 심사','파트너 콘솔에서 사업자등록증 검토. 업종·영업 기간 확인 후 1차 승인 처리.','파트너 콘솔은 일반 이메일 로그인, AA 미적용')">
+      <div class="step-box p-box">KYC 1차 심사</div>
+      <div class="step-sub">1~3일</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('sa','Starzip 최종 승인','Starzip 어드민이 파트너 심사 결과 검토 후 최종 승인. 사업주 콘솔 접근 권한 부여.','승인 시 사업주 멤버십 계정에 콘솔 권한 자동 추가')">
+      <div class="step-box s-box">Starzip 최종 승인</div>
+      <div class="step-sub">2~4주</div>
+    </div>
+  </div>
+</div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-owner">사업주</span>
+    <span class="an">Passkey 설정</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('o1','멤버십 가입 (사업주)','이메일 또는 Google/Apple로 멤버십 가입 → 역할 "사업주" 선택 → KYC 서류 업로드.','멤버십 계정이 사업주 콘솔의 기반 계정')">
+      <div class="step-box o-box">멤버십 가입</div>
+      <div class="step-sub">역할: 사업주</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('o2','Passkey 등록','심사 승인 후 콘솔에서 지문/FaceID 등록. 블록체인 지갑(Smart Account) 자동 생성.','멤버십 계정 + Passkey = 이중 인증 구조')">
+      <div class="step-box o-box">Passkey 등록</div>
+      <div class="step-sub">지문/FaceID</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('osa','Smart Account 생성','Passkey 등록 즉시 opBNB에 Smart Account(지갑) 자동 생성. 이후 모든 온체인 작업은 지문 1회.','가스비 Paymaster 대납, 사업주 부담 0')">
+      <div class="step-box s-box">Smart Account</div>
+      <div class="step-sub">자동·AA·가스비 0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHASE 2 ===== -->
+<div class="phase-div"><span>Phase 2 · 토큰 발행 & 런치패드</span><hr></div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-owner">사업주</span>
+    <span class="an">토큰 발행</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('t1','공모금액 설정','목표 공모금액 입력 → FDV 자동 계산 → 공급량 3가지 옵션 제시.','FDV = 목표금액 ÷ 0.3')">
+      <div class="step-box o-box">공모금 설정</div>
+      <div class="step-sub">FDV 자동 계산</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('t2','토큰명·공급량 선택','영문 3~5자 토큰명 + 공급량 선택(1억~10억).','중복 검사 포함')">
+      <div class="step-box o-box">토큰명·공급량</div>
+      <div class="step-sub">1억~10억 선택</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('t3','지문 → 발행','지문 1회 → 토큰 팩토리 컨트랙트 호출 → opBNB 자동 배포.','가스비 0, AA Paymaster 대납')">
+      <div class="step-box o-box">지문 → 발행</div>
+      <div class="step-sub">opBNB 자동 배포</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('t4','런치패드 오픈','사전 수요 예측 → 런치패드 오픈 → 멤버십 사용자에게 알림.','멤버십 계정 보유자에게 알림 발송')">
+      <div class="step-box o-box">런치패드 오픈</div>
+      <div class="step-sub">멤버십 알림 발송</div>
+    </div>
+  </div>
+</div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-user">사용자</span>
+    <span class="an">런치패드</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('l1','런치패드 알림 수신','멤버십 계정으로 알림 수신. 상점 정보·OCT 희석 공시 확인.','멤버십 알림 설정에 따라 이메일·앱 푸시')">
+      <div class="step-box u-box">알림 수신</div>
+      <div class="step-sub">멤버십 알림</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('l2','참여금액 입력','USDT/USDC 참여. STAR 스테이킹 시 1.2~2.0x 배정 부스트.','비례 배정, 미배정분 즉시 환불')">
+      <div class="step-box u-box">런치패드 참여</div>
+      <div class="step-sub">STAR 부스트 적용</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('l3','소프트캡 판정·배분','소프트캡 달성 → 40/10/50 자동 배분. 미달 → 전액 환불.','스마트 컨트랙트 자동 처리')">
+      <div class="step-box s-box">자동 판정·배분</div>
+      <div class="step-sub">40/10/50 구조</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHASE 3 ===== -->
+<div class="phase-div"><span>Phase 3 · DEX 거래 & 공시</span><hr></div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-user">사용자</span>
+    <span class="an">DEX 거래</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('d1','마켓 탐색','멤버십 로그인 상태로 마켓 목록 탐색. 즐겨찾기·포트폴리오 추적.','로그인 없어도 시세 조회 가능')">
+      <div class="step-box u-box">마켓 탐색</div>
+      <div class="step-sub">로그인 연동</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('d2','오더북 주문','지정가/시장가 주문 입력. 오프체인 오더북 매칭.','0.39% 수수료, DUST 0.1% 적립')">
+      <div class="step-box u-box">주문 입력</div>
+      <div class="step-sub">지정가·시장가</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('d3','온체인 정산·배분','체결 → Settlement 컨트랙트 기록 → 수수료 3% 상점 자동 배분.','실시간 처리')">
+      <div class="step-box s-box">정산·수수료 배분</div>
+      <div class="step-sub">상점 3% 실시간</div>
+    </div>
+  </div>
+</div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-owner">사업주</span>
+    <span class="an">분기 공시</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('q1','공시 제출','콘솔 원클릭 → 지문 → 온체인 기록. 분기 마감 14일 내.','가스비 0, Optimistic Compliance')">
+      <div class="step-box o-box">매출 공시 제출</div>
+      <div class="step-sub">14일 내 제출</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('q2','베스팅 자동 처리','제출 → 베스팅 해제. 미제출 → 베스팅 자동 중단.','스마트 컨트랙트 자동')">
+      <div class="step-box s-box">베스팅 해제/중단</div>
+      <div class="step-sub">자동 조건부</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('q3','챌린지·DAO','커뮤니티 이의 → 멀티시그 심사 → DAO 항소.','STAR 홀더 투표 최종')">
+      <div class="step-box d-box">챌린지 / DAO</div>
+      <div class="step-sub">STAR 홀더 투표</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHASE 4 ===== -->
+<div class="phase-div"><span>Phase 4 · 거버넌스 & 생태계</span><hr></div>
+
+<div class="lane">
+  <div class="lane-label">
+    <span class="ab ab-user">사용자</span>
+    <span class="an">STAR·DUST</span>
+  </div>
+  <div class="lane-body">
+    <div class="step" onclick="show('s1','DUST 적립','멤버십 계정에 DUST 적립. 가입·추천·거래·런치패드 참여로 누적.','만료 없음, TGE 후 STAR 전환')">
+      <div class="step-box g-box">DUST 적립</div>
+      <div class="step-sub">멤버십 계정 기록</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('s2','STAR 스테이킹','STAR 예치 → 수수료 수익 배분 + 런치패드 우선 배정.','스테이킹 보상 실시간')">
+      <div class="step-box g-box">STAR 스테이킹</div>
+      <div class="step-sub">수수료 배분·부스트</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('s3','DAO 투표','STAR → DEX DAO / Store Token → Store DAO.','48시간 Timelock')">
+      <div class="step-box d-box">DAO 투표</div>
+      <div class="step-sub">플랫폼 정책 결정</div>
+    </div>
+    <div class="arr">→</div>
+    <div class="step" onclick="show('s4','Genesis NFT','멤버십 계정으로 NFT 보유 확인 → TGE 후 STAR 클레임.','Phase1~2 NFT 보유자')">
+      <div class="step-box g-box">Genesis NFT</div>
+      <div class="step-sub">TGE 후 클레임</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="dp">
+  <p style="color:#a8a7a2;font-size:12px">각 단계를 클릭하면 상세 설명이 표시됩니다.</p>
+</div>
+
+</div>
+
+<script>
+function show(id, title, desc, tags) {
+  const el = document.getElementById('dp');
+  el.innerHTML = `<h3>${title}</h3><p>${desc}</p><div class="tags">${tags.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>`;
+}
+</script>
+</body>
+</html>
