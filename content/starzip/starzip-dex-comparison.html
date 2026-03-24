@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEX Market Home 비교분석 — Hyperliquid / dYdX / Binance Web3 vs Starzip</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f9f9f7;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1040px;margin:0 auto}
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+
+.tab-row{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:20px;border:1px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .15s}
+.tab.hl{background:#0A0E1A;color:#00E5FF;border-color:#00E5FF}
+.tab.dy{background:#1A0A2E;color:#9B6FFF;border-color:#6C3CE1}
+.tab.bn{background:#181A20;color:#F0B90B;border-color:#F0B90B}
+.tab.cmp{background:#1a1917;color:#fff;border-color:#1a1917}
+
+.panel{display:none}
+.panel.active{display:block}
+
+/* MOCKUP CONTAINER */
+.mockup-wrap{border-radius:12px;overflow:hidden;border:1px solid #e3e2dc;margin-bottom:1.25rem}
+
+/* HYPERLIQUID */
+.hl-bg{background:#0A0E1A;color:#E2E8F0}
+.hl-nav{background:#0D1224;border-bottom:1px solid #1E2A45;display:flex;align-items:center;padding:0 16px;height:44px;gap:0}
+.hl-logo{font-size:13px;font-weight:700;color:#00E5FF;letter-spacing:.05em;margin-right:20px}
+.hl-navlink{padding:0 10px;height:44px;display:flex;align-items:center;font-size:11px;color:#8899AA;cursor:pointer}
+.hl-navlink.active{color:#00E5FF;border-bottom:2px solid #00E5FF}
+.hl-hero{background:#0A0E1A;padding:12px 16px;border-bottom:1px solid #1E2A45;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.hl-stat{display:flex;flex-direction:column;gap:2px}
+.hl-stat-label{font-size:9px;color:#556677;text-transform:uppercase;letter-spacing:.06em}
+.hl-stat-value{font-size:13px;font-weight:500;color:#E2E8F0;font-family:monospace}
+.hl-search{flex:1;max-width:200px;background:#1E2A45;border:1px solid #2A3A55;border-radius:6px;padding:5px 10px;font-size:11px;color:#8899AA;display:flex;align-items:center;gap:6px}
+.hl-table-header{display:grid;grid-template-columns:180px 1fr 1fr 1fr 1fr 80px;padding:8px 16px;background:#0D1224;border-bottom:1px solid #1E2A45}
+.hl-table-header span{font-size:9px;color:#445566;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.hl-table-header span:not(:first-child){text-align:right}
+.hl-row{display:grid;grid-template-columns:180px 1fr 1fr 1fr 1fr 80px;padding:9px 16px;border-bottom:1px solid #111A2E;cursor:pointer;transition:background .1s}
+.hl-row:hover{background:#0D1224}
+.hl-row span{font-size:11px;color:#C0D0E0;font-family:monospace}
+.hl-row span:not(:first-child){text-align:right}
+.hl-token-cell{display:flex;align-items:center;gap:8px}
+.token-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.av-btc{background:#F7931A;color:white}
+.av-eth{background:#627EEA;color:white}
+.av-sol{background:#9945FF;color:white}
+.av-hype{background:#00E5FF;color:#0A0E1A}
+.av-wif{background:#8B5CF6;color:white}
+.av-pepe{background:#22C55E;color:white}
+.hl-token-name{font-size:11px;font-weight:500;color:#E2E8F0}
+.hl-token-pair{font-size:9px;color:#445566}
+.hl-up{color:#00E5A0}
+.hl-dn{color:#FF4466}
+.spark-cell{display:flex;align-items:center;justify-content:flex-end}
+.hl-footer{padding:8px 16px;background:#0A0E1A;border-top:1px solid #111A2E;font-size:10px;color:#334455;text-align:center}
+
+/* DYDX */
+.dy-bg{background:#1A0A2E;color:#E8E0FF}
+.dy-nav{background:#13072A;border-bottom:1px solid #2D1A5E;display:flex;align-items:center;padding:0 16px;height:44px}
+.dy-logo{font-size:13px;font-weight:700;color:#9B6FFF;margin-right:20px;letter-spacing:-.02em}
+.dy-navlink{padding:0 10px;height:44px;display:flex;align-items:center;font-size:11px;color:#6B5A9E;cursor:pointer}
+.dy-navlink.active{color:#9B6FFF;border-bottom:2px solid #9B6FFF}
+.dy-filter-row{background:#13072A;border-bottom:1px solid #2D1A5E;display:flex;align-items:center;padding:8px 16px;gap:8px;flex-wrap:wrap}
+.dy-filter{padding:4px 10px;border-radius:4px;font-size:10px;cursor:pointer;color:#6B5A9E;border:1px solid #2D1A5E}
+.dy-filter.active{background:#6C3CE1;color:white;border-color:#6C3CE1}
+.dy-sort-row{display:flex;gap:12px;padding:6px 16px;background:#1A0A2E;border-bottom:1px solid #2D1A5E;overflow-x:auto}
+.dy-sort-tab{font-size:10px;color:#6B5A9E;cursor:pointer;white-space:nowrap;padding:3px 0}
+.dy-sort-tab.active{color:#9B6FFF;border-bottom:1px solid #9B6FFF}
+.dy-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;background:#1A0A2E}
+.dy-card{background:#13072A;border:1px solid #2D1A5E;border-radius:8px;padding:10px;cursor:pointer;transition:border-color .15s}
+.dy-card:hover{border-color:#6C3CE1}
+.dy-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.dy-card-token{display:flex;align-items:center;gap:6px}
+.dy-card-name{font-size:12px;font-weight:500;color:#E8E0FF}
+.dy-card-badge{font-size:9px;padding:1px 5px;border-radius:3px;background:#2D1A5E;color:#6B5A9E}
+.dy-card-price{font-size:13px;font-weight:600;color:#E8E0FF;font-family:monospace;margin-bottom:3px}
+.dy-card-change{font-size:10px;font-family:monospace}
+.dy-card-vol{font-size:9px;color:#4A3A7E;margin-top:4px}
+.dy-sparkline{margin-top:6px}
+.dy-sparkline svg{width:100%;height:28px}
+.dy-up{color:#4FFFB0}
+.dy-dn{color:#FF5C7A}
+.dy-footer{padding:8px 16px;background:#13072A;border-top:1px solid #2D1A5E;font-size:10px;color:#3A2A6E;text-align:center}
+
+/* BINANCE */
+.bn-bg{background:#181A20;color:#EAECEF}
+.bn-nav{background:#0B0E11;border-bottom:1px solid #2B2F36;display:flex;align-items:center;padding:0 16px;height:44px}
+.bn-logo{font-size:13px;font-weight:700;color:#F0B90B;margin-right:16px}
+.bn-navlink{padding:0 10px;height:44px;display:flex;align-items:center;font-size:11px;color:#848E9C;cursor:pointer}
+.bn-navlink.active{color:#F0B90B}
+.bn-hero-tabs{background:#0B0E11;border-bottom:1px solid #2B2F36;display:flex;padding:0 16px}
+.bn-hero-tab{padding:10px 14px;font-size:11px;color:#848E9C;cursor:pointer;border-bottom:2px solid transparent}
+.bn-hero-tab.active{color:#F0B90B;border-bottom-color:#F0B90B}
+.bn-top-row{display:flex;background:#0D1117;border-bottom:1px solid #2B2F36;padding:8px 16px;overflow-x:auto;gap:6px}
+.bn-hot-tag{display:flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid #2B2F36;border-radius:4px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.bn-hot-tag.active{border-color:#F0B90B;background:rgba(240,185,11,.08)}
+.bn-hot-rank{font-size:10px;font-weight:700;color:#F0B90B;min-width:14px}
+.bn-hot-name{font-size:10px;color:#EAECEF;font-weight:500}
+.bn-hot-chg{font-size:10px;font-family:monospace}
+.bn-table-header{display:grid;grid-template-columns:170px 1fr 1fr 1fr 80px;padding:8px 16px;background:#181A20;border-bottom:1px solid #2B2F36}
+.bn-table-header span{font-size:9px;color:#848E9C;font-weight:500}
+.bn-table-header span:not(:first-child){text-align:right}
+.bn-row{display:grid;grid-template-columns:170px 1fr 1fr 1fr 80px;padding:9px 16px;border-bottom:1px solid #2B2F36;cursor:pointer;transition:background .1s}
+.bn-row:hover{background:#1C2029}
+.bn-row span{font-size:11px;color:#EAECEF;font-family:monospace}
+.bn-row span:not(:first-child){text-align:right}
+.bn-up{color:#0ECB81}
+.bn-dn{color:#F6465D}
+.bn-btn{background:#F0B90B;color:#181A20;border:none;border-radius:4px;padding:3px 8px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;width:100%}
+.bn-chain-tag{font-size:9px;padding:1px 5px;border-radius:3px;background:#2B2F36;color:#848E9C}
+.bn-footer{padding:8px 16px;background:#0B0E11;border-top:1px solid #2B2F36;font-size:10px;color:#3A3E4A;text-align:center}
+
+/* SUMMARY ROW */
+.sum-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:0}
+.sum-card{border-radius:8px;padding:10px 12px}
+.sum-card .sl{font-size:10px;margin-bottom:4px}
+.sum-card .sv{font-size:12px;line-height:1.5}
+
+/* COMPARISON */
+.cmp-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
+.cmp-table th{padding:10px 12px;text-align:left;font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;border-bottom:0.5px solid #e3e2dc;background:#f2f1ed;white-space:nowrap}
+.cmp-table td{padding:10px 12px;border-bottom:0.5px solid #e3e2dc;vertical-align:top;line-height:1.5;color:#6b6a65;font-size:12px}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr:hover td{background:#f9f9f7}
+.cmp-table td:first-child{font-weight:500;color:#1a1917;white-space:nowrap}
+.hl-txt{color:#00B8CC;font-weight:600}
+.dy-txt{color:#7B50E0;font-weight:600}
+.bn-txt{color:#C89A09;font-weight:600}
+.st-txt{color:#1B7A4A;font-weight:600}
+
+.score-wrap{background:#f2f1ed;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.score-wrap h4{font-size:11px;font-weight:500;margin-bottom:10px;color:#1a1917}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.score-label{font-size:11px;min-width:110px}
+.score-track{flex:1;height:6px;background:#e3e2dc;border-radius:3px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px;transition:width .6s}
+.score-num{font-size:11px;font-weight:500;min-width:30px;text-align:right;font-family:monospace}
+
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.i-card{background:#fff;border:0.5px solid #e3e2dc;border-radius:10px;padding:12px 14px}
+.i-card h4{font-size:12px;font-weight:500;margin-bottom:6px}
+.i-card p{font-size:11px;color:#6b6a65;line-height:1.55}
+.i-card.full{grid-column:1/-1}
+.tag-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.ctag{font-size:10px;padding:2px 7px;border-radius:10px;border:0.5px solid #e3e2dc;color:#6b6a65;background:#f9f9f7}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>DEX Market Home 비교분석</h1>
+  <p>Hyperliquid · dYdX · Binance Web3 vs Starzip — UI/UX 구조 및 차별화 포인트</p>
+</div>
+
+<div class="tab-row">
+  <button class="tab hl active" onclick="sw('hl',this)">Hyperliquid</button>
+  <button class="tab dy" onclick="sw('dy',this)">dYdX</button>
+  <button class="tab bn" onclick="sw('bn',this)">Binance Web3</button>
+  <button class="tab cmp" onclick="sw('cmp',this)">비교 분석</button>
+</div>
+
+<!-- ===== HYPERLIQUID ===== -->
+<div class="panel active" id="p-hl">
+  <div class="mockup-wrap">
+    <div class="hl-bg">
+      <div class="hl-nav">
+        <span class="hl-logo">HYPERLIQUID</span>
+        <div class="hl-navlink active">Trade</div>
+        <div class="hl-navlink">Vault</div>
+        <div class="hl-navlink">Portfolio</div>
+        <div class="hl-navlink">Leaderboard</div>
+        <div style="flex:1"></div>
+        <div style="font-size:10px;color:#445566;font-family:monospace">HYPE $34.20 +2.1%</div>
+      </div>
+      <div class="hl-hero">
+        <div class="hl-stat"><div class="hl-stat-label">24H Volume</div><div class="hl-stat-value">$8.42B</div></div>
+        <div class="hl-stat"><div class="hl-stat-label">Open Interest</div><div class="hl-stat-value">$12.1B</div></div>
+        <div class="hl-stat"><div class="hl-stat-label">Markets</div><div class="hl-stat-value">130+</div></div>
+        <div class="hl-stat"><div class="hl-stat-label">Taker Fee</div><div class="hl-stat-value">0.035%</div></div>
+        <div style="flex:1"></div>
+        <div class="hl-search">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5" cy="5" r="3.5" stroke="#445566" stroke-width="1.2"/><line x1="8" y1="8" x2="10.5" y2="10.5" stroke="#445566" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Search markets...
+        </div>
+        <div style="display:flex;gap:5px">
+          <div style="padding:4px 9px;border:1px solid #2A3A55;border-radius:4px;font-size:10px;color:#8899AA;cursor:pointer">Perps</div>
+          <div style="padding:4px 9px;border:1px solid #00E5FF;border-radius:4px;font-size:10px;color:#00E5FF;cursor:pointer">Spot</div>
+        </div>
+      </div>
+      <div class="hl-table-header">
+        <span>Market</span><span>Price</span><span>24H Chg</span><span>24H Vol</span><span>OI</span><span>7D Trend</span>
+      </div>
+      <div class="hl-row">
+        <div class="hl-token-cell"><div class="token-av av-btc">B</div><div><div class="hl-token-name">BTC</div><div class="hl-token-pair">BTC-PERP</div></div></div>
+        <span>$84,210</span><span class="hl-up">+2.41%</span><span>$2.14B</span><span>$5.2B</span>
+        <div class="spark-cell"><svg width="50" height="18" viewBox="0 0 50 18" fill="none"><polyline points="0,16 8,14 16,10 24,12 32,7 40,5 50,3" stroke="#00E5A0" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="hl-row">
+        <div class="hl-token-cell"><div class="token-av av-eth">E</div><div><div class="hl-token-name">ETH</div><div class="hl-token-pair">ETH-PERP</div></div></div>
+        <span>$2,018</span><span class="hl-up">+1.87%</span><span>$890M</span><span>$2.1B</span>
+        <div class="spark-cell"><svg width="50" height="18" viewBox="0 0 50 18" fill="none"><polyline points="0,14 8,12 16,8 24,10 32,6 40,7 50,4" stroke="#00E5A0" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="hl-row">
+        <div class="hl-token-cell"><div class="token-av av-sol">S</div><div><div class="hl-token-name">SOL</div><div class="hl-token-pair">SOL-PERP</div></div></div>
+        <span>$142.80</span><span class="hl-dn">-0.92%</span><span>$420M</span><span>$980M</span>
+        <div class="spark-cell"><svg width="50" height="18" viewBox="0 0 50 18" fill="none"><polyline points="0,6 8,8 16,10 24,9 32,11 40,13 50,14" stroke="#FF4466" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="hl-row">
+        <div class="hl-token-cell"><div class="token-av av-hype">H</div><div><div class="hl-token-name">HYPE</div><div class="hl-token-pair">HYPE-PERP</div></div></div>
+        <span>$34.20</span><span class="hl-up">+5.30%</span><span>$310M</span><span>$740M</span>
+        <div class="spark-cell"><svg width="50" height="18" viewBox="0 0 50 18" fill="none"><polyline points="0,16 8,13 16,10 24,8 32,5 40,4 50,2" stroke="#00E5A0" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="hl-footer">130+ perp markets · 50+ spot markets · 0 gas fees · KYC-free · Maker 0.01% / Taker 0.035%</div>
+    </div>
+  </div>
+  <div class="sum-row">
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">UI 특징</div><div class="sv" style="color:#6b6a65">완전 다크 테마. 테이블 중심 숫자 밀도. 컴팩트 레이아웃. 스파크라인 7일 추이. Perps/Spot 탭 분리.</div></div>
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">정렬·필터</div><div class="sv" style="color:#6b6a65">Volume / OI / 24H Change 컬럼 정렬. Perps ↔ Spot 토글. 검색창. 즐겨찾기 별표.</div></div>
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">타겟 사용자</div><div class="sv" style="color:#6b6a65">프로 트레이더. 빠른 스캔 최적화. 감성적 요소 없음. 정보 밀도 최우선.</div></div>
+  </div>
+</div>
+
+<!-- ===== DYDX ===== -->
+<div class="panel" id="p-dy">
+  <div class="mockup-wrap">
+    <div class="dy-bg">
+      <div class="dy-nav">
+        <span class="dy-logo">dYdX</span>
+        <div class="dy-navlink active">Markets</div>
+        <div class="dy-navlink">Trade</div>
+        <div class="dy-navlink">Portfolio</div>
+        <div class="dy-navlink">Rewards</div>
+        <div style="flex:1"></div>
+        <div style="font-size:10px;color:#4A3A7E;font-family:monospace">DYDX $0.84</div>
+      </div>
+      <div class="dy-filter-row">
+        <div class="dy-filter active">All</div>
+        <div class="dy-filter">Layer 1</div>
+        <div class="dy-filter">Layer 2</div>
+        <div class="dy-filter">DeFi</div>
+        <div class="dy-filter">AI</div>
+        <div style="flex:1"></div>
+        <div style="font-size:10px;color:#4A3A7E;background:#13072A;border:1px solid #2D1A5E;border-radius:4px;padding:4px 10px;cursor:pointer">Search markets... (Cmd+K)</div>
+      </div>
+      <div class="dy-sort-row">
+        <div class="dy-sort-tab active">Hot</div>
+        <div class="dy-sort-tab">Trending</div>
+        <div class="dy-sort-tab">Gainers</div>
+        <div class="dy-sort-tab">Losers</div>
+        <div class="dy-sort-tab">New listings</div>
+        <div class="dy-sort-tab">Favorites</div>
+      </div>
+      <div class="dy-card-grid">
+        <div class="dy-card">
+          <div class="dy-card-top">
+            <div class="dy-card-token"><div class="token-av av-btc" style="width:20px;height:20px;font-size:7px">B</div><span class="dy-card-name">BTC-USD</span></div>
+            <span class="dy-card-badge">Perpetual</span>
+          </div>
+          <div class="dy-card-price">$84,210</div>
+          <div class="dy-card-change dy-up">+2.41% · 24H</div>
+          <div class="dy-sparkline"><svg viewBox="0 0 80 28" fill="none"><polyline points="0,24 14,20 28,14 42,18 56,10 70,8 80,4" stroke="#4FFFB0" stroke-width="1.5"/></svg></div>
+          <div class="dy-card-vol">Vol: $2.14B · OI: $5.2B</div>
+        </div>
+        <div class="dy-card">
+          <div class="dy-card-top">
+            <div class="dy-card-token"><div class="token-av av-eth" style="width:20px;height:20px;font-size:7px">E</div><span class="dy-card-name">ETH-USD</span></div>
+            <span class="dy-card-badge">Perpetual</span>
+          </div>
+          <div class="dy-card-price">$2,018</div>
+          <div class="dy-card-change dy-up">+1.87% · 24H</div>
+          <div class="dy-sparkline"><svg viewBox="0 0 80 28" fill="none"><polyline points="0,22 14,18 28,12 42,16 56,9 70,11 80,6" stroke="#4FFFB0" stroke-width="1.5"/></svg></div>
+          <div class="dy-card-vol">Vol: $890M · OI: $2.1B</div>
+        </div>
+        <div class="dy-card">
+          <div class="dy-card-top">
+            <div class="dy-card-token"><div class="token-av av-sol" style="width:20px;height:20px;font-size:7px">S</div><span class="dy-card-name">SOL-USD</span></div>
+            <span class="dy-card-badge">Perpetual</span>
+          </div>
+          <div class="dy-card-price">$142.80</div>
+          <div class="dy-card-change dy-dn">-0.92% · 24H</div>
+          <div class="dy-sparkline"><svg viewBox="0 0 80 28" fill="none"><polyline points="0,8 14,10 28,14 42,13 56,16 70,18 80,20" stroke="#FF5C7A" stroke-width="1.5"/></svg></div>
+          <div class="dy-card-vol">Vol: $420M · OI: $980M</div>
+        </div>
+      </div>
+      <div class="dy-footer">Cosmos SDK chain · 2,000 TPS · No gas fees · Community governed · Open-source design system</div>
+    </div>
+  </div>
+  <div class="sum-row">
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">UI 특징</div><div class="sv" style="color:#6b6a65">카드 그리드 레이아웃. 스파크라인 강조. 섹터 필터(DeFi/AI). Hot·Trending 탭. 자체 디자인 시스템(Figma 공개).</div></div>
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">정렬·필터</div><div class="sv" style="color:#6b6a65">Hot / Trending / Gainers / Losers / New. 섹터 태그 필터. 즐겨찾기. Cmd+K 전역 검색.</div></div>
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">타겟 사용자</div><div class="sv" style="color:#6b6a65">프로~중급 트레이더. 시각적 스캔 용이. 퍼플 계열 브랜드 정체성 강함.</div></div>
+  </div>
+</div>
+
+<!-- ===== BINANCE WEB3 ===== -->
+<div class="panel" id="p-bn">
+  <div class="mockup-wrap">
+    <div class="bn-bg">
+      <div class="bn-nav">
+        <span class="bn-logo">Binance</span>
+        <div class="bn-navlink active">Web3</div>
+        <div class="bn-navlink">Markets</div>
+        <div class="bn-navlink">Alpha</div>
+        <div class="bn-navlink">Launchpool</div>
+        <div style="flex:1"></div>
+        <div style="background:#F0B90B;color:#181A20;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer">Connect Wallet</div>
+      </div>
+      <div class="bn-hero-tabs">
+        <div class="bn-hero-tab active">Trending</div>
+        <div class="bn-hero-tab">New Listing</div>
+        <div class="bn-hero-tab">Top Gainers</div>
+        <div class="bn-hero-tab">Top Volume</div>
+        <div class="bn-hero-tab">Watchlist</div>
+      </div>
+      <div class="bn-top-row">
+        <div class="bn-hot-tag active"><span class="bn-hot-rank">1</span><span class="bn-hot-name">BTC</span><span class="bn-hot-chg bn-up">+2.4%</span></div>
+        <div class="bn-hot-tag"><span class="bn-hot-rank">2</span><span class="bn-hot-name">HYPE</span><span class="bn-hot-chg bn-up">+5.3%</span></div>
+        <div class="bn-hot-tag"><span class="bn-hot-rank">3</span><span class="bn-hot-name">SOL</span><span class="bn-hot-chg bn-dn">-0.9%</span></div>
+        <div class="bn-hot-tag"><span class="bn-hot-rank">4</span><span class="bn-hot-name">WIF</span><span class="bn-hot-chg bn-up">+8.2%</span></div>
+        <div class="bn-hot-tag"><span class="bn-hot-rank">5</span><span class="bn-hot-name">PEPE</span><span class="bn-hot-chg bn-up">+12.1%</span></div>
+        <div style="font-size:10px;color:#848E9C;align-self:center;margin-left:8px;white-space:nowrap">Chain: BSC ▾</div>
+      </div>
+      <div class="bn-table-header">
+        <span>Token / Chain</span><span>Price</span><span>24H Chg</span><span>24H Vol</span><span>Action</span>
+      </div>
+      <div class="bn-row">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="token-av av-btc">B</div>
+          <div><div style="font-size:11px;font-weight:500;color:#EAECEF">Bitcoin</div><div style="display:flex;gap:4px;margin-top:1px"><span class="bn-chain-tag">BTC</span><span class="bn-chain-tag">BSC</span></div></div>
+        </div>
+        <span>$84,210</span><span class="bn-up">+2.41%</span><span>$42.1B</span>
+        <div style="text-align:right"><button class="bn-btn" style="display:inline-block;width:auto">Trade</button></div>
+      </div>
+      <div class="bn-row">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="token-av av-wif">W</div>
+          <div><div style="font-size:11px;font-weight:500;color:#EAECEF">dogwifhat</div><div style="display:flex;gap:4px;margin-top:1px"><span class="bn-chain-tag">WIF</span><span class="bn-chain-tag">SOL</span></div></div>
+        </div>
+        <span>$1.24</span><span class="bn-up">+8.20%</span><span>$890M</span>
+        <div style="text-align:right"><button class="bn-btn" style="display:inline-block;width:auto">Trade</button></div>
+      </div>
+      <div class="bn-row">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="token-av av-pepe">P</div>
+          <div><div style="font-size:11px;font-weight:500;color:#EAECEF">PEPE</div><div style="display:flex;gap:4px;margin-top:1px"><span class="bn-chain-tag">PEPE</span><span class="bn-chain-tag">ETH</span></div></div>
+        </div>
+        <span>$0.0000098</span><span class="bn-up">+12.10%</span><span>$620M</span>
+        <div style="text-align:right"><button class="bn-btn" style="display:inline-block;width:auto">Trade</button></div>
+      </div>
+      <div class="bn-row">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="token-av av-sol">S</div>
+          <div><div style="font-size:11px;font-weight:500;color:#EAECEF">Solana</div><div style="display:flex;gap:4px;margin-top:1px"><span class="bn-chain-tag">SOL</span><span class="bn-chain-tag">SOL</span></div></div>
+        </div>
+        <span>$142.80</span><span class="bn-dn">-0.92%</span><span>$380M</span>
+        <div style="text-align:right"><button class="bn-btn" style="display:inline-block;width:auto">Trade</button></div>
+      </div>
+      <div class="bn-footer">30+ chains · DEX aggregator · Alpha airdrops · MPC wallet · Swap only (no orderbook)</div>
+    </div>
+  </div>
+  <div class="sum-row">
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">UI 특징</div><div class="sv" style="color:#6b6a65">트렌딩 랭킹 상단 배치. 멀티체인 태그 강조. Trade CTA 버튼 강조. Alpha·Launchpool 연계.</div></div>
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">정렬·필터</div><div class="sv" style="color:#6b6a65">Trending / New / Gainers / Volume 탭. 체인 필터(BSC/ETH/SOL). Hot 랭킹 상단 스트립.</div></div>
+    <div class="sum-card" style="background:#f2f1ed"><div class="sl" style="color:#a8a7a2">타겟 사용자</div><div class="sv" style="color:#6b6a65">기존 Binance 사용자 Web3 전환. 밈코인·에어드롭 참여자. 멀티체인 스왑 니즈.</div></div>
+  </div>
+</div>
+
+<!-- ===== COMPARISON ===== -->
+<div class="panel" id="p-cmp">
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th class="hl-txt">Hyperliquid</th>
+        <th class="dy-txt">dYdX</th>
+        <th class="bn-txt">Binance Web3</th>
+        <th class="st-txt">Starzip (우리)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>배경 테마</td><td>완전 다크 (#0A0E1A)</td><td>다크 퍼플 (#1A0A2E)</td><td>다크 (#181A20)</td><td>라이트 (#F7F6F2)</td></tr>
+      <tr><td>마켓 목록 레이아웃</td><td>밀도 높은 테이블</td><td>카드 그리드 3열</td><td>테이블 + 트렌딩 스트립</td><td>카드 그리드 + 상점 썸네일</td></tr>
+      <tr><td>상단 hero 섹션</td><td>플랫폼 통계 바 (Vol, OI, Fees)</td><td>섹터 필터 + Hot/Trending 탭</td><td>Top 5 Hot 랭킹 스트립</td><td>4개 지표 카드 + Featured 상점</td></tr>
+      <tr><td>필터 구조</td><td>Perps / Spot 토글</td><td>섹터 태그 + 상태 탭</td><td>체인 필터 + 상태 탭</td><td>카테고리(업종) + 지역 필터</td></tr>
+      <tr><td>상품 컨텍스트</td><td>심볼·가격·OI만 표시</td><td>심볼·가격·스파크라인</td><td>심볼·체인·가격</td><td>상점명·위치·월 고객·운영 기간</td></tr>
+      <tr><td>스파크라인</td><td>7일 미니 라인</td><td>카드 내 큰 스파크라인</td><td>없음</td><td>7일 미니 스파크라인</td></tr>
+      <tr><td>CTA (행동 유도)</td><td>행 클릭 → 거래 화면</td><td>카드 클릭 → 거래 화면</td><td>Trade 버튼 (노란색)</td><td>행/카드 클릭 → 거래 화면</td></tr>
+      <tr><td>소셜/커뮤니티 요소</td><td>리더보드 연계</td><td>없음</td><td>Alpha, Square, 에어드롭</td><td>Store DAO, 즐겨찾기 ★</td></tr>
+      <tr><td>런치/신규 상장 강조</td><td>없음 (별도 탭)</td><td>New Listings 탭</td><td>New Listing 탭 + Alpha</td><td>런치패드 뱃지 + 진행률 바</td></tr>
+      <tr><td>주 사용자층</td><td>크립토 프로 트레이더</td><td>프로~중급 트레이더</td><td>Binance 기존 사용자</td><td>크립토 네이티브 + 로컬 커뮤니티</td></tr>
+      <tr><td>수수료 체계</td><td>Maker 0.01% / Taker 0.035%</td><td>Volume tier 기반</td><td>DEX 스왑 수수료 (가변)</td><td>0.39% (상점 3% 자동 배분)</td></tr>
+      <tr><td>상품 유형</td><td>Perps 130+ / Spot 50+</td><td>Perps 전용</td><td>멀티체인 스왑 (30+ 체인)</td><td>로컬 Store Token (Spot DEX)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="score-wrap">
+    <h4>마켓 페이지 UX 항목별 평가 (정보 밀도 · 탐색 효율 · 상품 맥락 · 차별화 · 신규 진입장벽)</h4>
+    <div class="score-row"><div class="score-label" style="color:#00B8CC">Hyperliquid</div><div class="score-track"><div class="score-fill" style="width:95%;background:#00E5A0"></div></div><div class="score-num" style="color:#00E5A0">9.5</div></div>
+    <div class="score-row"><div class="score-label" style="color:#7B50E0">dYdX</div><div class="score-track"><div class="score-fill" style="width:80%;background:#9B6FFF"></div></div><div class="score-num" style="color:#9B6FFF">8.0</div></div>
+    <div class="score-row"><div class="score-label" style="color:#C89A09">Binance Web3</div><div class="score-track"><div class="score-fill" style="width:72%;background:#F0B90B"></div></div><div class="score-num" style="color:#F0B90B">7.2</div></div>
+    <div class="score-row"><div class="score-label" style="color:#1B7A4A">Starzip (목표)</div><div class="score-track"><div class="score-fill" style="width:85%;background:#639922"></div></div><div class="score-num" style="color:#639922">8.5+</div></div>
+  </div>
+
+  <div class="insight-grid">
+    <div class="i-card">
+      <h4 style="color:#00B8CC">Hyperliquid에서 배울 점</h4>
+      <p>Vol / OI / Fees를 상단에 즉시 노출하는 통계 바. 컬럼 정렬로 즉각적인 데이터 탐색. 스파크라인 7일 추이로 모멘텀 시각화. Perps ↔ Spot 명확한 분리.</p>
+      <div class="tag-row"><span class="ctag">상단 통계 바</span><span class="ctag">컬럼 정렬</span><span class="ctag">스파크라인</span></div>
+    </div>
+    <div class="i-card">
+      <h4 style="color:#7B50E0">dYdX에서 배울 점</h4>
+      <p>카드 그리드로 스파크라인을 크게 보여주는 시각적 접근. Hot / Gainers / New 탭으로 의도 기반 탐색. 섹터 태그 필터로 카테고리 진입. Cmd+K 전역 검색.</p>
+      <div class="tag-row"><span class="ctag">카드 그리드</span><span class="ctag">상태별 탭</span><span class="ctag">섹터 필터</span></div>
+    </div>
+    <div class="i-card">
+      <h4 style="color:#C89A09">Binance Web3에서 배울 점</h4>
+      <p>Top 5 트렌딩 스트립으로 즉각적인 주목 유도. 멀티체인 태그로 자산 출처 명확화. Trade CTA 버튼 강조. 에어드롭·런치 연계 유입 전략.</p>
+      <div class="tag-row"><span class="ctag">트렌딩 스트립</span><span class="ctag">CTA 강조</span><span class="ctag">런치 연계</span></div>
+    </div>
+    <div class="i-card">
+      <h4 style="color:#1B7A4A">Starzip만의 차별점</h4>
+      <p>세 플랫폼 모두 "토큰 = 숫자"로만 다룸. Starzip은 유일하게 상점 썸네일, 위치, 월 고객 수, 운영 기간이라는 실세계 맥락을 마켓 목록에 노출. Real Estate DEX의 핵심 차별화.</p>
+      <div class="tag-row"><span class="ctag">상점 썸네일</span><span class="ctag">위치·지역 필터</span><span class="ctag">실세계 맥락</span></div>
+    </div>
+    <div class="i-card full">
+      <h4>Starzip 마켓 홈 개선 제안 (비교 분석 기반)</h4>
+      <p>
+        ① Hyperliquid 스타일 상단 통계 바 유지 — 24H 거래량, 상장 상점 수, 런치패드 진행 수, STAR 가격<br>
+        ② dYdX 스타일 Hot·신규 탭 추가 — "이번 주 신규 상장", "거래량 상위", "런치패드 진행 중"<br>
+        ③ Binance 스타일 트렌딩 상점 TOP 5 스트립 — 숫자 대신 상점명+업종+지역으로<br>
+        ④ Starzip 고유 — 런치패드 진행 중인 상점에 진행률 바 인라인 표시 (다른 DEX에 없음)<br>
+        ⑤ 리스트 뷰에서도 상점 미니 썸네일 컬러 블록 유지 — 숫자 테이블도 상점 개성이 느껴지게
+      </p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function sw(id, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.remove('hl','dy','bn','cmp');
+  });
+  btn.classList.add(id==='cmp'?'cmp':id);
+}
+</script>
+</body>
+</html>
