@@ -18,7 +18,77 @@
   --tag:#EAEAE4;--tagt:#48483E;
   --font-body:'DM Sans',sans-serif;--font-mono:'IBM Plex Mono',monospace;
 }
-body{background:var(--bg);font-family:var(--font-body);color:var(--tp);font-size:13px;min-height:100vh}
+body{background:var(--bg);font-family:var(--font-body);color:var(--tp);font-size:13px;min-height:100vh;padding-bottom:52px}
+
+/* ── DARK THEME ── */
+html.dark{
+  --bg:#0F0F12;
+  --surface:#18181C;
+  --surface2:#222228;
+  --surface3:#2A2A32;
+  --border:#2E2E38;
+  --border2:#3C3C4A;
+  --tp:#E8E8F0;
+  --ts:#9898A8;
+  --tt:#5A5A6E;
+  --green:#27C46A;
+  --gbg:#0D2B1C;
+  --glt:#134D2E;
+  --red:#E85050;
+  --rbg:#2B0D0D;
+  --blue:#4A80FF;
+  --bbg:#0D1530;
+  --amber:#F0A500;
+  --abg:#2B1D00;
+  --alt:#FAC04A;
+  --tag:#222230;
+  --tagt:#A0A0B8;
+}
+html.dark nav{background:#0A0A0E;border-bottom:1px solid #1E1E28}
+html.dark .stats-bar{background:#0A0A0E}
+html.dark .trending-strip{background:#12121A;border-bottom-color:#1E1E28}
+html.dark .bottom-bar{background:#0A0A0E;border-top-color:#1E1E28}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  height:52px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 16px;
+  gap:2px;
+  z-index:500;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.bottom-bar::-webkit-scrollbar{display:none}
+.bb-left{display:flex;align-items:center;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+.bb-left::-webkit-scrollbar{display:none}
+.bb-item{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:7px;
+  font-size:12px;font-weight:400;
+  color:var(--ts);cursor:pointer;
+  white-space:nowrap;flex-shrink:0;
+  border:none;background:transparent;
+  font-family:var(--font-body);
+  transition:background .12s,color .12s;
+}
+.bb-item:hover{background:var(--surface2);color:var(--tp)}
+.bb-item.active{background:var(--surface2);color:var(--tp);font-weight:500}
+.bb-item svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;flex-shrink:0}
+.bb-item.active svg{stroke:var(--tp)}
+.bb-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px}
+.bb-right{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px}
+.bb-status{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;background:var(--gbg);font-size:11px;font-weight:500;color:var(--green);cursor:pointer}
+.bb-status-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.bb-theme{width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts);transition:background .1s,color .1s;flex-shrink:0}
+.bb-theme:hover{background:var(--surface2);color:var(--tp)}
+.bb-theme svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5}
+.bb-feedback{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);font-size:11px;color:var(--ts);cursor:pointer;font-family:var(--font-body);background:transparent;white-space:nowrap;transition:background .1s,color .1s}
+.bb-feedback:hover{background:var(--surface2);color:var(--tp)}
+.bb-feedback svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}
 
 /* ── NAV ── */
 nav{background:var(--tp);display:flex;align-items:center;padding:0 24px;height:52px;position:sticky;top:0;z-index:300}
@@ -891,6 +961,66 @@ main{padding:18px 24px 48px}
 </main>
 </div>
 
+<!-- ── BOTTOM BAR ── -->
+<div class="bottom-bar">
+  <div class="bb-left">
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><path d="M7 1l1.5 3.5 3.5.5-2.5 2.5.5 3.5L7 9.5 4 11l.5-3.5L2 5l3.5-.5z"/></svg>
+      Price Alert
+    </button>
+    <button class="bb-item active" onclick="">
+      <svg viewBox="0 0 14 14"><path d="M1 3h12M1 7h12M1 11h7" stroke-linecap="round"/></svg>
+      Watchlist
+    </button>
+    <button class="bb-item active" onclick="">
+      <svg viewBox="0 0 14 14"><circle cx="5" cy="5" r="3"/><path d="M8.5 8.5L13 13" stroke-linecap="round"/></svg>
+      Markets Tracker
+    </button>
+    <div class="bb-sep"></div>
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><path d="M2 10c0-3.3 2.2-6 5-6s5 2.7 5 6" stroke-linecap="round"/><circle cx="7" cy="4" r="1.5"/><path d="M4.5 10.5c.5-1.8 1.4-2.5 2.5-2.5s2 .7 2.5 2.5" stroke-linecap="round"/></svg>
+      Meme Tracker
+    </button>
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><rect x="1" y="2" width="12" height="10" rx="2"/><path d="M4 6h6M4 9h4" stroke-linecap="round"/></svg>
+      Wallet Tracker
+    </button>
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><path d="M7 2C4.2 2 2 4.2 2 7s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5z"/><path d="M7 5v2.5l2 1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Social Tracker
+    </button>
+    <div class="bb-sep"></div>
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><rect x="1" y="4" width="4" height="6" rx="1"/><rect x="5" y="2" width="4" height="10" rx="1"/><rect x="9" y="5" width="4" height="5" rx="1"/></svg>
+      My Positions
+    </button>
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M4.5 7l1.5 1.5 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Signal
+    </button>
+    <button class="bb-item" onclick="">
+      <svg viewBox="0 0 14 14"><path d="M7 2a5 5 0 100 10A5 5 0 007 2z"/><path d="M5 7c.5-1.5 1.2-2 2-2s1.5.5 2 2-1.5 3-2 3-2-1.5-2-3z"/></svg>
+      AI Assistant
+    </button>
+  </div>
+  <div class="bb-right">
+    <div class="bb-status"><div class="bb-status-dot"></div>Stable</div>
+    <button class="bb-theme" onclick="toggleTheme()" title="테마 전환">
+      <!-- sun icon (light mode) -->
+      <svg id="theme-icon-sun" viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><line x1="7" y1="1" x2="7" y2="2.5" stroke-linecap="round"/><line x1="7" y1="11.5" x2="7" y2="13" stroke-linecap="round"/><line x1="1" y1="7" x2="2.5" y2="7" stroke-linecap="round"/><line x1="11.5" y1="7" x2="13" y2="7" stroke-linecap="round"/><line x1="2.93" y1="2.93" x2="3.99" y2="3.99" stroke-linecap="round"/><line x1="10.01" y1="10.01" x2="11.07" y2="11.07" stroke-linecap="round"/><line x1="11.07" y1="2.93" x2="10.01" y2="3.99" stroke-linecap="round"/><line x1="3.99" y1="10.01" x2="2.93" y2="11.07" stroke-linecap="round"/></svg>
+      <!-- moon icon (dark mode, hidden by default) -->
+      <svg id="theme-icon-moon" viewBox="0 0 14 14" style="display:none"><path d="M11.5 8.5A5 5 0 015.5 2.5a5 5 0 100 9 5 5 0 006-3z" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button class="bb-feedback" onclick="">
+      <svg viewBox="0 0 12 12"><path d="M2 2h8v7H7l-2 2V9H2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Feedback
+    </button>
+    <button class="bb-item" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:7px" onclick="">
+      About ›
+    </button>
+  </div>
+</div>
+
 <script>
 // ── DATA ──
 const stores=[
@@ -1092,6 +1222,34 @@ function selectLocFromDD(flag,city,code){
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}
   if(e.key==='Escape')closeAll();
+});
+
+// ── THEME ──
+const saved = localStorage.getItem('sz-theme');
+if(saved==='dark') applyDark();
+
+function applyDark(){
+  document.documentElement.classList.add('dark');
+  document.getElementById('theme-icon-sun').style.display='none';
+  document.getElementById('theme-icon-moon').style.display='block';
+}
+function applyLight(){
+  document.documentElement.classList.remove('dark');
+  document.getElementById('theme-icon-sun').style.display='block';
+  document.getElementById('theme-icon-moon').style.display='none';
+}
+function toggleTheme(){
+  const isDark=document.documentElement.classList.contains('dark');
+  if(isDark){applyLight();localStorage.setItem('sz-theme','light');}
+  else{applyDark();localStorage.setItem('sz-theme','dark');}
+}
+
+// ── BOTTOM BAR ACTIVE ──
+document.querySelectorAll('.bb-item').forEach(item=>{
+  item.addEventListener('click',function(){
+    document.querySelectorAll('.bb-item').forEach(i=>i.classList.remove('active'));
+    this.classList.add('active');
+  });
 });
 </script>
 </body>
