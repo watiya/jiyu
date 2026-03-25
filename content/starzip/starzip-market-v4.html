@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — Markets</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEEE8;--surface3:#E8E7E1;
+  --border:#DDDDD6;--border2:#CACAC2;
+  --tp:#18171A;--ts:#64635E;--tt:#A3A29D;
+  --green:#1B7A4A;--gbg:#EBF5EF;--glt:#B8DFC9;
+  --red:#C0392B;--rbg:#FDECEA;
+  --blue:#1A4FDB;--bbg:#EBF0FF;
+  --amber:#7A4500;--abg:#FFF3E0;--alt:#FAC04A;
+  --tag:#EAEAE4;--tagt:#48483E;
+  --font-body:'DM Sans',sans-serif;--font-mono:'IBM Plex Mono',monospace;
+}
+body{background:var(--bg);font-family:var(--font-body);color:var(--tp);font-size:13px;min-height:100vh}
+
+/* ── NAV ── */
+nav{background:var(--tp);display:flex;align-items:center;padding:0 24px;height:52px;position:sticky;top:0;z-index:300}
+.nav-logo{font-family:var(--font-mono);font-weight:500;font-size:14px;color:#fff;margin-right:28px;display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-star{width:22px;height:22px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center}
+.logo-star svg{width:13px;height:13px;fill:var(--tp)}
+.nav-links{display:flex;flex:1}
+.na{padding:0 13px;height:52px;display:flex;align-items:center;font-size:13px;color:rgba(255,255,255,.45);border-bottom:2px solid transparent;cursor:pointer;text-decoration:none;transition:color .1s}
+.na:hover{color:rgba(255,255,255,.75)}
+.na.active{color:#fff;font-weight:500;border-bottom-color:rgba(255,255,255,.5)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.dust-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:500;color:rgba(255,255,255,.7);font-family:var(--font-mono)}
+.dust-dot{width:6px;height:6px;border-radius:50%;background:#F0A500}
+.btn-connect{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:6px 14px;font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;transition:background .1s}
+.btn-connect:hover{background:rgba(255,255,255,.2)}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--tp);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 24px;height:38px;gap:0;overflow-x:auto;scrollbar-width:none;position:sticky;top:52px;z-index:299}
+.stats-bar::-webkit-scrollbar{display:none}
+.stat-item{display:flex;align-items:center;gap:8px;padding:0 18px;border-right:1px solid rgba(255,255,255,.08);white-space:nowrap}
+.stat-item:first-child{padding-left:0}
+.stat-lbl{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.05em;text-transform:uppercase}
+.stat-val{font-family:var(--font-mono);font-size:12px;font-weight:500;color:rgba(255,255,255,.85)}
+.stat-chg{font-family:var(--font-mono);font-size:10px}
+.stat-up{color:#4ADB8A}.stat-dn{color:#FF6B6B}
+.stats-bar-live{display:flex;align-items:center;gap:5px;margin-left:auto;padding-left:18px;font-size:10px;color:rgba(255,255,255,.3)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#4ADB8A;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── TRENDING STRIP ── */
+.trending-strip{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;height:42px;gap:0;overflow-x:auto;scrollbar-width:none;position:sticky;top:90px;z-index:298}
+.trending-strip::-webkit-scrollbar{display:none}
+.trend-label{font-size:10px;font-weight:500;color:var(--tt);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;margin-right:14px;flex-shrink:0}
+.trend-item{display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--border);border-radius:6px;margin-right:6px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:border-color .1s,background .1s}
+.trend-item:hover{border-color:var(--border2);background:var(--surface2)}
+.trend-item.hot{border-color:var(--amber);background:var(--abg)}
+.trend-rank{font-size:10px;font-weight:700;color:var(--amber);min-width:14px;font-family:var(--font-mono)}
+.trend-thumb{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;font-family:var(--font-mono);flex-shrink:0}
+.t-cafe{background:#E8D8C8;color:#6B4A2A}
+.t-bbq{background:#3A1A0A;color:#E8A060}
+.t-gym{background:#0A1428;color:#5090E0}
+.t-hair{background:#F0D8F0;color:#884488}
+.t-ramen{background:#FFF0D8;color:#884400}
+.trend-info .tn{font-size:11px;font-weight:500;color:var(--tp)}
+.trend-info .tc{font-size:9px;color:var(--tt)}
+.trend-chg{font-size:11px;font-family:var(--font-mono);font-weight:500}
+.tup{color:var(--green)}.tdn{color:var(--red)}
+
+/* ── PAGE LAYOUT ── */
+.page-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 132px)}
+
+/* ── SIDEBAR ── */
+aside{background:var(--surface);border-right:1px solid var(--border);padding:16px 0;position:sticky;top:132px;height:calc(100vh - 132px);overflow-y:auto;scrollbar-width:thin}
+.sb-sec{padding:0 12px;margin-bottom:16px}
+.sb-lbl{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--tt);margin-bottom:6px;padding:0 4px}
+
+/* COUNTRY TREE */
+.country-item{margin-bottom:2px}
+.country-hd{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .1s;user-select:none}
+.country-hd:hover{background:var(--surface2)}
+.country-hd.open{background:var(--surface2)}
+.country-hd.selected{background:var(--tp)!important}
+.country-hd.selected .ch-name,.country-hd.selected .ch-cnt{color:#fff}
+.ch-flag{font-size:15px;line-height:1;flex-shrink:0;width:20px;text-align:center}
+.ch-name{font-size:12px;font-weight:500;flex:1;color:var(--ts)}
+.ch-cnt{font-size:10px;font-family:var(--font-mono);color:var(--tt);background:var(--surface3);padding:1px 5px;border-radius:6px;flex-shrink:0}
+.ch-arrow{color:var(--tt);transition:transform .15s;flex-shrink:0;line-height:1}
+.country-hd.open .ch-arrow{transform:rotate(90deg)}
+.city-list{display:none;padding:2px 0 4px 8px;margin-left:4px;border-left:1px solid var(--border)}
+.country-hd.open + .city-list,.country-item.open .city-list{display:flex;flex-direction:column;gap:1px}
+.city-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;cursor:pointer;transition:background .1s;color:var(--ts);font-size:12px}
+.city-item:hover{background:var(--surface2);color:var(--tp)}
+.city-item.active{background:var(--tp);color:#fff}
+.city-item .city-cnt{margin-left:auto;font-size:10px;font-family:var(--font-mono);opacity:.55}
+
+/* CATEGORY & FILTER ITEMS */
+.sb-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;cursor:pointer;margin-bottom:1px;transition:background .1s;color:var(--ts);font-size:12px;text-decoration:none}
+.sb-item:hover{background:var(--surface2);color:var(--tp)}
+.sb-item.active{background:var(--tp);color:white;font-weight:500}
+.sb-item.active .sb-cnt{background:rgba(255,255,255,.12);color:rgba(255,255,255,.6)}
+.sb-icon{width:20px;height:20px;border-radius:5px;background:var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sb-icon svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5}
+.sb-item.active .sb-icon{background:rgba(255,255,255,.15)}
+.sb-cnt{margin-left:auto;font-size:10px;background:var(--tag);padding:2px 6px;border-radius:8px;color:var(--tt);font-family:var(--font-mono)}
+.sb-div{height:1px;background:var(--border);margin:8px 12px 12px}
+.sb-more{padding:5px 12px;font-size:11px;color:var(--tt);cursor:pointer;transition:color .1s}
+.sb-more:hover{color:var(--ts)}
+
+/* ── MAIN ── */
+main{padding:18px 24px 48px}
+
+/* ── SEARCH BAR (B1 + B2) ── */
+.search-wrap{position:relative;margin-bottom:14px}
+.search-row{display:flex;align-items:center;gap:8px}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:9px 13px;flex:1;transition:border-color .15s;cursor:text}
+.search-bar:focus-within{border-color:var(--tp)}
+.search-bar svg{width:15px;height:15px;fill:none;stroke:var(--tt);stroke-width:1.5;flex-shrink:0}
+.loc-chip{display:flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 9px;font-size:11px;font-weight:500;color:var(--ts);flex-shrink:0;cursor:pointer;transition:border-color .1s,background .1s;white-space:nowrap}
+.loc-chip:hover{border-color:var(--border2);background:var(--surface3)}
+.loc-chip svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.5}
+.search-input{border:none;outline:none;background:transparent;font-family:var(--font-body);font-size:13px;color:var(--tp);flex:1;min-width:0}
+.search-input::placeholder{color:var(--tt)}
+.search-kbd{font-size:10px;color:var(--tt);background:var(--surface2);border:0.5px solid var(--border);border-radius:4px;padding:2px 6px;font-family:var(--font-mono);flex-shrink:0}
+.search-clear{color:var(--tt);cursor:pointer;display:none;flex-shrink:0;background:none;border:none;padding:0;line-height:1}
+.search-clear svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;display:block}
+.search-clear.visible{display:block}
+
+/* DROPDOWN */
+.search-dd{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:400;display:none;overflow:hidden;max-height:400px;overflow-y:auto}
+.search-dd.open{display:block}
+.dd-sec{border-bottom:1px solid var(--border)}
+.dd-sec:last-child{border-bottom:none}
+.dd-sec-lbl{padding:7px 14px 4px;font-size:10px;font-weight:500;color:var(--tt);text-transform:uppercase;letter-spacing:.06em}
+.dd-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;transition:background .1s}
+.dd-item:hover,.dd-item.dd-sel{background:var(--surface2)}
+.dd-thumb{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;font-family:var(--font-mono);flex-shrink:0}
+.dd-flag{font-size:16px;line-height:1;width:26px;text-align:center;flex-shrink:0}
+.dd-info{flex:1;min-width:0}
+.dd-name{font-size:12px;font-weight:500}
+.dd-sub{font-size:11px;color:var(--tt)}
+.dd-right{text-align:right;flex-shrink:0}
+.dd-price{font-size:12px;font-weight:500;font-family:var(--font-mono)}
+.dd-cnt{font-size:11px;font-family:var(--font-mono);color:var(--ts)}
+.dd-chg{font-size:10px;font-family:var(--font-mono)}
+.dd-cat-row{display:flex;gap:5px;flex-wrap:wrap;padding:8px 14px}
+.dd-cat{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:8px;border:0.5px solid var(--border);font-size:11px;cursor:pointer;color:var(--ts);background:var(--surface);transition:all .1s}
+.dd-cat:hover{background:var(--surface2)}
+.dd-cat.active{background:var(--tp);color:#fff;border-color:var(--tp)}
+.dd-cdot{width:6px;height:6px;border-radius:50%}
+.dd-recent{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;transition:background .1s}
+.dd-recent:hover{background:var(--surface2)}
+.dd-recent-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:var(--tt);flex-shrink:0}
+.dd-recent-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+.dd-recent-text{font-size:12px;color:var(--ts);flex:1}
+.dd-recent-del{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:var(--tt);opacity:0;transition:opacity .1s;background:none;border:none;cursor:pointer;padding:0;flex-shrink:0}
+.dd-recent-del svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;display:block}
+.dd-recent:hover .dd-recent-del{opacity:1}
+.hl{background:#FFF9C4;color:#5C4A00;border-radius:2px}
+.empty-dd{padding:20px 14px;text-align:center}
+.empty-dd p{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:4px}
+.empty-dd span{font-size:11px;color:var(--tt)}
+
+/* LOC PICKER DROPDOWN */
+.loc-picker-dd{position:absolute;top:calc(100% + 6px);left:0;width:260px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:401;display:none;overflow:hidden}
+.loc-picker-dd.open{display:block}
+.lp-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .1s}
+.lp-item:hover{background:var(--surface2)}
+.lp-item.active{background:var(--tp)}
+.lp-item.active .lp-name,.lp-item.active .lp-cnt{color:#fff}
+.lp-flag{font-size:16px;line-height:1;flex-shrink:0;width:22px;text-align:center}
+.lp-name{font-size:12px;font-weight:500;flex:1;color:var(--tp)}
+.lp-cnt{font-size:10px;font-family:var(--font-mono);color:var(--tt)}
+.lp-cities{padding:0 0 6px 14px;border-left:1px solid var(--border);margin:0 14px 6px 48px}
+.lp-city{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:11px;color:var(--ts);transition:background .1s}
+.lp-city:hover{background:var(--surface2);color:var(--tp)}
+.lp-city.active{background:var(--tp);color:#fff}
+.lp-city-cnt{margin-left:auto;font-size:10px;font-family:var(--font-mono);opacity:.6}
+.lp-div{height:1px;background:var(--border);margin:4px 0}
+
+/* ── MAIN TOPBAR ── */
+.main-topbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.state-tabs{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.st{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:5px;font-size:11px;font-weight:400;cursor:pointer;color:var(--ts);transition:all .1s;white-space:nowrap}
+.st.active{background:var(--tp);color:white;font-weight:500}
+.st.active .st-cnt{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.st:not(.active):hover{background:var(--surface2);color:var(--tp)}
+.st-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.st-cnt{font-size:9px;font-family:var(--font-mono);background:var(--tag);padding:1px 5px;border-radius:8px;color:var(--tt)}
+.sort-btn{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 11px;font-size:12px;color:var(--ts);cursor:pointer;white-space:nowrap}
+.sort-btn svg{width:12px;height:12px;fill:none;stroke:var(--tt);stroke-width:1.5}
+.view-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.vv{width:30px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:5px;cursor:pointer;color:var(--tt);transition:all .1s;border:none;background:transparent}
+.vv svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+.vv.active{background:var(--tp);color:white}
+
+/* ── CARDS ── */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-hd span{font-size:12px;font-weight:500;color:var(--ts)}
+.section-hd a{font-size:11px;color:var(--ts);text-decoration:none;cursor:pointer}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.store-card-lg{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
+.store-card-lg:hover{border-color:var(--border2);transform:translateY(-1px)}
+.store-card-lg.pinned{border-color:var(--tp);border-width:1.5px}
+.card-thumb{width:100%;height:148px;position:relative;overflow:hidden}
+
+/* ── TICKER EMPHASIS SYSTEM ── */
+/* Background color fills */
+.tc-cafe{background:#C8B498}
+.tc-bbq{background:#2A0E06}
+.tc-gym{background:#0A1428}
+.tc-hair{background:#D8B8D8}
+.tc-ramen{background:#FFDBAA}
+.tc-book{background:#AADCAA}
+
+/* Watermark — large faded bg letter */
+.thumb-watermark{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-weight:700;
+  font-size:110px;line-height:1;
+  letter-spacing:-.06em;
+  opacity:.08;
+  user-select:none;pointer-events:none;
+  overflow:hidden;white-space:nowrap
+}
+/* Ticker pill — the star of the show */
+.thumb-ticker{
+  position:absolute;
+  bottom:14px;left:14px;
+  display:inline-flex;align-items:center;
+  font-family:var(--font-mono);font-weight:500;
+  font-size:15px;letter-spacing:.04em;
+  padding:5px 11px;
+  border-radius:8px;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+/* Light bg variant (cafe, hair, ramen, book) */
+.tc-cafe .thumb-ticker,
+.tc-hair .thumb-ticker,
+.tc-ramen .thumb-ticker,
+.tc-book .thumb-ticker{
+  background:rgba(0,0,0,.18);
+  color:rgba(255,255,255,.95);
+}
+/* Dark bg variant (bbq, gym) */
+.tc-bbq .thumb-ticker,
+.tc-gym .thumb-ticker{
+  background:rgba(255,255,255,.14);
+  color:rgba(255,255,255,.95);
+}
+/* Compact ticker for sm / compact cards */
+.thumb-ticker-sm{
+  position:absolute;
+  bottom:8px;left:8px;
+  display:inline-flex;align-items:center;
+  font-family:var(--font-mono);font-weight:500;
+  font-size:11px;letter-spacing:.04em;
+  padding:3px 7px;border-radius:6px;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.22);
+  color:rgba(255,255,255,.95);
+}
+.tc-bbq .thumb-ticker-sm,
+.tc-gym .thumb-ticker-sm{
+  background:rgba(255,255,255,.15);
+}
+.thumb-tl{position:absolute;top:10px;left:10px}
+.thumb-price{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.52);color:white;font-family:var(--font-mono);font-size:11px;font-weight:500;padding:4px 8px;border-radius:6px}
+.thumb-fav{position:absolute;top:10px;right:10px;width:28px;height:28px;background:rgba(255,255,255,.88);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.thumb-fav svg{width:12px;height:12px;fill:none;stroke:var(--tp);stroke-width:1.5}
+.thumb-fav.on svg{fill:#E24B4A;stroke:#E24B4A}
+
+/* Location badge on thumb — sits above the ticker pill */
+.thumb-loc{position:absolute;bottom:46px;left:14px;background:rgba(0,0,0,.40);color:rgba(255,255,255,.85);font-size:10px;padding:3px 7px;border-radius:6px;display:flex;align-items:center;gap:4px}
+
+.card-body{padding:12px 14px 14px}
+.card-row1{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px;gap:8px}
+.card-name{font-size:14px;font-weight:600;margin-bottom:2px;line-height:1.2}
+.card-loc{font-size:11px;color:var(--tt);display:flex;align-items:center;gap:3px}
+.card-loc svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:1.5}
+.price-blk{text-align:right;flex-shrink:0}
+.card-price{font-family:var(--font-mono);font-size:14px;font-weight:500}
+.card-chg{font-family:var(--font-mono);font-size:11px;margin-top:1px}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
+.ctag{font-size:10px;padding:2px 7px;border-radius:10px;border:1px solid var(--border);color:var(--ts)}
+.launch-bar-wrap{margin-bottom:9px}
+.launch-bar-top{display:flex;justify-content:space-between;font-size:10px;color:var(--tt);margin-bottom:4px}
+.launch-bar-top strong{font-family:var(--font-mono);color:var(--tp)}
+.launch-bar-bg{background:var(--surface2);border-radius:100px;height:5px;overflow:hidden;border:1px solid var(--border)}
+.launch-bar-fill{height:100%;border-radius:100px;background:var(--blue);transition:width .6s}
+.launch-bar-soft{display:inline-flex;align-items:center;gap:3px;margin-top:4px;font-size:9px;color:var(--blue)}
+.launch-star-boost{display:inline-flex;align-items:center;gap:3px;background:var(--abg);color:var(--amber);padding:2px 6px;border-radius:10px;font-size:10px;font-weight:500;margin-left:6px}
+.card-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--border);padding-top:9px}
+.cm{display:flex;flex-direction:column;gap:2px}
+.cm:not(:last-child){border-right:1px solid var(--border);margin-right:9px;padding-right:9px}
+.cm-lbl{font-size:9px;color:var(--tt)}
+.cm-val{font-family:var(--font-mono);font-size:12px;font-weight:500}
+
+/* STATUS BADGES */
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:500}
+.sb-live{background:var(--gbg);color:var(--green)}
+.sb-launch{background:var(--bbg);color:var(--blue)}
+.sb-new{background:var(--abg);color:var(--amber)}
+.sbadge-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+
+/* SMALL CARDS */
+.store-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.store-card-sm{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
+.store-card-sm:hover{border-color:var(--border2);transform:translateY(-1px)}
+.card-thumb-sm{width:100%;height:95px;position:relative;overflow:hidden}
+.card-body-sm{padding:10px 12px 12px}
+.card-name-sm{font-size:13px;font-weight:600;margin-bottom:2px}
+.card-loc-sm{font-size:10px;color:var(--tt);margin-bottom:7px;display:flex;align-items:center;gap:3px}
+.card-loc-sm svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:1.5}
+.card-pr{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.card-price-sm{font-family:var(--font-mono);font-size:13px;font-weight:500}
+.card-chg-sm{font-family:var(--font-mono);font-size:10px}
+.card-metrics-sm{display:flex;gap:10px;border-top:1px solid var(--border);padding-top:7px}
+.mms{display:flex;flex-direction:column;gap:1px}
+.mms .ml{font-size:9px;color:var(--tt)}
+.mms .mv{font-family:var(--font-mono);font-size:11px;font-weight:500}
+
+/* LIST VIEW */
+.store-list{display:flex;flex-direction:column;gap:6px;margin-bottom:24px}
+.list-header{display:grid;grid-template-columns:46px 1fr 100px 100px 80px 76px 56px;padding:6px 14px;font-size:10px;color:var(--tt);font-weight:500;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);margin-bottom:4px}
+.store-row{background:var(--surface);border:1px solid var(--border);border-radius:9px;display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;transition:border-color .1s}
+.store-row:hover{border-color:var(--border2)}
+.row-thumb{width:46px;height:46px;border-radius:8px;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.rt-label{font-family:var(--font-mono);font-size:8px;font-weight:700;opacity:.55;z-index:1;position:relative}
+.row-info{flex:1;min-width:0}
+.row-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.row-sub{font-size:11px;color:var(--tt);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.row-flag{font-size:12px;line-height:1}
+.row-price-blk{text-align:right;flex-shrink:0;min-width:90px}
+.row-price{font-family:var(--font-mono);font-size:14px;font-weight:500}
+.row-chg{font-family:var(--font-mono);font-size:11px;margin-top:1px}
+.row-vol{text-align:right;min-width:72px;flex-shrink:0}
+.row-vol-val{font-family:var(--font-mono);font-size:12px;font-weight:500}
+.row-vol-lbl{font-size:9px;color:var(--tt);margin-top:1px}
+.row-status{min-width:76px;text-align:right;flex-shrink:0}
+.row-spark{min-width:56px;display:flex;align-items:center;justify-content:flex-end}
+
+/* COMPACT GRID */
+.compact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.compact-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .1s,transform .1s}
+.compact-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.compact-thumb{width:100%;height:68px;position:relative;overflow:hidden}
+.compact-body{padding:8px 10px 10px}
+.compact-name{font-size:12px;font-weight:600;margin-bottom:1px}
+.compact-loc{font-size:9px;color:var(--tt);margin-bottom:5px}
+.compact-pr{display:flex;align-items:center;justify-content:space-between}
+.compact-price{font-family:var(--font-mono);font-size:12px;font-weight:500}
+.compact-chg{font-family:var(--font-mono);font-size:9px}
+
+/* PLACEHOLDER */
+.card-placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:11px;overflow:hidden;opacity:.45;cursor:default}
+.ph-thumb{height:95px;background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.ph-body{padding:10px 12px;height:80px;display:flex;align-items:center;justify-content:center}
+
+/* SECTION DIVIDER */
+.sec-div{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sd-lbl{font-size:10px;font-weight:500;color:var(--ts);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+.sd-line{flex:1;height:1px;background:var(--border)}
+
+/* COLORS */
+.up{color:var(--green)}.dn{color:var(--red)}
+
+/* VIEW PANELS */
+.view-panel{display:none}.view-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeIn .2s ease both}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:350;display:none}
+.overlay.on{display:block}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY (닫기용) -->
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+    STARZIP
+  </a>
+  <div class="nav-links">
+    <a class="na active" href="#">Markets</a>
+    <a class="na" href="#">Trade</a>
+    <a class="na" href="#">Launchpad</a>
+    <a class="na" href="#">Portfolio</a>
+    <a class="na" href="#">DAO</a>
+  </div>
+  <div class="nav-r">
+    <div class="dust-chip"><div class="dust-dot"></div>DUST 1,240</div>
+    <button class="btn-connect">지갑 연결됨</button>
+  </div>
+</nav>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-lbl">24H 거래량</span><span class="stat-val">$842K</span><span class="stat-chg stat-up">+18.3%</span></div>
+  <div class="stat-item"><span class="stat-lbl">상장 상점</span><span class="stat-val">57</span><span class="stat-chg stat-up">+3 this week</span></div>
+  <div class="stat-item"><span class="stat-lbl">런치패드</span><span class="stat-val">3 진행중</span><span class="stat-chg stat-up">소프트캡 2달성</span></div>
+  <div class="stat-item"><span class="stat-lbl">STAR</span><span class="stat-val">$0.142</span><span class="stat-chg stat-dn">-2.1%</span></div>
+  <div class="stat-item"><span class="stat-lbl">참여국</span><span class="stat-val">4개국</span><span class="stat-chg stat-up">KR JP SG US</span></div>
+  <div class="stats-bar-live"><div class="live-dot"></div>LIVE</div>
+</div>
+
+<!-- TRENDING STRIP -->
+<div class="trending-strip">
+  <span class="trend-label">트렌딩 상점</span>
+  <div class="trend-item hot">
+    <span class="trend-rank">1</span>
+    <div class="trend-thumb tc-cafe">☕</div>
+    <div class="trend-info"><div class="tn">브루밍 카페</div><div class="tc">카페 · 서울 · 🇰🇷</div></div>
+    <span class="trend-chg tup">+12.4%</span>
+  </div>
+  <div class="trend-item">
+    <span class="trend-rank" style="color:var(--ts)">2</span>
+    <div class="trend-thumb tc-bbq">🥩</div>
+    <div class="trend-info"><div class="tn">바베큐 골목</div><div class="tc">음식점 · 서울 · 🇰🇷</div></div>
+    <span class="trend-chg tup">+7.2%</span>
+  </div>
+  <div class="trend-item">
+    <span class="trend-rank" style="color:var(--ts)">3</span>
+    <div class="trend-thumb" style="background:#F5F0E8;color:#5A4A30;font-size:8px">TKYC</div>
+    <div class="trend-info"><div class="tn">도쿄 카페 특구</div><div class="tc">카페 · 도쿄 · 🇯🇵</div></div>
+    <span class="trend-chg tup">+5.2%</span>
+  </div>
+  <div class="trend-item">
+    <span class="trend-rank" style="color:var(--ts)">4</span>
+    <div class="trend-thumb tc-gym">💪</div>
+    <div class="trend-info"><div class="tn">핏러버 짐</div><div class="tc">피트니스 · 서울 · 🇰🇷</div></div>
+    <span class="trend-chg tdn">-3.1%</span>
+  </div>
+  <div class="trend-item">
+    <span class="trend-rank" style="color:var(--ts)">5</span>
+    <div class="trend-thumb" style="background:#E8F0F8;color:#1A3A5C;font-size:8px">SFCF</div>
+    <div class="trend-info"><div class="tn">SF Roasters</div><div class="tc">카페 · SF · 🇺🇸</div></div>
+    <span class="trend-chg tup">+3.8%</span>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="page-layout">
+
+<!-- SIDEBAR -->
+<aside>
+  <!-- 검색 (모바일) -->
+  <div class="sb-sec" style="display:none"></div>
+
+  <!-- 위치 / 나라 트리 -->
+  <div class="sb-sec">
+    <div class="sb-lbl">위치</div>
+    <div id="loc-tree">
+      <!-- 전체 글로벌 -->
+      <div class="country-item">
+        <div class="country-hd selected" onclick="selectCountry(this,'global','🌏 전체 글로벌')">
+          <span class="ch-flag">🌏</span>
+          <span class="ch-name">전체 글로벌</span>
+          <span class="ch-cnt">57</span>
+        </div>
+      </div>
+
+      <!-- Korea -->
+      <div class="country-item" id="ci-kr">
+        <div class="country-hd open" onclick="toggleCountry(this,'kr')">
+          <span class="ch-flag">🇰🇷</span>
+          <span class="ch-name">Korea</span>
+          <span class="ch-cnt">38</span>
+          <span class="ch-arrow">›</span>
+        </div>
+        <div class="city-list">
+          <div class="city-item active" onclick="selectCity(this,'서울','🇰🇷')">서울 <span class="city-cnt">28</span></div>
+          <div class="city-item" onclick="selectCity(this,'부산','🇰🇷')">부산 <span class="city-cnt">6</span></div>
+          <div class="city-item" onclick="selectCity(this,'제주','🇰🇷')">제주 <span class="city-cnt">4</span></div>
+        </div>
+      </div>
+
+      <!-- Japan -->
+      <div class="country-item" id="ci-jp">
+        <div class="country-hd" onclick="toggleCountry(this,'jp')">
+          <span class="ch-flag">🇯🇵</span>
+          <span class="ch-name">Japan</span>
+          <span class="ch-cnt">12</span>
+          <span class="ch-arrow">›</span>
+        </div>
+        <div class="city-list">
+          <div class="city-item" onclick="selectCity(this,'도쿄','🇯🇵')">도쿄 <span class="city-cnt">8</span></div>
+          <div class="city-item" onclick="selectCity(this,'오사카','🇯🇵')">오사카 <span class="city-cnt">4</span></div>
+        </div>
+      </div>
+
+      <!-- Singapore -->
+      <div class="country-item" id="ci-sg">
+        <div class="country-hd" onclick="toggleCountry(this,'sg')">
+          <span class="ch-flag">🇸🇬</span>
+          <span class="ch-name">Singapore</span>
+          <span class="ch-cnt">5</span>
+          <span class="ch-arrow">›</span>
+        </div>
+        <div class="city-list">
+          <div class="city-item" onclick="selectCity(this,'싱가포르','🇸🇬')">싱가포르 <span class="city-cnt">5</span></div>
+        </div>
+      </div>
+
+      <!-- USA -->
+      <div class="country-item" id="ci-us">
+        <div class="country-hd" onclick="toggleCountry(this,'us')">
+          <span class="ch-flag">🇺🇸</span>
+          <span class="ch-name">USA</span>
+          <span class="ch-cnt">7</span>
+          <span class="ch-arrow">›</span>
+        </div>
+        <div class="city-list">
+          <div class="city-item" onclick="selectCity(this,'San Francisco','🇺🇸')">San Francisco <span class="city-cnt">4</span></div>
+          <div class="city-item" onclick="selectCity(this,'New York','🇺🇸')">New York <span class="city-cnt">3</span></div>
+        </div>
+      </div>
+
+      <div class="sb-more">+ 59개국 더보기</div>
+    </div>
+  </div>
+
+  <div class="sb-div"></div>
+
+  <!-- 카테고리 -->
+  <div class="sb-sec">
+    <div class="sb-lbl">카테고리</div>
+    <a class="sb-item active" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><rect x="1" y="1" width="9" height="9" rx="1.5"/></svg></div>
+      전체<span class="sb-cnt">57</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><path d="M2 8Q5.5 2 9 8" stroke-linecap="round"/><path d="M1 8h9" stroke-linecap="round"/></svg></div>
+      카페 · 음료<span class="sb-cnt">18</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><path d="M2 9Q5.5 2 9 9" stroke-linecap="round"/></svg></div>
+      음식점<span class="sb-cnt">14</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><circle cx="5.5" cy="4" r="2"/><path d="M2 10c0-2 1.6-3.5 3.5-3.5S9 8 9 10" stroke-linecap="round"/></svg></div>
+      뷰티 · 헤어<span class="sb-cnt">9</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><path d="M2 7l2-4 2 4 2-4 2 4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      피트니스<span class="sb-cnt">7</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><rect x="2" y="2" width="7" height="7" rx="1"/><path d="M4 5h3M4 7h2" stroke-linecap="round"/></svg></div>
+      서점 · 문화<span class="sb-cnt">5</span>
+    </a>
+  </div>
+
+  <div class="sb-div"></div>
+
+  <!-- 상태 필터 -->
+  <div class="sb-sec">
+    <div class="sb-lbl">필터</div>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><polygon points="5.5,1 7,4.5 10.5,5 8,7.5 8.5,11 5.5,9.5 2.5,11 3,7.5 0.5,5 4,4.5"/></svg></div>
+      런치패드 오픈<span class="sb-cnt">3</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M5.5 3.5v2l1.5 1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      신규 7일<span class="sb-cnt">7</span>
+    </a>
+    <a class="sb-item" onclick="setSbActive(this)">
+      <div class="sb-icon"><svg viewBox="0 0 11 11"><path d="M1.5 7.5l2-2 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      24H 상승 상위<span class="sb-cnt">10</span>
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+  <!-- B1: SEARCH BAR + LOCATION CHIP -->
+  <div class="search-wrap" id="searchWrap">
+    <div class="search-row">
+      <div class="search-bar" onclick="openSearch()">
+        <!-- Location chip -->
+        <div class="loc-chip" id="locChip" onclick="toggleLocPicker(event)">
+          <span id="locChipText">🇰🇷 서울</span>
+          <svg viewBox="0 0 10 10"><path d="M3 4l2 2 2-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke-linecap="round"/></svg>
+        <input class="search-input" id="searchInput" placeholder="상점명, 토큰, 도시, 나라 검색..." oninput="onSearch(this.value)" onfocus="openSearch()" onkeydown="onSearchKey(event)">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">
+          <svg viewBox="0 0 13 13"><line x1="2" y1="2" x2="11" y2="11" stroke-linecap="round"/><line x1="11" y1="2" x2="2" y2="11" stroke-linecap="round"/></svg>
+        </button>
+        <span class="search-kbd" id="searchKbd">⌘K</span>
+      </div>
+    </div>
+
+    <!-- B2: AUTOCOMPLETE DROPDOWN -->
+    <div class="search-dd" id="searchDd">
+      <!-- Shown when empty: recent + categories + regions -->
+      <div id="dd-empty-state">
+        <div class="dd-sec" id="dd-recent-sec">
+          <div class="dd-sec-lbl">최근 검색</div>
+          <div class="dd-recent" onclick="doSearch('브루밍 카페')"><div class="dd-recent-icon"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="dd-recent-text">브루밍 카페</span><button class="dd-recent-del" onclick="delRecent(event,this)"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button></div>
+          <div class="dd-recent" onclick="doSearch('성수동')"><div class="dd-recent-icon"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="dd-recent-text">성수동</span><button class="dd-recent-del" onclick="delRecent(event,this)"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button></div>
+          <div class="dd-recent" onclick="doSearch('도쿄 카페')"><div class="dd-recent-icon"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="dd-recent-text">도쿄 카페</span><button class="dd-recent-del" onclick="delRecent(event,this)"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button></div>
+        </div>
+        <div class="dd-sec">
+          <div class="dd-sec-lbl">업종으로 탐색</div>
+          <div class="dd-cat-row">
+            <div class="dd-cat" onclick="doSearch('카페')"><div class="dd-cdot" style="background:#E8A060"></div>카페·음료</div>
+            <div class="dd-cat" onclick="doSearch('음식점')"><div class="dd-cdot" style="background:#E85A30"></div>음식점</div>
+            <div class="dd-cat" onclick="doSearch('피트니스')"><div class="dd-cdot" style="background:#1B7A4A"></div>피트니스</div>
+            <div class="dd-cat" onclick="doSearch('뷰티')"><div class="dd-cdot" style="background:#884488"></div>뷰티·헤어</div>
+          </div>
+        </div>
+        <div class="dd-sec">
+          <div class="dd-sec-lbl">나라 / 도시로 탐색</div>
+          <div class="dd-item" onclick="selectLocFromDD('🇰🇷','서울','KR')"><span class="dd-flag">🇰🇷</span><div class="dd-info"><div class="dd-name">대한민국 · Korea</div><div class="dd-sub">서울 · 부산 · 제주</div></div><div class="dd-cnt">38</div></div>
+          <div class="dd-item" onclick="selectLocFromDD('🇯🇵','도쿄','JP')"><span class="dd-flag">🇯🇵</span><div class="dd-info"><div class="dd-name">일본 · Japan</div><div class="dd-sub">도쿄 · 오사카</div></div><div class="dd-cnt">12</div></div>
+          <div class="dd-item" onclick="selectLocFromDD('🇺🇸','San Francisco','US')"><span class="dd-flag">🇺🇸</span><div class="dd-info"><div class="dd-name">미국 · USA</div><div class="dd-sub">SF · New York</div></div><div class="dd-cnt">7</div></div>
+          <div class="dd-item" onclick="selectLocFromDD('🇸🇬','싱가포르','SG')"><span class="dd-flag">🇸🇬</span><div class="dd-info"><div class="dd-name">싱가포르 · Singapore</div><div class="dd-sub">싱가포르 시티</div></div><div class="dd-cnt">5</div></div>
+          <div class="dd-item" style="color:var(--tt);font-size:12px;padding:8px 14px;cursor:pointer" onclick="closeAll()">🌏 전체 글로벌 보기 →</div>
+        </div>
+      </div>
+
+      <!-- Shown while typing -->
+      <div id="dd-results" style="display:none">
+        <div class="dd-sec" id="dd-stores-sec">
+          <div class="dd-sec-lbl" id="dd-stores-lbl">상점 · 토큰</div>
+          <div id="dd-stores-list"></div>
+        </div>
+        <div class="dd-sec" id="dd-global-sec">
+          <div class="dd-sec-lbl">🌏 글로벌 · 같은 업종</div>
+          <div id="dd-global-list"></div>
+        </div>
+        <div class="dd-sec" id="dd-empty-result" style="display:none">
+          <div class="empty-dd"><p id="dd-empty-msg">검색 결과가 없습니다</p><span>다른 키워드로 검색해보세요</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOC PICKER -->
+    <div class="loc-picker-dd" id="locPickerDd">
+      <div class="lp-item active" id="lp-global" onclick="setLoc('🌏','전체 글로벌',this)"><span class="lp-flag">🌏</span><span class="lp-name">전체 글로벌</span><span class="lp-cnt">57</span></div>
+      <div class="lp-div"></div>
+      <div class="lp-item" onclick="toggleLpCountry(this,'lp-kr')"><span class="lp-flag">🇰🇷</span><span class="lp-name">Korea</span><span class="lp-cnt">38 ›</span></div>
+      <div class="lp-cities" id="lp-kr" style="display:none">
+        <div class="lp-city active" onclick="setLoc('🇰🇷','서울',this)">서울 <span class="lp-city-cnt">28</span></div>
+        <div class="lp-city" onclick="setLoc('🇰🇷','부산',this)">부산 <span class="lp-city-cnt">6</span></div>
+        <div class="lp-city" onclick="setLoc('🇰🇷','제주',this)">제주 <span class="lp-city-cnt">4</span></div>
+      </div>
+      <div class="lp-item" onclick="toggleLpCountry(this,'lp-jp')"><span class="lp-flag">🇯🇵</span><span class="lp-name">Japan</span><span class="lp-cnt">12 ›</span></div>
+      <div class="lp-cities" id="lp-jp" style="display:none">
+        <div class="lp-city" onclick="setLoc('🇯🇵','도쿄',this)">도쿄 <span class="lp-city-cnt">8</span></div>
+        <div class="lp-city" onclick="setLoc('🇯🇵','오사카',this)">오사카 <span class="lp-city-cnt">4</span></div>
+      </div>
+      <div class="lp-item" onclick="toggleLpCountry(this,'lp-sg')"><span class="lp-flag">🇸🇬</span><span class="lp-name">Singapore</span><span class="lp-cnt">5 ›</span></div>
+      <div class="lp-cities" id="lp-sg" style="display:none">
+        <div class="lp-city" onclick="setLoc('🇸🇬','싱가포르',this)">싱가포르 <span class="lp-city-cnt">5</span></div>
+      </div>
+      <div class="lp-item" onclick="toggleLpCountry(this,'lp-us')"><span class="lp-flag">🇺🇸</span><span class="lp-name">USA</span><span class="lp-cnt">7 ›</span></div>
+      <div class="lp-cities" id="lp-us" style="display:none">
+        <div class="lp-city" onclick="setLoc('🇺🇸','San Francisco',this)">San Francisco <span class="lp-city-cnt">4</span></div>
+        <div class="lp-city" onclick="setLoc('🇺🇸','New York',this)">New York <span class="lp-city-cnt">3</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="main-topbar">
+    <div class="state-tabs">
+      <div class="st active" onclick="setTab(this)"><div class="st-dot" style="background:var(--ts)"></div>전체 <span class="st-cnt">57</span></div>
+      <div class="st" onclick="setTab(this)"><div class="st-dot" style="background:#F0A500"></div>거래량 상위 <span class="st-cnt">10</span></div>
+      <div class="st" onclick="setTab(this)"><div class="st-dot" style="background:var(--blue)"></div>런치패드 <span class="st-cnt">3</span></div>
+      <div class="st" onclick="setTab(this)"><div class="st-dot" style="background:var(--green)"></div>신규 <span class="st-cnt">7</span></div>
+      <div class="st" onclick="setTab(this)">★ 즐겨찾기 <span class="st-cnt">2</span></div>
+    </div>
+    <div style="flex:1"></div>
+    <div class="sort-btn"><svg viewBox="0 0 12 12"><path d="M2 3h8M3 6h6M4 9h4" stroke-linecap="round"/></svg>거래량순</div>
+    <div class="view-toggle">
+      <button class="vv" id="vv-card" onclick="setView('card')" title="상세 카드">
+        <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="5.5" rx="1.5"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1.5"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1.5"/></svg>
+      </button>
+      <button class="vv active" id="vv-grid" onclick="setView('grid')">
+        <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/></svg>
+      </button>
+      <button class="vv" id="vv-list" onclick="setView('list')">
+        <svg viewBox="0 0 14 14"><line x1="1" y1="3.5" x2="13" y2="3.5" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke-linecap="round"/><line x1="1" y1="10.5" x2="13" y2="10.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CARD VIEW -->
+  <div class="view-panel active fade-in" id="vp-card">
+    <div class="section-hd"><span>주목할 상점</span><a>전체 보기 →</a></div>
+    <div class="feat-grid">
+      <div class="store-card-lg pinned">
+        <div class="card-thumb tc-cafe">
+          <div class="thumb-watermark">CAFE</div>
+          <div class="thumb-tl"><span class="sbadge sb-launch"><span class="sbadge-dot"></span>런치패드</span></div>
+          <div class="thumb-fav on" onclick="toggleFav(event,this)"><svg viewBox="0 0 14 14"><path d="M7 12S2 8.5 2 5a3 3 0 016 0 3 3 0 016 0c0 3.5-5 7-5 7z"/></svg></div>
+          <div class="thumb-ticker">CAFE</div>
+          <div class="thumb-loc">📍 성수동 · 서울 · 🇰🇷</div>
+        </div>
+        <div class="card-body">
+          <div class="card-row1">
+            <div><div class="card-name">브루밍 카페</div><div class="card-loc"><svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>성수동 · 서울 · 🇰🇷</div></div>
+            <div class="price-blk"><div class="card-price">$0.00067</div><div class="card-chg up">+12.4%</div></div>
+          </div>
+          <div class="card-tags"><span class="ctag">카페</span><span class="ctag">핸드드립</span><span class="ctag">브런치</span><span class="ctag">2년 운영</span></div>
+          <div class="launch-bar-wrap">
+            <div class="launch-bar-top"><span>런치패드 진행률</span><strong>68% · $6,800 / $10,000</strong></div>
+            <div class="launch-bar-bg"><div class="launch-bar-fill" style="width:68%"></div></div>
+            <div style="display:flex;align-items:center;margin-top:3px"><span class="launch-bar-soft"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><circle cx="4.5" cy="4.5" r="3.5" stroke="currentColor" stroke-width="1"/><path d="M3 4.5l1.5 1.5L7 3" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>소프트캡 달성</span><span class="launch-star-boost">STAR 1.4x</span></div>
+          </div>
+          <div class="card-metrics">
+            <div class="cm"><div class="cm-lbl">24H 거래량</div><div class="cm-val">$24.6K</div></div>
+            <div class="cm"><div class="cm-lbl">시가총액</div><div class="cm-val">$335K</div></div>
+            <div class="cm"><div class="cm-lbl">월 고객</div><div class="cm-val">~800명</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="store-card-lg">
+        <div class="card-thumb" style="background:#DDD0B8">
+          <div class="thumb-watermark" style="color:#5A4A30">TKYC</div>
+          <div class="thumb-tl"><span class="sbadge sb-live"><span class="sbadge-dot"></span>거래중</span></div>
+          <div class="thumb-fav" onclick="toggleFav(event,this)"><svg viewBox="0 0 14 14"><path d="M7 12S2 8.5 2 5a3 3 0 016 0 3 3 0 016 0c0 3.5-5 7-5 7z"/></svg></div>
+          <div class="thumb-ticker" style="background:rgba(0,0,0,.18);color:rgba(255,255,255,.95)">TKYC</div>
+          <div class="thumb-loc">📍 시부야 · 도쿄 · 🇯🇵</div>
+        </div>
+        <div class="card-body">
+          <div class="card-row1">
+            <div><div class="card-name">도쿄 카페 특구</div><div class="card-loc"><svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>시부야 · 도쿄 · 🇯🇵</div></div>
+            <div class="price-blk"><div class="card-price">$0.00089</div><div class="card-chg up">+5.2%</div></div>
+          </div>
+          <div class="card-tags"><span class="ctag">카페</span><span class="ctag">스페셜티</span><span class="ctag">모던재패니즈</span></div>
+          <div style="background:var(--surface2);border-radius:6px;padding:7px 10px;margin-bottom:9px;font-size:11px;color:var(--ts)">분기 공시 정상 · 베스팅 진행중 · 글로벌 탑 3위</div>
+          <div class="card-metrics">
+            <div class="cm"><div class="cm-lbl">24H 거래량</div><div class="cm-val">$41.2K</div></div>
+            <div class="cm"><div class="cm-lbl">시가총액</div><div class="cm-val">$445K</div></div>
+            <div class="cm"><div class="cm-lbl">월 고객</div><div class="cm-val">~1,100명</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-div"><span class="sd-lbl">전체 상장 상점</span><div class="sd-line"></div></div>
+    <div class="store-grid">
+      <div class="store-card-sm">
+        <div class="card-thumb-sm tc-bbq">
+          <div class="thumb-watermark" style="font-size:72px">BBGM</div>
+          <div class="thumb-tl" style="position:absolute;top:7px;left:7px"><span class="sbadge sb-live" style="font-size:9px;padding:2px 6px"><span class="sbadge-dot"></span>거래중</span></div>
+          <div class="thumb-ticker-sm">BBGM</div>
+        </div>
+        <div class="card-body-sm">
+          <div class="card-name-sm">바베큐 골목</div>
+          <div class="card-loc-sm"><svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>마포구 · 서울 · 🇰🇷</div>
+          <div class="card-pr"><span class="card-price-sm">$0.00142</span><span class="card-chg-sm up">+7.2%</span></div>
+          <div class="card-tags" style="margin-bottom:7px"><span class="ctag">음식점</span><span class="ctag">5년 운영</span></div>
+          <div class="card-metrics-sm"><div class="mms"><div class="ml">거래량</div><div class="mv">$58.2K</div></div><div class="mms"><div class="ml">시총</div><div class="mv">$710K</div></div><div class="mms"><div class="ml">월 고객</div><div class="mv">~1,200명</div></div></div>
+        </div>
+      </div>
+      <div class="store-card-sm">
+        <div class="card-thumb-sm tc-gym">
+          <div class="thumb-watermark" style="font-size:72px">FITX</div>
+          <div class="thumb-tl" style="position:absolute;top:7px;left:7px"><span class="sbadge sb-live" style="font-size:9px;padding:2px 6px"><span class="sbadge-dot"></span>거래중</span></div>
+          <div class="thumb-ticker-sm">FITX</div>
+        </div>
+        <div class="card-body-sm">
+          <div class="card-name-sm">핏러버 짐</div>
+          <div class="card-loc-sm"><svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>강남구 · 서울 · 🇰🇷</div>
+          <div class="card-pr"><span class="card-price-sm">$0.00098</span><span class="card-chg-sm dn">-3.1%</span></div>
+          <div class="card-tags" style="margin-bottom:7px"><span class="ctag">피트니스</span><span class="ctag">PT</span></div>
+          <div class="card-metrics-sm"><div class="mms"><div class="ml">거래량</div><div class="mv">$31.9K</div></div><div class="mms"><div class="ml">시총</div><div class="mv">$490K</div></div><div class="mms"><div class="ml">월 고객</div><div class="mv">~650명</div></div></div>
+        </div>
+      </div>
+      <div class="store-card-sm">
+        <div class="card-thumb-sm" style="background:#B8D0E8">
+          <div class="thumb-watermark" style="font-size:72px;color:#1A3A5C">SFCF</div>
+          <div class="thumb-tl" style="position:absolute;top:7px;left:7px"><span class="sbadge sb-new" style="font-size:9px;padding:2px 6px"><span class="sbadge-dot"></span>신규</span></div>
+          <div class="thumb-ticker-sm">SFCF</div>
+        </div>
+        <div class="card-body-sm">
+          <div class="card-name-sm">SF Roasters</div>
+          <div class="card-loc-sm"><svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>Mission · SF · 🇺🇸</div>
+          <div class="card-pr"><span class="card-price-sm">$0.00112</span><span class="card-chg-sm up">+3.8%</span></div>
+          <div class="card-tags" style="margin-bottom:7px"><span class="ctag">카페</span><span class="ctag">스페셜티</span></div>
+          <div class="card-metrics-sm"><div class="mms"><div class="ml">거래량</div><div class="mv">$18.4K</div></div><div class="mms"><div class="ml">시총</div><div class="mv">$224K</div></div><div class="mms"><div class="ml">월 고객</div><div class="mv">~520명</div></div></div>
+        </div>
+      </div>
+      <div class="store-card-sm">
+        <div class="card-thumb-sm tc-book">
+          <div class="thumb-watermark" style="font-size:72px">BOOK</div>
+          <div class="thumb-tl" style="position:absolute;top:7px;left:7px"><span class="sbadge sb-launch" style="font-size:9px;padding:2px 6px"><span class="sbadge-dot"></span>런치패드</span></div>
+          <div class="thumb-ticker-sm" style="background:rgba(0,0,0,.18);color:rgba(255,255,255,.95)">BOOK</div>
+        </div>
+        <div class="card-body-sm">
+          <div class="card-name-sm">북스토어 모퉁이</div>
+          <div class="card-loc-sm"><svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>연남동 · 서울 · 🇰🇷</div>
+          <div class="card-pr"><span class="card-price-sm">$0.00045</span><span class="card-chg-sm up">+5.2%</span></div>
+          <div class="launch-bar-wrap" style="margin-bottom:6px">
+            <div class="launch-bar-top"><span>진행률</span><strong>41%</strong></div>
+            <div class="launch-bar-bg"><div class="launch-bar-fill" style="width:41%"></div></div>
+          </div>
+          <div class="card-metrics-sm"><div class="mms"><div class="ml">목표</div><div class="mv">$8,000</div></div><div class="mms"><div class="ml">참여자</div><div class="mv">74명</div></div><div class="mms"><div class="ml">월 고객</div><div class="mv">~280명</div></div></div>
+        </div>
+      </div>
+      <div class="card-placeholder"><div class="ph-thumb"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#CACAC2" stroke-width="1.5"><circle cx="11" cy="11" r="9"/><line x1="11" y1="7" x2="11" y2="15"/><line x1="7" y1="11" x2="15" y2="11"/></svg></div><div class="ph-body"><span style="font-size:11px;color:var(--tt)">곧 상장 예정</span></div></div>
+      <div class="card-placeholder"><div class="ph-thumb"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#CACAC2" stroke-width="1.5"><circle cx="11" cy="11" r="9"/><line x1="11" y1="7" x2="11" y2="15"/><line x1="7" y1="11" x2="15" y2="11"/></svg></div><div class="ph-body"><span style="font-size:11px;color:var(--tt)">곧 상장 예정</span></div></div>
+    </div>
+  </div>
+
+  <!-- COMPACT GRID VIEW -->
+  <div class="view-panel fade-in" id="vp-grid">
+    <div class="compact-grid">
+      <div class="compact-card"><div class="compact-thumb tc-cafe"><div class="thumb-watermark" style="font-size:56px">CAFE</div><div class="thumb-tl" style="position:absolute;top:6px;left:6px"><span class="sbadge sb-launch" style="font-size:9px;padding:2px 5px"><span class="sbadge-dot"></span>런치패드</span></div><div class="thumb-ticker-sm">CAFE</div></div><div class="compact-body"><div class="compact-name">브루밍 카페</div><div class="compact-loc">성수동 · 서울 · 🇰🇷</div><div class="compact-pr"><span class="compact-price">$0.00067</span><span class="compact-chg up">+12.4%</span></div></div></div>
+      <div class="compact-card"><div class="compact-thumb" style="background:#DDD0B8"><div class="thumb-watermark" style="font-size:56px;color:#5A4A30">TKYC</div><div class="thumb-tl" style="position:absolute;top:6px;left:6px"><span class="sbadge sb-live" style="font-size:9px;padding:2px 5px"><span class="sbadge-dot"></span>거래중</span></div><div class="thumb-ticker-sm">TKYC</div></div><div class="compact-body"><div class="compact-name">도쿄 카페 특구</div><div class="compact-loc">시부야 · 도쿄 · 🇯🇵</div><div class="compact-pr"><span class="compact-price">$0.00089</span><span class="compact-chg up">+5.2%</span></div></div></div>
+      <div class="compact-card"><div class="compact-thumb tc-bbq"><div class="thumb-watermark" style="font-size:56px">BBGM</div><div class="thumb-tl" style="position:absolute;top:6px;left:6px"><span class="sbadge sb-live" style="font-size:9px;padding:2px 5px"><span class="sbadge-dot"></span>거래중</span></div><div class="thumb-ticker-sm">BBGM</div></div><div class="compact-body"><div class="compact-name">바베큐 골목</div><div class="compact-loc">마포구 · 서울 · 🇰🇷</div><div class="compact-pr"><span class="compact-price">$0.00142</span><span class="compact-chg up">+7.2%</span></div></div></div>
+      <div class="compact-card"><div class="compact-thumb tc-gym"><div class="thumb-watermark" style="font-size:56px">FITX</div><div class="thumb-tl" style="position:absolute;top:6px;left:6px"><span class="sbadge sb-live" style="font-size:9px;padding:2px 5px"><span class="sbadge-dot"></span>거래중</span></div><div class="thumb-ticker-sm">FITX</div></div><div class="compact-body"><div class="compact-name">핏러버 짐</div><div class="compact-loc">강남구 · 서울 · 🇰🇷</div><div class="compact-pr"><span class="compact-price">$0.00098</span><span class="compact-chg dn">-3.1%</span></div></div></div>
+      <div class="compact-card"><div class="compact-thumb" style="background:#B8D0E8"><div class="thumb-watermark" style="font-size:56px;color:#1A3A5C">SFCF</div><div class="thumb-tl" style="position:absolute;top:6px;left:6px"><span class="sbadge sb-new" style="font-size:9px;padding:2px 5px"><span class="sbadge-dot"></span>신규</span></div><div class="thumb-ticker-sm">SFCF</div></div><div class="compact-body"><div class="compact-name">SF Roasters</div><div class="compact-loc">Mission · SF · 🇺🇸</div><div class="compact-pr"><span class="compact-price">$0.00112</span><span class="compact-chg up">+3.8%</span></div></div></div>
+      <div class="compact-card"><div class="compact-thumb tc-book"><div class="thumb-watermark" style="font-size:56px">BOOK</div><div class="thumb-tl" style="position:absolute;top:6px;left:6px"><span class="sbadge sb-launch" style="font-size:9px;padding:2px 5px"><span class="sbadge-dot"></span>런치패드</span></div><div class="thumb-ticker-sm" style="background:rgba(0,0,0,.18)">BOOK</div></div><div class="compact-body"><div class="compact-name">북스토어 모퉁이</div><div class="compact-loc">연남동 · 서울 · 🇰🇷</div><div class="compact-pr"><span class="compact-price">$0.00045</span><span class="compact-chg up">+5.2%</span></div></div></div>
+      <div class="compact-card" style="border-style:dashed;opacity:.45;cursor:default"><div class="compact-thumb" style="background:var(--surface2);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#CACAC2" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg></div><div class="compact-body" style="display:flex;align-items:center;justify-content:center;height:48px"><span style="font-size:10px;color:var(--tt)">곧 상장 예정</span></div></div>
+      <div class="compact-card" style="border-style:dashed;opacity:.45;cursor:default"><div class="compact-thumb" style="background:var(--surface2);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#CACAC2" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg></div><div class="compact-body" style="display:flex;align-items:center;justify-content:center;height:48px"><span style="font-size:10px;color:var(--tt)">곧 상장 예정</span></div></div>
+    </div>
+  </div>
+
+  <!-- LIST VIEW -->
+  <div class="view-panel fade-in" id="vp-list">
+    <div class="list-header" style="display:grid;grid-template-columns:46px 1fr 90px 90px 76px 76px 56px">
+      <span></span><span>상점 정보</span><span style="text-align:right">가격</span><span style="text-align:right">24H 변동</span><span style="text-align:right">거래량</span><span style="text-align:right">상태</span><span style="text-align:right">7일</span>
+    </div>
+    <div class="store-list">
+      <div class="store-row">
+        <div class="row-thumb tc-cafe"><div class="rt-label">CAFE</div></div>
+        <div class="row-info"><div class="row-name">브루밍 카페</div><div class="row-sub"><span class="row-flag">🇰🇷</span>성수동 · 서울<span style="color:var(--border2)">·</span><span class="ctag" style="padding:1px 5px;font-size:10px">카페</span><span style="color:var(--border2)">·</span>월 고객 ~800명</div></div>
+        <div class="row-price-blk"><div class="row-price">$0.00067</div><div class="row-chg up">+12.4%</div></div>
+        <div class="row-vol"><div class="row-vol-val">$24.6K</div><div class="row-vol-lbl">24H</div></div>
+        <div class="row-status" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="sbadge sb-launch" style="font-size:10px"><span class="sbadge-dot"></span>런치패드</span><div class="launch-bar-bg" style="width:58px;margin-top:2px"><div class="launch-bar-fill" style="width:68%"></div></div></div>
+        <div class="row-spark"><svg width="56" height="20" viewBox="0 0 56 20" fill="none"><polyline points="0,18 9,16 18,12 27,14 36,9 45,7 56,4" stroke="#1B7A4A" stroke-width="1.4"/></svg></div>
+      </div>
+      <div class="store-row">
+        <div class="row-thumb" style="background:linear-gradient(135deg,#F5F0E8,#DDD0B8)"><div class="rt-label" style="color:#5A4A30">TKYC</div></div>
+        <div class="row-info"><div class="row-name">도쿄 카페 특구</div><div class="row-sub"><span class="row-flag">🇯🇵</span>시부야 · 도쿄<span style="color:var(--border2)">·</span><span class="ctag" style="padding:1px 5px;font-size:10px">카페</span><span style="color:var(--border2)">·</span>월 고객 ~1,100명</div></div>
+        <div class="row-price-blk"><div class="row-price">$0.00089</div><div class="row-chg up">+5.2%</div></div>
+        <div class="row-vol"><div class="row-vol-val">$41.2K</div><div class="row-vol-lbl">24H</div></div>
+        <div class="row-status"><span class="sbadge sb-live"><span class="sbadge-dot"></span>거래중</span></div>
+        <div class="row-spark"><svg width="56" height="20" viewBox="0 0 56 20" fill="none"><polyline points="0,16 9,13 18,9 27,11 36,7 45,5 56,3" stroke="#1B7A4A" stroke-width="1.4"/></svg></div>
+      </div>
+      <div class="store-row">
+        <div class="row-thumb tc-bbq"><div class="rt-label">BBGM</div></div>
+        <div class="row-info"><div class="row-name">바베큐 골목</div><div class="row-sub"><span class="row-flag">🇰🇷</span>마포구 · 서울<span style="color:var(--border2)">·</span><span class="ctag" style="padding:1px 5px;font-size:10px">음식점</span><span style="color:var(--border2)">·</span>월 고객 ~1,200명</div></div>
+        <div class="row-price-blk"><div class="row-price">$0.00142</div><div class="row-chg up">+7.2%</div></div>
+        <div class="row-vol"><div class="row-vol-val">$58.2K</div><div class="row-vol-lbl">24H</div></div>
+        <div class="row-status"><span class="sbadge sb-live"><span class="sbadge-dot"></span>거래중</span></div>
+        <div class="row-spark"><svg width="56" height="20" viewBox="0 0 56 20" fill="none"><polyline points="0,16 9,13 18,9 27,11 36,7 45,5 56,3" stroke="#1B7A4A" stroke-width="1.4"/></svg></div>
+      </div>
+      <div class="store-row">
+        <div class="row-thumb tc-gym"><div class="rt-label">FITX</div></div>
+        <div class="row-info"><div class="row-name">핏러버 짐</div><div class="row-sub"><span class="row-flag">🇰🇷</span>강남구 · 서울<span style="color:var(--border2)">·</span><span class="ctag" style="padding:1px 5px;font-size:10px">피트니스</span><span style="color:var(--border2)">·</span>월 고객 ~650명</div></div>
+        <div class="row-price-blk"><div class="row-price">$0.00098</div><div class="row-chg dn">-3.1%</div></div>
+        <div class="row-vol"><div class="row-vol-val">$31.9K</div><div class="row-vol-lbl">24H</div></div>
+        <div class="row-status"><span class="sbadge sb-live"><span class="sbadge-dot"></span>거래중</span></div>
+        <div class="row-spark"><svg width="56" height="20" viewBox="0 0 56 20" fill="none"><polyline points="0,4 9,6 18,9 27,8 36,11 45,14 56,16" stroke="#C0392B" stroke-width="1.4"/></svg></div>
+      </div>
+      <div class="store-row">
+        <div class="row-thumb" style="background:linear-gradient(135deg,#E8F0F8,#B8D0E8)"><div class="rt-label" style="color:#1A3A5C">SFCF</div></div>
+        <div class="row-info"><div class="row-name">SF Roasters</div><div class="row-sub"><span class="row-flag">🇺🇸</span>Mission · SF<span style="color:var(--border2)">·</span><span class="ctag" style="padding:1px 5px;font-size:10px">카페</span><span style="color:var(--border2)">·</span>월 고객 ~520명</div></div>
+        <div class="row-price-blk"><div class="row-price">$0.00112</div><div class="row-chg up">+3.8%</div></div>
+        <div class="row-vol"><div class="row-vol-val">$18.4K</div><div class="row-vol-lbl">24H</div></div>
+        <div class="row-status"><span class="sbadge sb-new"><span class="sbadge-dot"></span>신규</span></div>
+        <div class="row-spark"><svg width="56" height="20" viewBox="0 0 56 20" fill="none"><polyline points="0,15 9,13 18,11 27,13 36,10 45,8 56,6" stroke="#1B7A4A" stroke-width="1.4"/></svg></div>
+      </div>
+      <div class="store-row">
+        <div class="row-thumb tc-book"><div class="rt-label">BOOK</div></div>
+        <div class="row-info"><div class="row-name">북스토어 모퉁이</div><div class="row-sub"><span class="row-flag">🇰🇷</span>연남동 · 서울<span style="color:var(--border2)">·</span><span class="ctag" style="padding:1px 5px;font-size:10px">서점</span><span style="color:var(--border2)">·</span>월 고객 ~280명</div></div>
+        <div class="row-price-blk"><div class="row-price">$0.00045</div><div class="row-chg up">+5.2%</div></div>
+        <div class="row-vol"><div class="row-vol-val">$6.3K</div><div class="row-vol-lbl">24H</div></div>
+        <div class="row-status" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="sbadge sb-launch" style="font-size:10px"><span class="sbadge-dot"></span>런치패드</span><div class="launch-bar-bg" style="width:58px;margin-top:2px"><div class="launch-bar-fill" style="width:41%"></div></div></div>
+        <div class="row-spark"><svg width="56" height="20" viewBox="0 0 56 20" fill="none"><polyline points="0,18 9,16 18,13 27,15 36,11 45,9 56,6" stroke="#1B7A4A" stroke-width="1.4"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ── DATA ──
+const stores=[
+  {name:'브루밍 카페',sym:'CAFE',cat:'카페',city:'서울',flag:'🇰🇷',price:'$0.00067',chg:'+12.4%',up:true,status:'launch'},
+  {name:'바베큐 골목',sym:'BBGM',cat:'음식점',city:'서울',flag:'🇰🇷',price:'$0.00142',chg:'+7.2%',up:true,status:'live'},
+  {name:'핏러버 짐',sym:'FITX',cat:'피트니스',city:'서울',flag:'🇰🇷',price:'$0.00098',chg:'-3.1%',up:false,status:'live'},
+  {name:'도쿄 카페 특구',sym:'TKYC',cat:'카페',city:'도쿄',flag:'🇯🇵',price:'$0.00089',chg:'+5.2%',up:true,status:'live'},
+  {name:'오사카 라멘 골목',sym:'OSAKAMEN',cat:'음식점',city:'오사카',flag:'🇯🇵',price:'$0.00054',chg:'+2.8%',up:true,status:'live'},
+  {name:'SF Roasters',sym:'SFCF',cat:'카페',city:'San Francisco',flag:'🇺🇸',price:'$0.00112',chg:'+3.8%',up:true,status:'new'},
+  {name:'북스토어 모퉁이',sym:'BOOK',cat:'서점',city:'서울',flag:'🇰🇷',price:'$0.00045',chg:'+5.2%',up:true,status:'launch'},
+  {name:'헤어룸 살롱',sym:'HAIR',cat:'뷰티',city:'서울',flag:'🇰🇷',price:'$0.00033',chg:'+1.9%',up:true,status:'new'},
+  {name:'진심라멘',sym:'RAMEN',cat:'음식점',city:'서울',flag:'🇰🇷',price:'$0.00021',chg:'-0.5%',up:false,status:'live'},
+  {name:'Hawker Hub',sym:'HWKR',cat:'음식점',city:'싱가포르',flag:'🇸🇬',price:'$0.00076',chg:'+4.1%',up:true,status:'live'},
+];
+let currentLoc={flag:'🇰🇷',city:'서울'};
+
+// ── VIEW TOGGLE ──
+function setView(v){
+  ['card','grid','list'].forEach(id=>{
+    document.getElementById('vp-'+id).classList.remove('active');
+    document.getElementById('vv-'+id).classList.remove('active');
+  });
+  document.getElementById('vp-'+v).classList.add('active');
+  document.getElementById('vv-'+v).classList.add('active');
+}
+
+// ── STATE TABS ──
+function setTab(el){
+  document.querySelectorAll('.st').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── SIDEBAR ──
+function setSbActive(el){
+  el.closest('.sb-sec').querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── COUNTRY TREE ──
+function toggleCountry(hd,code){
+  hd.classList.toggle('open');
+}
+function selectCountry(hd,code,label){
+  document.querySelectorAll('.country-hd').forEach(h=>h.classList.remove('selected'));
+  document.querySelectorAll('.city-item').forEach(c=>c.classList.remove('active'));
+  hd.classList.add('selected');
+  if(code==='global'){
+    currentLoc={flag:'🌏',city:'전체 글로벌'};
+    document.getElementById('locChipText').textContent='🌏 전체 글로벌';
+  }
+}
+function selectCity(el,city,flag){
+  document.querySelectorAll('.country-hd').forEach(h=>h.classList.remove('selected'));
+  document.querySelectorAll('.city-item').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentLoc={flag,city};
+  document.getElementById('locChipText').textContent=flag+' '+city;
+}
+
+// ── FAV ──
+function toggleFav(e,btn){
+  e.stopPropagation();
+  btn.classList.toggle('on');
+  const svg=btn.querySelector('svg');
+  if(btn.classList.contains('on')){svg.style.fill='#E24B4A';svg.style.stroke='#E24B4A';}
+  else{svg.style.fill='none';svg.style.stroke='var(--tp)';}
+}
+
+// ── SEARCH ──
+let searchOpen=false,locPickerOpen=false;
+
+function openSearch(){
+  if(searchOpen)return;
+  searchOpen=true;
+  document.getElementById('searchDd').classList.add('open');
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('searchKbd').style.display='none';
+  document.getElementById('searchInput').focus();
+}
+
+function closeAll(){
+  searchOpen=false;locPickerOpen=false;
+  document.getElementById('searchDd').classList.remove('open');
+  document.getElementById('locPickerDd').classList.remove('open');
+  document.getElementById('overlay').classList.remove('on');
+  document.getElementById('searchKbd').style.display='';
+  if(!document.getElementById('searchInput').value)
+    document.getElementById('searchClear').classList.remove('visible');
+}
+
+function clearSearch(){
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchClear').classList.remove('visible');
+  showEmptyState();
+  document.getElementById('searchInput').focus();
+}
+
+function showEmptyState(){
+  document.getElementById('dd-empty-state').style.display='';
+  document.getElementById('dd-results').style.display='none';
+}
+
+function onSearch(val){
+  const clear=document.getElementById('searchClear');
+  if(val.trim()){clear.classList.add('visible');}
+  else{clear.classList.remove('visible');showEmptyState();return;}
+
+  document.getElementById('dd-empty-state').style.display='none';
+  document.getElementById('dd-results').style.display='';
+
+  const q=val.toLowerCase();
+  const local=stores.filter(s=>
+    s.name.toLowerCase().includes(q)||
+    s.sym.toLowerCase().includes(q)||
+    s.city.toLowerCase().includes(q)||
+    s.cat.toLowerCase().includes(q)
+  );
+  const localHere=local.filter(s=>s.city===currentLoc.city||currentLoc.city==='전체 글로벌');
+  const global=local.filter(s=>s.city!==currentLoc.city&&currentLoc.city!=='전체 글로벌');
+
+  const lbl=document.getElementById('dd-stores-lbl');
+  lbl.textContent=currentLoc.flag+' '+currentLoc.city+' · 상점 · 토큰';
+
+  const list=document.getElementById('dd-stores-list');
+  list.innerHTML=localHere.slice(0,3).map(s=>ddItem(s,q)).join('')||'<div style="padding:8px 14px;font-size:12px;color:var(--tt)">현재 위치에 결과 없음</div>';
+
+  const glist=document.getElementById('dd-global-list');
+  const gsec=document.getElementById('dd-global-sec');
+  if(global.length&&currentLoc.city!=='전체 글로벌'){
+    gsec.style.display='';
+    glist.innerHTML=global.slice(0,2).map(s=>ddItem(s,q)).join('');
+  }else{gsec.style.display='none';}
+
+  const empty=document.getElementById('dd-empty-result');
+  if(!localHere.length&&!global.length){
+    empty.style.display='';
+    document.getElementById('dd-empty-msg').textContent='"'+val+'" 검색 결과가 없습니다';
+  }else{empty.style.display='none';}
+}
+
+function ddItem(s,q){
+  const nameHl=s.name.replace(new RegExp(q,'gi'),m=>`<span class="hl">${m}</span>`);
+  const clr=s.up?'color:var(--green)':'color:var(--red)';
+  return`<div class="dd-item"><span class="dd-flag">${s.flag}</span><div class="dd-info"><div class="dd-name">${nameHl} · ${s.sym}</div><div class="dd-sub">${s.city} · ${s.cat}</div></div><div class="dd-right"><div class="dd-price">${s.price}</div><div class="dd-chg" style="${clr}">${s.chg}</div></div></div>`;
+}
+
+function doSearch(term){
+  document.getElementById('searchInput').value=term;
+  onSearch(term);
+}
+
+function onSearchKey(e){
+  if(e.key==='Escape')closeAll();
+}
+
+function delRecent(e,btn){
+  e.stopPropagation();
+  btn.closest('.dd-recent').remove();
+}
+
+// ── LOC PICKER ──
+function toggleLocPicker(e){
+  e.stopPropagation();
+  locPickerOpen=!locPickerOpen;
+  document.getElementById('locPickerDd').classList.toggle('open',locPickerOpen);
+  if(locPickerOpen){
+    if(searchOpen)document.getElementById('searchDd').classList.remove('open');
+    document.getElementById('overlay').classList.add('on');
+  }
+}
+
+function toggleLpCountry(el,id){
+  const cities=document.getElementById(id);
+  const isOpen=cities.style.display!=='none';
+  cities.style.display=isOpen?'none':'flex';
+  cities.style.flexDirection='column';
+}
+
+function setLoc(flag,city,el){
+  currentLoc={flag,city};
+  document.getElementById('locChipText').textContent=flag+' '+city;
+  document.querySelectorAll('.lp-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.lp-city').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  locPickerOpen=false;
+  document.getElementById('locPickerDd').classList.remove('open');
+  document.getElementById('overlay').classList.remove('on');
+  if(document.getElementById('searchInput').value)
+    onSearch(document.getElementById('searchInput').value);
+}
+
+function selectLocFromDD(flag,city,code){
+  currentLoc={flag,city};
+  document.getElementById('locChipText').textContent=flag+' '+city;
+  closeAll();
+}
+
+// Cmd+K
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}
+  if(e.key==='Escape')closeAll();
+});
+</script>
+</body>
+</html>
