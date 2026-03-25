@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 글로벌 검색 & 위치 스펙</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f9f9f7;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:960px;margin:0 auto}
+
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+
+.tab-row{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:20px;border:0.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .15s}
+.tab.active{background:#1a1917;color:#fff;border-color:#1a1917}
+.tab:not(.active):hover{background:#f2f1ed}
+
+.panel{display:none}.panel.active{display:block}
+.mockup{background:#f2f1ed;border-radius:12px;padding:18px;margin-bottom:1.25rem}
+.mockup-label{font-size:10px;font-weight:500;color:#a8a7a2;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+
+/* SEARCH BAR */
+.sb{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #1a1917;border-radius:10px;padding:9px 13px;margin-bottom:10px}
+.sb svg{width:15px;height:15px;fill:none;stroke:#a8a7a2;stroke-width:1.5;flex-shrink:0}
+.sb .q{font-size:13px;color:#1a1917;flex:1}
+.sb .ph{font-size:13px;color:#a8a7a2;flex:1}
+.sb .loc-chip{display:flex;align-items:center;gap:4px;background:#f2f1ed;border:0.5px solid #d0cfc8;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:500;color:#64635E;flex-shrink:0;cursor:pointer;white-space:nowrap}
+.sb .loc-chip svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.5}
+.sb .kbd{font-size:10px;color:#a8a7a2;background:#f2f1ed;border:0.5px solid #d0cfc8;border-radius:4px;padding:2px 6px;font-family:monospace}
+.sb .x{color:#a8a7a2;cursor:pointer;flex-shrink:0}
+.sb .x svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;display:block}
+
+/* DROPDOWN */
+.dd{background:#fff;border:0.5px solid #d0cfc8;border-radius:10px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.dd-sec{border-bottom:0.5px solid #e3e2dc}
+.dd-sec:last-child{border-bottom:none}
+.dd-sec-lbl{padding:7px 13px 4px;font-size:10px;font-weight:500;color:#a8a7a2;text-transform:uppercase;letter-spacing:.06em}
+.dd-item{display:flex;align-items:center;gap:10px;padding:8px 13px;cursor:pointer;transition:background .1s}
+.dd-item:hover,.dd-item.sel{background:#f9f9f7}
+.dd-thumb{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;font-family:monospace;flex-shrink:0}
+.dd-flag{font-size:16px;line-height:1;width:26px;text-align:center;flex-shrink:0}
+.dd-info{flex:1;min-width:0}
+.dd-name{font-size:12px;font-weight:500;color:#1a1917}
+.dd-sub{font-size:11px;color:#a8a7a2}
+.dd-right{text-align:right;flex-shrink:0}
+.dd-price{font-size:12px;font-weight:500;font-family:monospace;color:#1a1917}
+.dd-cnt{font-size:11px;font-family:monospace;color:#64635E}
+.dd-chg{font-size:10px;font-family:monospace}
+.green{color:#1B7A4A}.red{color:#C0392B}
+.hl{background:#FFF9C4;color:#5C4A00;border-radius:2px}
+
+.cat-row{display:flex;gap:5px;flex-wrap:wrap;padding:8px 13px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:8px;border:0.5px solid #e3e2dc;font-size:11px;cursor:pointer;color:#64635E;background:#fff;transition:all .1s}
+.chip:hover{background:#f2f1ed}
+.chip.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.cdot{width:6px;height:6px;border-radius:50%}
+
+.recent-item{display:flex;align-items:center;gap:8px;padding:8px 13px;cursor:pointer;transition:background .1s}
+.recent-item:hover{background:#f9f9f7}
+.ri-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:#a8a7a2;flex-shrink:0}
+.ri-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+.ri-text{font-size:12px;color:#64635E;flex:1}
+.ri-del{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:#a8a7a2;opacity:0;transition:opacity .1s;background:none;border:none;cursor:pointer;padding:0;flex-shrink:0}
+.ri-del svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;display:block}
+.recent-item:hover .ri-del{opacity:1}
+
+/* LOCATION TREE */
+.loc-tree{background:#fff;border:0.5px solid #e3e2dc;border-radius:12px;padding:12px;margin-bottom:12px}
+.lt-country{margin-bottom:2px}
+.lt-hd{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .1s;user-select:none}
+.lt-hd:hover{background:#f2f1ed}
+.lt-hd.open{background:#f2f1ed}
+.lt-hd.selected{background:#1a1917}
+.lt-hd.selected .lt-name,.lt-hd.selected .lt-cnt{color:#fff}
+.lt-flag{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.lt-name{font-size:12px;font-weight:500;flex:1;color:#64635E}
+.lt-cnt{font-size:10px;font-family:monospace;color:#a8a7a2;background:#f2f1ed;padding:1px 5px;border-radius:6px;flex-shrink:0}
+.lt-arrow{color:#a8a7a2;transition:transform .15s;flex-shrink:0;font-size:13px}
+.lt-hd.open .lt-arrow{transform:rotate(90deg)}
+.lt-cities{display:none;padding:2px 0 4px 8px;margin-left:4px;border-left:0.5px solid #e3e2dc;flex-direction:column;gap:1px}
+.lt-hd.open + .lt-cities{display:flex}
+.lt-city{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;cursor:pointer;transition:background .1s;color:#64635E;font-size:12px}
+.lt-city:hover{background:#f2f1ed;color:#1a1917}
+.lt-city.active{background:#1a1917;color:#fff}
+.lt-city .city-cnt{margin-left:auto;font-size:10px;font-family:monospace;opacity:.55}
+
+/* SPEC TABLE */
+.spec-sec{margin-bottom:1.5rem}
+.spec-sec h3{font-size:13px;font-weight:500;margin-bottom:10px;color:#1a1917}
+.spec-row{display:flex;border-bottom:0.5px solid #e3e2dc;padding:9px 0;align-items:start}
+.spec-row:first-of-type{border-top:0.5px solid #e3e2dc}
+.spec-key{font-size:12px;font-weight:500;min-width:150px;color:#1a1917;padding-right:14px;flex-shrink:0}
+.spec-val{font-size:12px;color:#6b6a65;line-height:1.55;flex:1}
+.stag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-right:4px;font-weight:500}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.unique{background:#EEEDFE;color:#3C3489}
+
+.hier-box{background:#f2f1ed;border-radius:10px;padding:13px;margin-bottom:1.25rem}
+.hier-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}
+.hier-row:last-child{margin-bottom:0}
+.hier-lv{font-size:10px;font-weight:500;color:#a8a7a2;text-transform:uppercase;letter-spacing:.05em;min-width:52px}
+.hier-arrow{color:#a8a7a2;font-size:14px}
+.hier-ex{color:#6b6a65}
+.hier-ex span{color:#1a1917;font-weight:500}
+
+.note{background:#f2f1ed;border-radius:10px;border:0.5px solid #e3e2dc;padding:11px 13px;font-size:12px;color:#6b6a65;line-height:1.6;margin-top:10px}
+.note strong{color:#1a1917;font-weight:500}
+
+/* FLOW STEPS */
+.flow{display:flex;flex-direction:column;gap:0;margin-bottom:1.25rem}
+.flow-step{display:flex;align-items:flex-start;gap:14px;padding:12px 14px;background:#fff;border:0.5px solid #e3e2dc;border-bottom:none;cursor:pointer;transition:background .1s}
+.flow-step:first-child{border-radius:10px 10px 0 0}
+.flow-step:last-child{border-radius:0 0 10px 10px;border-bottom:0.5px solid #e3e2dc}
+.flow-step:hover{background:#f9f9f7}
+.fs-num{width:24px;height:24px;border-radius:50%;background:#1a1917;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.fs-num.alt{background:#f2f1ed;color:#64635E}
+.fs-info h4{font-size:13px;font-weight:500;margin-bottom:3px}
+.fs-info p{font-size:12px;color:#6b6a65;line-height:1.45}
+.fs-trigger{font-size:10px;color:#a8a7a2;margin-top:4px;font-family:monospace}
+
+/* PHASE */
+.phase-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.phase-card{background:#fff;border:0.5px solid #e3e2dc;border-radius:10px;padding:12px 14px}
+.phase-card h4{font-size:12px;font-weight:500;margin-bottom:7px}
+.phase-card ul{list-style:none;padding:0}
+.phase-card li{font-size:11px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.phase-card li::before{content:"·";margin-right:5px;color:#a8a7a2}
+
+/* COMPARISON */
+.cmp-row{display:grid;grid-template-columns:130px 1fr 1fr 1fr;gap:0;border-bottom:0.5px solid #e3e2dc;padding:8px 0;align-items:start}
+.cmp-row:first-of-type{border-top:0.5px solid #e3e2dc}
+.cmp-cell{font-size:12px;padding:0 10px;color:#6b6a65;line-height:1.5}
+.cmp-cell:first-child{font-weight:500;color:#1a1917;padding-left:0}
+.cmp-head{font-size:10px;font-weight:500;color:#a8a7a2;text-transform:uppercase;letter-spacing:.05em}
+.cmp-good{color:#1B7A4A}
+.cmp-none{color:#a8a7a2}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip — 글로벌 검색 & 위치 스펙</h1>
+  <p>나라·도시 계층 구조 · 검색 UI 목업 · 사이드바 위치 트리 · 경쟁사 비교 · 구현 단계</p>
+</div>
+
+<div class="tab-row">
+  <button class="tab active" onclick="sw('demo',this)">검색 UI 목업</button>
+  <button class="tab" onclick="sw('sidebar',this)">사이드바 구조</button>
+  <button class="tab" onclick="sw('spec',this)">글로벌 스펙</button>
+  <button class="tab" onclick="sw('phase',this)">구현 단계</button>
+</div>
+
+<!-- ===== DEMO ===== -->
+<div class="panel active" id="p-demo">
+
+  <div class="mockup">
+    <div class="mockup-label">상태 1 — 미입력 · 위치 미설정 (신규 사용자)</div>
+    <div class="sb">
+      <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke-linecap="round"/></svg>
+      <span class="ph">상점명, 토큰, 도시, 나라 검색...</span>
+      <span class="kbd">⌘K</span>
+    </div>
+    <div class="dd">
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">나라 선택</div>
+        <div class="dd-item sel">
+          <span class="dd-flag">🇰🇷</span>
+          <div class="dd-info"><div class="dd-name">대한민국 · Korea</div><div class="dd-sub">38개 상점 상장</div></div>
+          <div class="dd-right"><div class="dd-cnt">38</div></div>
+        </div>
+        <div class="dd-item">
+          <span class="dd-flag">🇯🇵</span>
+          <div class="dd-info"><div class="dd-name">일본 · Japan</div><div class="dd-sub">12개 상점 상장</div></div>
+          <div class="dd-right"><div class="dd-cnt">12</div></div>
+        </div>
+        <div class="dd-item">
+          <span class="dd-flag">🇺🇸</span>
+          <div class="dd-info"><div class="dd-name">미국 · United States</div><div class="dd-sub">7개 상점 상장</div></div>
+          <div class="dd-right"><div class="dd-cnt">7</div></div>
+        </div>
+        <div class="dd-item">
+          <span class="dd-flag">🌏</span>
+          <div class="dd-info"><div class="dd-name">전체 글로벌</div><div class="dd-sub">63개국 · 상점 전체 보기</div></div>
+          <div class="dd-right"><div class="dd-cnt" style="color:#1B7A4A">420+</div></div>
+        </div>
+      </div>
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">업종으로 탐색 (글로벌)</div>
+        <div class="cat-row">
+          <div class="chip"><div class="cdot" style="background:#E8A060"></div>카페·음료</div>
+          <div class="chip"><div class="cdot" style="background:#E85A30"></div>음식점</div>
+          <div class="chip on"><div class="cdot" style="background:#8850E0"></div>뷰티·헤어</div>
+          <div class="chip"><div class="cdot" style="background:#1B7A4A"></div>피트니스</div>
+          <div class="chip"><div class="cdot" style="background:#1A4FDB"></div>서점·문화</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-label">상태 2 — 위치 설정 후 (🇰🇷 서울) · 입력 중 "카페"</div>
+    <div class="sb">
+      <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke-linecap="round"/></svg>
+      <div class="loc-chip">
+        <svg viewBox="0 0 10 10"><circle cx="5" cy="4" r="2"/><path d="M5 6v3.5" stroke-linecap="round"/></svg>
+        🇰🇷 서울
+        <svg viewBox="0 0 10 10"><path d="M3 4l2 2 2-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="q">카페</span>
+      <div class="x"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="dd">
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">🇰🇷 서울 · 상점 · 토큰</div>
+        <div class="dd-item sel">
+          <div class="dd-thumb" style="background:#E8D8C8;color:#6B4A2A">CAFE</div>
+          <div class="dd-info">
+            <div class="dd-name"><span class="hl">카페</span> · 브루밍 카페</div>
+            <div class="dd-sub">성수동 · 서울 · 🇰🇷 · 런치패드 68%</div>
+          </div>
+          <div class="dd-right"><div class="dd-price">$0.00067</div><div class="dd-chg green">+12.4%</div></div>
+        </div>
+        <div class="dd-item">
+          <div class="dd-thumb" style="background:#E8C8A8;color:#5A3810">MORE</div>
+          <div class="dd-info">
+            <div class="dd-name">더보기 <span class="hl">카페</span></div>
+            <div class="dd-sub">홍대 · 서울 · 🇰🇷</div>
+          </div>
+          <div class="dd-right"><div class="dd-price">$0.00042</div><div class="dd-chg green">+3.1%</div></div>
+        </div>
+      </div>
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">🌏 글로벌 · 같은 업종</div>
+        <div class="dd-item">
+          <span class="dd-flag">🇯🇵</span>
+          <div class="dd-info">
+            <div class="dd-name">도쿄 <span class="hl">카페</span> 특구 · TKYCAFE</div>
+            <div class="dd-sub">시부야 · 도쿄 · 🇯🇵</div>
+          </div>
+          <div class="dd-right"><div class="dd-price">$0.00089</div><div class="dd-chg green">+5.2%</div></div>
+        </div>
+        <div class="dd-item">
+          <span class="dd-flag">🇺🇸</span>
+          <div class="dd-info">
+            <div class="dd-name">SF Roasters · SFCAFE</div>
+            <div class="dd-sub">Mission · San Francisco · 🇺🇸</div>
+          </div>
+          <div class="dd-right"><div class="dd-price">$0.00112</div><div class="dd-chg red">-1.3%</div></div>
+        </div>
+      </div>
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">도시 / 지역</div>
+        <div class="dd-item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0"><circle cx="10" cy="9" r="4" stroke="#a8a7a2" stroke-width="1.2"/><path d="M10 13v5" stroke="#a8a7a2" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <div class="dd-info"><div class="dd-name">서울 <span class="hl">카페</span>·음료 전체</div><div class="dd-sub">12개 상점</div></div>
+          <div class="dd-right"><div class="dd-cnt">12</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-label">상태 3 — 나라 직접 검색 "japan"</div>
+    <div class="sb">
+      <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke-linecap="round"/></svg>
+      <span class="q">japan</span>
+      <div class="x"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="dd">
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">나라</div>
+        <div class="dd-item sel">
+          <span class="dd-flag">🇯🇵</span>
+          <div class="dd-info"><div class="dd-name"><span class="hl">Japan</span> · 일본</div><div class="dd-sub">도쿄 · 오사카 · 교토 등 12개 상점</div></div>
+          <div class="dd-right"><div class="dd-cnt">12</div></div>
+        </div>
+      </div>
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">🇯🇵 일본 · 상점 · 토큰</div>
+        <div class="dd-item">
+          <span class="dd-flag">🇯🇵</span>
+          <div class="dd-info"><div class="dd-name">도쿄 카페 특구 · TKYCAFE</div><div class="dd-sub">시부야 · 도쿄 · 카페</div></div>
+          <div class="dd-right"><div class="dd-price">$0.00089</div><div class="dd-chg green">+5.2%</div></div>
+        </div>
+        <div class="dd-item">
+          <span class="dd-flag">🇯🇵</span>
+          <div class="dd-info"><div class="dd-name">오사카 라멘 골목 · OSAKAMEN</div><div class="dd-sub">난바 · 오사카 · 음식점</div></div>
+          <div class="dd-right"><div class="dd-price">$0.00054</div><div class="dd-chg green">+2.8%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-label">최근 검색어 (미입력 상태)</div>
+    <div class="sb">
+      <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke-linecap="round"/></svg>
+      <span class="ph">상점명, 토큰, 도시, 나라 검색...</span>
+      <span class="kbd">⌘K</span>
+    </div>
+    <div class="dd">
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">최근 검색</div>
+        <div class="recent-item">
+          <div class="ri-icon"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ri-text">브루밍 카페</span>
+          <button class="ri-del"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button>
+        </div>
+        <div class="recent-item">
+          <div class="ri-icon"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ri-text">성수동</span>
+          <button class="ri-del"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button>
+        </div>
+        <div class="recent-item">
+          <div class="ri-icon"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l2 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ri-text">도쿄 카페</span>
+          <button class="ri-del"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+      <div class="dd-sec">
+        <div class="dd-sec-lbl">업종으로 탐색</div>
+        <div class="cat-row">
+          <div class="chip"><div class="cdot" style="background:#E8A060"></div>카페·음료</div>
+          <div class="chip"><div class="cdot" style="background:#E85A30"></div>음식점</div>
+          <div class="chip"><div class="cdot" style="background:#1B7A4A"></div>피트니스</div>
+          <div class="chip"><div class="cdot" style="background:#884488"></div>뷰티·헤어</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="panel" id="p-sidebar">
+
+  <div class="hier-box">
+    <div style="font-size:11px;font-weight:500;margin-bottom:10px;color:#1a1917">사이드바 위치 계층 구조</div>
+    <div class="hier-row"><span class="hier-lv">레벨 0</span><span class="hier-arrow">→</span><span class="hier-ex">🌏 <span>전체 글로벌</span></span></div>
+    <div class="hier-row"><span class="hier-lv">레벨 1</span><span class="hier-arrow">→</span><span class="hier-ex">나라 · <span>🇰🇷 Korea / 🇯🇵 Japan / 🇺🇸 USA / 🇸🇬 SG / ...</span></span></div>
+    <div class="hier-row"><span class="hier-lv">레벨 2</span><span class="hier-arrow">→</span><span class="hier-ex">도시 · <span>서울 / 부산 / 도쿄 / 오사카 / New York / LA / ...</span></span></div>
+    <div class="hier-row"><span class="hier-lv">레벨 3</span><span class="hier-arrow">→</span><span class="hier-ex">지역구 · <span>마포구 / 성동구 / 시부야 / Mission / ...</span></span></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:220px 1fr;gap:14px">
+    <div>
+      <div style="font-size:11px;font-weight:500;color:#6b6a65;margin-bottom:8px">사이드바 위치 트리 (목업)</div>
+      <div class="loc-tree">
+        <div class="lt-country">
+          <div class="lt-hd selected">
+            <span class="lt-flag">🌏</span>
+            <span class="lt-name">전체 글로벌</span>
+            <span class="lt-cnt">57</span>
+          </div>
+        </div>
+        <div class="lt-country">
+          <div class="lt-hd open" onclick="this.classList.toggle('open')">
+            <span class="lt-flag">🇰🇷</span>
+            <span class="lt-name">Korea</span>
+            <span class="lt-cnt">38</span>
+            <span class="lt-arrow">›</span>
+          </div>
+          <div class="lt-cities">
+            <div class="lt-city active">서울 <span class="city-cnt">28</span></div>
+            <div class="lt-city">부산 <span class="city-cnt">6</span></div>
+            <div class="lt-city">제주 <span class="city-cnt">4</span></div>
+          </div>
+        </div>
+        <div class="lt-country">
+          <div class="lt-hd" onclick="this.classList.toggle('open')">
+            <span class="lt-flag">🇯🇵</span>
+            <span class="lt-name">Japan</span>
+            <span class="lt-cnt">12</span>
+            <span class="lt-arrow">›</span>
+          </div>
+          <div class="lt-cities">
+            <div class="lt-city">도쿄 <span class="city-cnt">8</span></div>
+            <div class="lt-city">오사카 <span class="city-cnt">4</span></div>
+          </div>
+        </div>
+        <div class="lt-country">
+          <div class="lt-hd" onclick="this.classList.toggle('open')">
+            <span class="lt-flag">🇺🇸</span>
+            <span class="lt-name">USA</span>
+            <span class="lt-cnt">7</span>
+            <span class="lt-arrow">›</span>
+          </div>
+          <div class="lt-cities">
+            <div class="lt-city">San Francisco <span class="city-cnt">4</span></div>
+            <div class="lt-city">New York <span class="city-cnt">3</span></div>
+          </div>
+        </div>
+        <div class="lt-country">
+          <div class="lt-hd" onclick="this.classList.toggle('open')">
+            <span class="lt-flag">🇸🇬</span>
+            <span class="lt-name">Singapore</span>
+            <span class="lt-cnt">5</span>
+            <span class="lt-arrow">›</span>
+          </div>
+          <div class="lt-cities">
+            <div class="lt-city">싱가포르 <span class="city-cnt">5</span></div>
+          </div>
+        </div>
+        <div style="padding:6px 8px;font-size:11px;color:#a8a7a2;cursor:pointer">+ 58개국 더보기</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:500;color:#6b6a65;margin-bottom:8px">설계 원칙</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#fff;border:0.5px solid #e3e2dc;border-radius:10px;padding:11px 13px">
+          <div style="font-size:12px;font-weight:500;margin-bottom:4px">나라 → 도시 아코디언 트리</div>
+          <div style="font-size:11px;color:#6b6a65;line-height:1.5">나라 클릭 시 도시 목록 펼쳐짐. 나라 선택만으로도 해당 국가 전체 필터링. 도시 선택 시 해당 도시만 필터링. 현재 선택 상태 강조 표시.</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e3e2dc;border-radius:10px;padding:11px 13px">
+          <div style="font-size:12px;font-weight:500;margin-bottom:4px">상점 수 카운트 실시간 표시</div>
+          <div style="font-size:11px;color:#6b6a65;line-height:1.5">각 나라·도시 옆에 상장 상점 수 표시. 필터 적용 시 카운트가 해당 조건에 맞는 수로 실시간 변경. 0개인 나라는 비활성 처리.</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e3e2dc;border-radius:10px;padding:11px 13px">
+          <div style="font-size:12px;font-weight:500;margin-bottom:4px">URL 파라미터 연동</div>
+          <div style="font-size:11px;color:#6b6a65;line-height:1.5">/markets?country=KR&city=seoul 형태. 링크 공유 시 필터 상태 그대로 전달. 뒤로가기 시 복귀 보장.</div>
+        </div>
+        <div style="background:#fff;border:0.5px solid #e3e2dc;border-radius:10px;padding:11px 13px">
+          <div style="font-size:12px;font-weight:500;margin-bottom:4px">ISO 3166-1 alpha-2 국가 코드</div>
+          <div style="font-size:11px;color:#6b6a65;line-height:1.5">KR, JP, US, SG, TW, HK, TH 등 표준 코드 사용. 국기 이모지 Unicode Regional Indicator 자동 렌더링. 한국어+영어 나라명 지원.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SPEC ===== -->
+<div class="panel" id="p-spec">
+
+  <div class="spec-sec">
+    <h3>검색 대상 — 글로벌 축 포함</h3>
+    <div class="spec-row"><div class="spec-key">상점명</div><div class="spec-val"><span class="stag must">필수</span> 한글·영문 모두. 부분 일치 지원. 예: "브루밍", "Bruming"</div></div>
+    <div class="spec-row"><div class="spec-key">토큰 심볼</div><div class="spec-val"><span class="stag must">필수</span> 영문 3~5자. 대소문자 무시. 예: "CAFE", "cafe"</div></div>
+    <div class="spec-row"><div class="spec-key">나라명</div><div class="spec-val"><span class="stag must">필수</span> 한국어+영어 모두. "korea", "일본", "japan", "미국", "usa", "KR" 등 ISO 코드도 지원</div></div>
+    <div class="spec-row"><div class="spec-key">도시명</div><div class="spec-val"><span class="stag must">필수</span> "서울", "seoul", "도쿄", "tokyo", "san francisco", "싱가포르" 등 한·영 모두</div></div>
+    <div class="spec-row"><div class="spec-key">지역구·동네</div><div class="spec-val"><span class="stag high">높음</span> 도시 내 하위 지역. "성수동", "시부야", "mission district", "홍대" 등</div></div>
+    <div class="spec-row"><div class="spec-key">업종 카테고리</div><div class="spec-val"><span class="stag high">높음</span> "카페", "음식점", "피트니스" 등. 업종 전체 결과 페이지로 연결</div></div>
+    <div class="spec-row"><div class="spec-key">복합 자연어 쿼리</div><div class="spec-val"><span class="stag unique">Starzip 고유</span> "도쿄 카페", "서울 피트니스", "tokyo cafe", "singapore hair" 등 나라+업종</div></div>
+  </div>
+
+  <div class="spec-sec">
+    <h3>위치 컨텍스트 (내 위치 설정)</h3>
+    <div class="spec-row"><div class="spec-key">위치 설정 방식</div><div class="spec-val">① 브라우저 GPS 자동 감지 (허용 시) &nbsp;·&nbsp; ② 검색창 위치 칩에서 수동 선택 &nbsp;·&nbsp; ③ 멤버십 계정에 기본 위치 저장</div></div>
+    <div class="spec-row"><div class="spec-key">위치 미설정 시</div><div class="spec-val">글로벌 전체 기본값. 드롭다운 상단에 나라 선택 섹션 우선 표시</div></div>
+    <div class="spec-row"><div class="spec-key">위치 설정 후</div><div class="spec-val">검색창에 "🇰🇷 서울" 칩 표시. 자동완성에서 해당 도시 결과 최상단. 글로벌 결과는 하단 섹션으로 분리</div></div>
+    <div class="spec-row"><div class="spec-key">위치 칩 클릭</div><div class="spec-val">나라/도시 변경 드롭다운 오픈. "🌏 전체 글로벌" 선택 시 위치 필터 해제</div></div>
+  </div>
+
+  <div class="spec-sec">
+    <h3>자동완성 드롭다운 섹션 순서</h3>
+    <div class="spec-row"><div class="spec-key">위치 설정 시</div><div class="spec-val">① [도시명] 상점·토큰 &nbsp;→&nbsp; ② [나라명] 상점·토큰 &nbsp;→&nbsp; ③ 글로벌 같은 업종 &nbsp;→&nbsp; ④ 도시/지역 바로가기</div></div>
+    <div class="spec-row"><div class="spec-key">위치 미설정 시</div><div class="spec-val">① 나라 선택 &nbsp;→&nbsp; ② 글로벌 전체 상점·토큰 &nbsp;→&nbsp; ③ 업종 카테고리 &nbsp;→&nbsp; ④ 주요 도시 바로가기</div></div>
+    <div class="spec-row"><div class="spec-key">국기 이모지 표시</div><div class="spec-val">모든 상점 결과에 국기 이모지 + 도시명. "🇰🇷 서울 · 성수동" 형식으로 위치 명확화</div></div>
+  </div>
+
+  <div class="spec-sec">
+    <h3>URL 파라미터 구조</h3>
+    <div class="spec-row"><div class="spec-key">나라 필터</div><div class="spec-val" style="font-family:monospace">/markets?country=KR</div></div>
+    <div class="spec-row"><div class="spec-key">도시 필터</div><div class="spec-val" style="font-family:monospace">/markets?country=KR&city=seoul</div></div>
+    <div class="spec-row"><div class="spec-key">검색 + 위치</div><div class="spec-val" style="font-family:monospace">/markets?q=카페&country=KR&city=seoul</div></div>
+    <div class="spec-row"><div class="spec-key">업종 + 나라</div><div class="spec-val" style="font-family:monospace">/markets?category=cafe&country=JP</div></div>
+    <div class="spec-row"><div class="spec-key">글로벌 전체</div><div class="spec-val" style="font-family:monospace">/markets (파라미터 없음 = 전체)</div></div>
+  </div>
+
+  <div style="margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:130px 1fr 1fr 1fr;gap:0;margin-bottom:4px">
+      <div class="cmp-cell" style="color:#a8a7a2;font-size:10px;padding-left:0"></div>
+      <div class="cmp-cell cmp-head" style="color:#008BAA">Hyperliquid</div>
+      <div class="cmp-cell cmp-head" style="color:#6C3CE1">dYdX</div>
+      <div class="cmp-cell cmp-head" style="color:#1B7A4A">Starzip</div>
+    </div>
+    <div class="cmp-row"><div class="cmp-cell">검색 진입</div><div class="cmp-cell">검색창 클릭</div><div class="cmp-cell cmp-good">Cmd+K 글로벌</div><div class="cmp-cell cmp-good">검색창 + Cmd+K</div></div>
+    <div class="cmp-row"><div class="cmp-cell">검색 대상</div><div class="cmp-cell">토큰 심볼만</div><div class="cmp-cell">토큰 심볼만</div><div class="cmp-cell cmp-good">심볼+상점명+나라+도시+업종</div></div>
+    <div class="cmp-row"><div class="cmp-cell">나라 검색</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-good">한국어+영어+ISO 코드</div></div>
+    <div class="cmp-row"><div class="cmp-cell">복합 자연어</div><div class="cmp-cell cmp-none">불가</div><div class="cmp-cell cmp-none">불가</div><div class="cmp-cell cmp-good">"도쿄 카페" 지원</div></div>
+    <div class="cmp-row"><div class="cmp-cell">최근 검색어</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-good">5개 저장 + 삭제</div></div>
+    <div class="cmp-row"><div class="cmp-cell">URL 반영</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-good">있음</div><div class="cmp-cell cmp-good">?q= + ?country= + ?city=</div></div>
+    <div class="cmp-row"><div class="cmp-cell">위치 칩</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-none">없음</div><div class="cmp-cell cmp-good">🇰🇷 서울 칩 + 변경 픽커</div></div>
+    <div class="cmp-row"><div class="cmp-cell">빈 상태</div><div class="cmp-cell">단순 없음</div><div class="cmp-cell">단순 없음</div><div class="cmp-cell cmp-good">유사 업종 제안 + 인접 나라</div></div>
+  </div>
+
+  <div class="note">
+    <strong>핵심 인사이트</strong> — Hyperliquid와 dYdX의 검색은 "심볼을 이미 아는 사람"을 위한 도구입니다. Starzip의 검색은 반대로 "어떤 상점이 있는지 탐색하는 사람"을 위한 도구입니다. "홍대 카페", "도쿄 피트니스" 같은 자연어 쿼리를 지원하는 것이 크립토 DEX 중 유일한 차별화 포인트입니다.
+  </div>
+</div>
+
+<!-- ===== PHASE ===== -->
+<div class="panel" id="p-phase">
+  <div style="font-size:12px;color:#6b6a65;margin-bottom:14px;line-height:1.6">글로벌 위치 구조는 상점 수에 따라 단계적으로 도입하는 것이 현실적입니다. 초기에 모든 나라 트리를 만들어도 대부분 비어있으면 오히려 신뢰를 낮춥니다.</div>
+  <div class="phase-row">
+    <div class="phase-card">
+      <h4 style="color:#1B7A4A">Phase 1 · 런치 (현재)</h4>
+      <ul>
+        <li>한국만 서비스</li>
+        <li>사이드바: 서울·부산·제주 도시만</li>
+        <li>검색: 상점명·심볼·지역구</li>
+        <li>URL: ?city=seoul 수준</li>
+        <li>카드: "성수동 · 서울" 표기</li>
+        <li>위치 칩 없음 (단순 검색창)</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <h4 style="color:#1A4FDB">Phase 2 · 아시아 확장</h4>
+      <ul>
+        <li>KR + JP + SG + TW</li>
+        <li>사이드바: 나라 아코디언 도입</li>
+        <li>검색: 나라명·도시명 추가</li>
+        <li>국기 이모지 + ISO 코드</li>
+        <li>카드: "성수동 · 서울 · 🇰🇷" 표기</li>
+        <li>위치 칩 검색창에 추가</li>
+        <li>카테고리 현지화 전략 수립</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <h4 style="color:#854F0B">Phase 3 · 글로벌</h4>
+      <ul>
+        <li>전체 글로벌 오픈</li>
+        <li>GPS 자동 위치 감지</li>
+        <li>복합 자연어 쿼리 지원</li>
+        <li>"tokyo cafe" 검색 지원</li>
+        <li>나라별 랭킹 리더보드</li>
+        <li>검색 결과 지도 뷰 (선택)</li>
+        <li>현지 업종 태그 (이자카야 등)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:14px">
+    <strong>Phase 2 진입 전 필수 결정사항</strong> — 나라가 늘어날수록 카테고리 태그 현지화가 필요합니다. 일본의 "居酒屋(이자카야)", 싱가포르의 "Hawker Center" 같이 현지 업종 개념이 글로벌 카테고리 체계에 맞지 않을 수 있습니다. Phase 2 진입 전에 카테고리 현지화 전략도 함께 정의해야 합니다.
+  </div>
+
+  <div style="margin-top:20px">
+    <div style="font-size:12px;font-weight:500;margin-bottom:10px">UX 플로우 — 검색 단계별</div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="fs-num">1</div>
+        <div class="fs-info">
+          <h4>검색 진입</h4>
+          <p>검색창 클릭 또는 Cmd+K 단축키. 마켓 어느 화면에서도 접근 가능. 진입 즉시 드롭다운 오픈 — 최근 검색어 + 업종/지역 빠른 탐색 표시.</p>
+          <div class="fs-trigger">트리거: 클릭 · Cmd+K · 모바일 탭</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num">2</div>
+        <div class="fs-info">
+          <h4>입력 전 — 빠른 탐색 제공</h4>
+          <p>최근 검색어 + 업종 카테고리 칩 + 나라/도시 목록. 검색어 없이도 카테고리·나라로 바로 진입 가능.</p>
+          <div class="fs-trigger">표시 조건: 검색창 포커스 & 입력값 없음</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num">3</div>
+        <div class="fs-info">
+          <h4>입력 중 — 실시간 자동완성</h4>
+          <p>1자 이상 입력 시 디바운스 150ms 후 API 호출. 현재 위치 상점 / 나라 전체 / 글로벌 같은 업종 3섹션으로 결과 표시. 검색어 하이라이트.</p>
+          <div class="fs-trigger">트리거: keyup (디바운스 150ms)</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num fs-num" style="background:#E6F1FB;color:#0C447C">4a</div>
+        <div class="fs-info">
+          <h4>결과 선택 — 상점 직접 클릭</h4>
+          <p>드롭다운 내 상점 항목 클릭 → /trade/CAFE 거래 화면으로 직접 이동. 가장 빠른 경로.</p>
+          <div class="fs-trigger">결과: /trade/[TOKEN] 페이지 이동</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num" style="background:#EAF3DE;color:#27500A">4b</div>
+        <div class="fs-info">
+          <h4>결과 선택 — 나라/도시 클릭</h4>
+          <p>나라 또는 도시 항목 클릭 → /markets?country=JP 또는 ?city=tokyo로 이동. 사이드바 트리 자동 동기화.</p>
+          <div class="fs-trigger">결과: /markets?country= 또는 ?city= 이동</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num" style="background:#FAEEDA;color:#633806">4c</div>
+        <div class="fs-info">
+          <h4>결과 선택 — Enter / 전체 결과 보기</h4>
+          <p>Enter 또는 전체 결과 보기 → /markets?q=[검색어]. URL 반영으로 공유 가능, 뒤로가기 복귀 가능.</p>
+          <div class="fs-trigger">결과: /markets?q=[검색어] 이동</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num" style="background:#FCEBEB;color:#A32D2D">5</div>
+        <div class="fs-info">
+          <h4>결과 없음 처리</h4>
+          <p>매칭 결과 0개 → 유사 업종 칩 제안 + "상점을 직접 제안하기" CTA. 글로벌의 경우 인접 나라 추천도 함께 표시.</p>
+          <div class="fs-trigger">조건: API 응답 결과 count === 0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function sw(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+document.querySelectorAll('.lt-hd').forEach(hd=>{
+  if(!hd.classList.contains('selected'))
+    hd.addEventListener('click',function(){this.classList.toggle('open')});
+});
+</script>
+</body>
+</html>
