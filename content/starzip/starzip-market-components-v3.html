@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 마켓 구성요소 정리 v3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+
+.zp{display:none}.zp.on{display:block}
+
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover{border-color:#d0cfc8}
+.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-upd{background:#EAF3DE;color:#27500A}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-hl{color:#008BAA}
+.src-dy{color:#6C3CE1}
+.src-bn{color:#C89A09}
+.src-st{color:#1B7A4A}
+.src-bl{color:#1A4FDB}
+
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dcols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+.snb{font-size:9px;padding:2px 8px;border-radius:3px;font-weight:600;background:#E6F1FB;color:#0C447C}
+
+.foot{display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff;transition:border-color .1s}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+.ft strong{color:#1a1917}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip 마켓 구성요소 정리 v3</h1>
+  <p>v5 화면 기준 · A. 상단 바 (3) · B. 검색 (4) · C. 사이드바 (3) · D. 데이터 표시 (5) · E. 탐색·정렬 (2) · F. 하단 바 (3) · G. 액션·유틸 (3) · 총 24개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on"  onclick="sw('all',this)">전체 (24개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 상단 바</button>
+  <button class="zt" onclick="sw('b',this)">B. 검색</button>
+  <button class="zt" onclick="sw('c',this)">C. 사이드바</button>
+  <button class="zt" onclick="sw('d',this)">D. 데이터 표시</button>
+  <button class="zt" onclick="sw('e',this)">E. 탐색·정렬</button>
+  <button class="zt" onclick="sw('f',this)">F. 하단 바 ✦</button>
+  <button class="zt" onclick="sw('g',this)">G. 액션·유틸</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- A -->
+<div class="sec">A. 상단 바 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">글로벌 내비게이션 바</div>
+    <div class="desc">로고·주요 메뉴·지갑 연결·DUST 잔액·멤버십 상태</div>
+    <div class="pri must">필수</div><div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>포함 요소</h5><ul><li>STARZIP 로고 + 별 아이콘</li><li>Markets / Trade / Launchpad / Portfolio / DAO</li><li>DUST 잔액 칩 (실시간)</li><li>지갑 연결 버튼</li><li>멤버십 로그인 상태</li></ul></div>
+    <div class="dc"><h5>상태 변형</h5><ul><li>미로그인: 지갑 연결하기 CTA</li><li>로그인: 주소 단축 + DUST 뱃지</li><li>활성 탭 언더라인</li><li>Sticky — 스크롤 상단 고정</li></ul></div>
+    <div class="dc"><h5>v5 변경</h5><ul><li>다크 모드: 더 짙은 #0A0A0E 배경</li><li>하단 바 추가로 body padding-bottom</li><li>테마 전환 버튼 → 하단 바로 이동</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">실시간 통계 바</div>
+    <div class="desc">24H 거래량·상장 수·런치패드·STAR·참여국 인라인 (Hyperliquid식)</div>
+    <div class="pri must">필수</div><div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>표시 항목</h5><ul><li>24H 거래량 + 전일 대비</li><li>상장 상점 수 + 주간 신규</li><li>런치패드 진행 수</li><li>STAR 가격 + 24H 변동</li><li>참여국 수 + 국가 코드</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>WebSocket 실시간 업데이트</li><li>LIVE 도트 애니메이션</li><li>가로 스크롤 (모바일)</li><li>Sticky top:52px</li></ul></div>
+    <div class="dc"><h5>다크 모드</h5><ul><li>배경 #0A0A0E</li><li>텍스트 rgba(255,255,255,.85)</li><li>구분선 rgba(255,255,255,.08)</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">트렌딩 상점 스트립</div>
+    <div class="desc">TOP 5 상점 가로 스크롤, 상점명+업종+도시+국기 (Binance식)</div>
+    <div class="pri must">필수</div><div class="src src-bn">BN 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>포함 요소</h5><ul><li>순위 번호 (1~5)</li><li>상점 컬러 썸네일</li><li>상점명 + 업종·도시·국기</li><li>24H 가격 변동률</li></ul></div>
+    <div class="dc"><h5>글로벌 표기</h5><ul><li>국기 이모지 필수</li><li>서울·🇰🇷 / 도쿄·🇯🇵 / SF·🇺🇸</li><li>글로벌 / 나라별 랭킹 탭</li></ul></div>
+    <div class="dc"><h5>다크 모드</h5><ul><li>배경 #12121A</li><li>카드 border #1E1E28</li><li>Sticky top:90px</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- B -->
+<div class="sec">B. 검색 영역 <span class="snb">신규 섹션</span> <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">B1</div>
+    <div class="nm">검색창 + 위치 칩 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">상점명·토큰·도시·나라 통합 검색 + 위치 컨텍스트 칩</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>검색 대상</h5><ul><li>상점명 (한·영 부분 일치)</li><li>토큰 심볼 (대소문자 무시)</li><li>나라명 (korea, 일본, KR)</li><li>도시명 (서울, tokyo, sf)</li><li>지역구 (성수동, 시부야)</li><li>복합 쿼리 (도쿄 카페)</li></ul></div>
+    <div class="dc"><h5>위치 칩</h5><ul><li>검색창 좌측 🇰🇷 서울 표시</li><li>클릭 → 나라/도시 픽커</li><li>GPS 자동 감지 (허용 시)</li><li>🌏 전체 글로벌로 해제</li><li>멤버십 계정에 저장</li></ul></div>
+    <div class="dc"><h5>UX 동작</h5><ul><li>Cmd+K 글로벌 단축키</li><li>1자 입력부터 자동완성</li><li>디바운스 150ms</li><li>↑↓ 키보드 내비게이션</li><li>검색어 노란 하이라이트</li><li>X 버튼 즉시 초기화</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">B2</div>
+    <div class="nm">자동완성 드롭다운 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">나라·도시·상점 3섹션, 위치 설정에 따라 동적 변화</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>위치 미설정 섹션</h5><ul><li>① 나라 선택 (국기+상점수)</li><li>② 글로벌 상점·토큰</li><li>③ 업종 카테고리 칩</li><li>④ 주요 도시 바로가기</li></ul></div>
+    <div class="dc"><h5>위치 설정 후 섹션</h5><ul><li>① [현재 도시] 상점 결과</li><li>② [현재 나라] 전체 결과</li><li>③ 글로벌 같은 업종</li><li>④ 도시/지역 바로가기</li></ul></div>
+    <div class="dc"><h5>결과 아이템</h5><ul><li>국기 + 티커 썸네일</li><li>상점명 하이라이트</li><li>도시·나라 서브텍스트</li><li>가격 + 24H 변동</li><li>런치패드/신규 뱃지</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">B3</div>
+    <div class="nm">최근 검색어 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">최근 5개 저장, 검색창 포커스 시 자동 표시, 개별 삭제</div>
+    <div class="pri high">높음</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>저장</h5><ul><li>검색어 + 시간</li><li>최대 5개 FIFO</li><li>localStorage 저장</li><li>멤버십 로그인 시 서버 동기화</li></ul></div>
+    <div class="dc"><h5>표시 조건</h5><ul><li>포커스 + 입력값 없을 때</li><li>시계 아이콘 + 텍스트</li><li>호버 시 X 버튼 노출</li><li>전체 삭제 링크</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>클릭 → 즉시 검색</li><li>X → 해당 항목 삭제</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">B4</div>
+    <div class="nm">검색 결과 페이지 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">/markets?q=... URL 연동, 검색+필터 복합 적용, 현재 뷰 유지</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>URL 파라미터</h5><ul><li>?q=카페</li><li>?country=KR</li><li>?city=seoul</li><li>?category=cafe</li><li>복합: ?q=카페&country=KR&city=seoul</li></ul></div>
+    <div class="dc"><h5>결과 표시</h5><ul><li>현재 뷰 그대로 유지</li><li>결과 수 컨텍스트 표시</li><li>X → 전체 목록 복귀</li><li>사이드바 필터 동시 적용</li></ul></div>
+    <div class="dc"><h5>빈 상태</h5><ul><li>유사 업종 칩 제안</li><li>상점 제안하기 CTA</li><li>필터 초기화 버튼</li><li>인접 나라 추천 (글로벌)</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- C -->
+<div class="sec">C. 사이드바 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">C1</div>
+    <div class="nm">글로벌 위치 트리 <span class="nb nb-upd">UPDATED</span></div>
+    <div class="desc">나라 → 도시 아코디언, 상점 수 카운트 실시간, ISO 국기 이모지</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>위치 계층</h5><ul><li>레벨 0: 🌏 전체 글로벌</li><li>레벨 1: 🇰🇷 Korea / 🇯🇵 Japan / 🇺🇸 USA / 🇸🇬 SG</li><li>레벨 2: 서울 / 도쿄 / SF / ...</li><li>레벨 3: 성수동 / 시부야 / ...</li><li>+ N개국 더보기 링크</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>나라 클릭 → 도시 목록 펼침</li><li>도시 클릭 → 해당 도시 필터</li><li>선택 상태 강조 표시</li><li>상점 수 카운트 실시간 갱신</li></ul></div>
+    <div class="dc"><h5>URL 연동</h5><ul><li>?country=KR&city=seoul</li><li>뒤로가기 복귀 보장</li><li>링크 공유 시 필터 유지</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">C2</div>
+    <div class="nm">카테고리 필터</div>
+    <div class="desc">업종별 필터 (전체·카페·음식점·뷰티·피트니스·서점)</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>카테고리</h5><ul><li>전체 / 카페·음료</li><li>음식점 / 뷰티·헤어</li><li>피트니스 / 서점·문화</li><li>각 카운트 실시간 반영</li></ul></div>
+    <div class="dc"><h5>글로벌 확장</h5><ul><li>나라별 현지 업종 태그</li><li>이자카야(JP), Hawker(SG)</li><li>Phase 2 진입 시 현지화</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>클릭 즉시 필터링</li><li>위치 트리 연동</li><li>?category= URL 반영</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">C3</div>
+    <div class="nm">상태 필터</div>
+    <div class="desc">런치패드 오픈·신규 7일·24H 상승 빠른 접근</div>
+    <div class="pri high">높음</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>필터 목록</h5><ul><li>런치패드 오픈 (카운트)</li><li>신규 7일</li><li>24H 상승 상위</li><li>즐겨찾기 ★</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>클릭 즉시 필터링</li><li>카운트 실시간 반영</li><li>카테고리·위치 필터 AND 조합</li></ul></div>
+    <div class="dc"><h5>표시</h5><ul><li>사이드바 하단 섹션</li><li>아이콘 + 텍스트 + 카운트</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- D -->
+<div class="sec">D. 데이터 표시 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D1</div>
+    <div class="nm">상태 탭 바</div>
+    <div class="desc">전체·거래량상위·런치패드·신규·즐겨찾기 (dYdX식)</div>
+    <div class="pri must">필수</div><div class="src src-dy">dYdX 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>탭 목록</h5><ul><li>전체 (카운트)</li><li>거래량 상위</li><li>런치패드 진행중</li><li>신규 상장 7일</li><li>즐겨찾기 ★</li></ul></div>
+    <div class="dc"><h5>탭 상태</h5><ul><li>컬러 도트로 성격 구분</li><li>카운트 뱃지 실시간</li><li>위치·카테고리 필터 연동</li></ul></div>
+    <div class="dc"><h5>다크 모드</h5><ul><li>탭 배경 #222228</li><li>활성: #2A2A32 + 텍스트 강조</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D2</div>
+    <div class="nm">뷰 전환 토글</div>
+    <div class="desc">상세 카드 / 컴팩트 그리드 / 리스트 3가지 뷰</div>
+    <div class="pri high">높음</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>상세 카드 뷰</h5><ul><li>Featured 2개 대형 (148px 썸네일)</li><li>3열 소형 카드</li><li>티커 강조 3레이어 구조</li><li>런치패드 진행률 바</li></ul></div>
+    <div class="dc"><h5>컴팩트 그리드</h5><ul><li>4열 소형 카드</li><li>68px 썸네일 + 티커 pill</li><li>가격·변동률만 표시</li></ul></div>
+    <div class="dc"><h5>리스트 뷰</h5><ul><li>46px 미니 썸네일 + 티커 유지</li><li>국기·도시·업종 인라인</li><li>스파크라인 + 런치패드 미니 바</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D3</div>
+    <div class="nm">상점 카드 썸네일 (티커 강조) <span class="nb nb-upd">UPDATED</span></div>
+    <div class="desc">워터마크 + 위치 배지 + 티커 pill 3레이어 구조</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>3레이어 구조</h5><ul><li>레이어1: 단색 배경 (업종별 팔레트)</li><li>레이어2: 워터마크 — 초대형 티커 opacity 8%</li><li>레이어3: 티커 pill — 좌하단 강조 표시</li></ul></div>
+    <div class="dc"><h5>티커 pill</h5><ul><li>대형 카드: 15px 모노폰트</li><li>소형 카드: 11px</li><li>컴팩트: 11px</li><li>라이트 bg → 어두운 반투명</li><li>다크 bg → 밝은 반투명</li></ul></div>
+    <div class="dc"><h5>오버레이 요소</h5><ul><li>상태 뱃지 (좌상단)</li><li>즐겨찾기 하트 (우상단)</li><li>위치 배지 (티커 pill 위)</li><li>다크 모드: opacity 조정</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D4</div>
+    <div class="nm">런치패드 진행률 바</div>
+    <div class="desc">공모 상점 인라인 표시, 소프트캡·STAR 부스트 포함</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>바 요소</h5><ul><li>진행률 % + 현재/목표 금액</li><li>소프트캡(30%) 구분선</li><li>달성 뱃지 (초록)</li></ul></div>
+    <div class="dc"><h5>추가 정보</h5><ul><li>STAR 스테이킹 부스트 배율</li><li>종료까지 남은 시간</li><li>참여자 수</li></ul></div>
+    <div class="dc"><h5>표시 위치</h5><ul><li>대형 카드: 전체 폭</li><li>소형 카드: 가격 행 아래</li><li>리스트: 상태 컬럼 내 미니</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D5</div>
+    <div class="nm">7일 스파크라인</div>
+    <div class="desc">가격 추이 미니 차트, 상승/하락 컬러 (리스트 뷰 전용)</div>
+    <div class="pri high">높음</div><div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>규격</h5><ul><li>56×20px SVG 폴리라인</li><li>상승: 초록, 하락: 빨강</li><li>다크 모드: 채도 높게 조정</li></ul></div>
+    <div class="dc"><h5>데이터</h5><ul><li>7일 일봉 종가 기준</li><li>WebSocket 실시간 반영</li></ul></div>
+    <div class="dc"><h5>위치</h5><ul><li>리스트 뷰 마지막 컬럼</li><li>카드 뷰: 생략 (메트릭 대체)</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- E -->
+<div class="sec">E. 탐색·정렬 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">E1</div>
+    <div class="nm">정렬 버튼</div>
+    <div class="desc">거래량·가격·변동률·신규·나라별 그룹핑 정렬</div>
+    <div class="pri high">높음</div><div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>정렬 기준</h5><ul><li>24H 거래량 (기본)</li><li>시가총액 / 변동률</li><li>신규 상장 순서</li><li>월 고객 수</li></ul></div>
+    <div class="dc"><h5>글로벌 옵션</h5><ul><li>나라별 그룹핑 토글</li><li>런치패드 진행률 높은 순</li><li>STAR 부스트 배율 순</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>오름/내림 토글</li><li>현재 기준 표시</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">E2</div>
+    <div class="nm">페이지네이션 / 더보기</div>
+    <div class="desc">뷰 타입별 페이지 처리, 로딩 스켈레톤, URL 상태 보존</div>
+    <div class="pri med">중간</div><div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>뷰별 방식</h5><ul><li>카드: 더 보기 버튼</li><li>리스트: 페이지네이션</li><li>컴팩트: 무한 스크롤</li></ul></div>
+    <div class="dc"><h5>로딩</h5><ul><li>스켈레톤 카드/행</li><li>레이아웃 이탈 방지</li></ul></div>
+    <div class="dc"><h5>상태 보존</h5><ul><li>필터·정렬 URL 반영</li><li>뒤로가기 스크롤 복원</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- F -->
+<div class="sec">F. 하단 기능 바 영역 <span class="snb">신규 섹션</span> <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">F1</div>
+    <div class="nm">하단 기능 바 (Bottom Bar) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">Binance DEX식 가로 스크롤 기능 메뉴, 좌측 툴·우측 유틸</div>
+    <div class="pri must">필수</div><div class="src src-bn">BN DEX 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>좌측 기능 메뉴</h5><ul><li>Price Alert — 가격 알림 설정</li><li>Watchlist — 관심 상점 목록</li><li>Markets Tracker — 마켓 현황</li><li>Meme Tracker — 밈 토큰 트래커</li><li>Wallet Tracker — 지갑 추적</li><li>Social Tracker — 소셜 지표</li><li>My Positions — 내 보유 포지션</li><li>Signal — 트레이딩 시그널</li><li>AI Assistant — AI 도우미</li></ul></div>
+    <div class="dc"><h5>우측 유틸리티</h5><ul><li>Stable 상태 도트 (초록)</li><li>다크/라이트 테마 전환 버튼</li><li>Feedback 버튼</li><li>About 링크</li></ul></div>
+    <div class="dc"><h5>레이아웃 규칙</h5><ul><li>position: fixed; bottom:0</li><li>높이 52px</li><li>좌측: 가로 스크롤 가능</li><li>우측: 항상 고정 노출</li><li>body padding-bottom: 52px</li><li>다크 모드: #0A0A0E 배경</li><li>z-index: 500</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">F2</div>
+    <div class="nm">다크/라이트 테마 전환 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">하단 바 우측 배치, localStorage 저장, 전체 CSS 변수 전환</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>라이트 모드 팔레트</h5><ul><li>--bg: #F4F3EE</li><li>--surface: #FFFFFF</li><li>--tp: #18171A</li><li>Nav: --tp 배경</li></ul></div>
+    <div class="dc"><h5>다크 모드 팔레트</h5><ul><li>--bg: #0F0F12</li><li>--surface: #18181C</li><li>--tp: #E8E8F0</li><li>Nav: #0A0A0E / Stats: #0A0A0E / Trend: #12121A</li></ul></div>
+    <div class="dc"><h5>UX</h5><ul><li>아이콘: 태양(라이트) / 달(다크)</li><li>localStorage('sz-theme') 저장</li><li>새로고침 후 유지</li><li>html.dark 클래스 토글</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">F3</div>
+    <div class="nm">시스템 상태 표시 (Stable) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">플랫폼 정상 동작 여부 실시간 표시, 하단 바 우측</div>
+    <div class="pri high">높음</div><div class="src src-bn">BN DEX 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>상태 종류</h5><ul><li>Stable (초록 도트)</li><li>Degraded (주황 도트)</li><li>Incident (빨강 도트 + 점멸)</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>WebSocket 상태 체크</li><li>클릭 → 상태 페이지 이동</li><li>Incident 시 팝업 배너</li></ul></div>
+    <div class="dc"><h5>표시</h5><ul><li>초록 배경 pill</li><li>도트 + "Stable" 텍스트</li><li>하단 바 우측 고정</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- G -->
+<div class="sec">G. 액션·유틸 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G1</div>
+    <div class="nm">즐겨찾기 (하트)</div>
+    <div class="desc">카드·리스트 행 즐겨찾기 토글, 멤버십 계정 저장</div>
+    <div class="pri high">높음</div><div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>표시 위치</h5><ul><li>대형 카드: 썸네일 우상단</li><li>소형 카드: 썸네일 우상단</li><li>리스트: 호버 시 노출</li></ul></div>
+    <div class="dc"><h5>동작</h5><ul><li>낙관적 업데이트 즉시 반영</li><li>즐겨찾기 탭 자동 추가</li><li>멤버십 계정 서버 저장</li></ul></div>
+    <div class="dc"><h5>상태</h5><ul><li>빈 하트: 미즐겨찾기</li><li>빨간 하트: 완료</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G2</div>
+    <div class="nm">상태 뱃지 시스템</div>
+    <div class="desc">거래중·런치패드·신규·공시 경고 컬러 코딩</div>
+    <div class="pri must">필수</div><div class="src src-st">Starzip 고유</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>뱃지 종류</h5><ul><li>거래중 (초록) — live 도트</li><li>런치패드 (파랑)</li><li>신규 (주황) — 7일 이내</li><li>공시 경고 (빨강)</li></ul></div>
+    <div class="dc"><h5>우선순위</h5><ul><li>런치패드 > 신규 > 거래중</li><li>공시 경고 별도 오버레이</li></ul></div>
+    <div class="dc"><h5>다크 모드</h5><ul><li>배경 더 어둡게 조정</li><li>텍스트 채도 유지</li></ul></div>
+  </div></div>
+</div>
+
+<div class="row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G3</div>
+    <div class="nm">빈 상태 (Empty State)</div>
+    <div class="desc">검색/필터 없음·해당 나라 상점 없음·즐겨찾기 없음 처리</div>
+    <div class="pri med">중간</div><div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dcols">
+    <div class="dc"><h5>케이스</h5><ul><li>검색 결과 없음</li><li>필터 결과 없음</li><li>해당 나라/도시 상점 없음</li><li>즐겨찾기 미등록</li></ul></div>
+    <div class="dc"><h5>처리</h5><ul><li>유사 업종 칩 제안</li><li>필터 초기화 CTA</li><li>상점 제안하기 링크</li></ul></div>
+    <div class="dc"><h5>글로벌 케이스</h5><ul><li>[나라]에 상점이 없어요</li><li>인접 나라 추천</li><li>글로벌 전체 보기 CTA</li></ul></div>
+  </div></div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 상단 바<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1A4FDB"></div>B. 검색<span class="fc">4</span><span class="nb nb-new" style="margin-left:2px">신규</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#1B7A4A"></div>C. 사이드바<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('d',document.querySelectorAll('.zt')[4])"><div class="fd" style="background:#854F0B"></div>D. 데이터<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('e',document.querySelectorAll('.zt')[5])"><div class="fd" style="background:#A32D2D"></div>E. 탐색<span class="fc">2</span></div>
+  <div class="fp" onclick="sw('f',document.querySelectorAll('.zt')[6])"><div class="fd" style="background:#0C447C"></div>F. 하단 바<span class="fc">3</span><span class="nb nb-new" style="margin-left:2px">신규</span></div>
+  <div class="fp" onclick="sw('g',document.querySelectorAll('.zt')[7])"><div class="fd" style="background:#444441"></div>G. 액션<span class="fc">3</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">13</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">7</span></div>
+  <div class="fp" style="background:#EAF3DE;border-color:#C0DD97"><span style="color:#27500A">중간</span><span class="fc" style="color:#27500A">4</span></div>
+  <div class="ft">총 <strong>24개</strong> 구성요소</div>
+</div>
+
+</div>
+
+<!-- FILTERED PANELS -->
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+<div class="zp" id="z-d"></div>
+<div class="zp" id="z-e"></div>
+<div class="zp" id="z-f"></div>
+<div class="zp" id="z-g"></div>
+
+</div>
+
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return}
+  const prefMap={a:'A',b:'B',c:'C',d:'D',e:'E',f:'F',g:'G'};
+  const pref=prefMap[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>
