@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 브루밍 카페 CAFE</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p50:#EFF4FF;--p100:#D1E0FF;--p300:#84ADFF;--p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s700:#027A48;
+  --e50:#FEF3F2;--e500:#F04438;--e700:#B42318;
+  --w50:#FFFAEB;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--g0);color:var(--g900);font-size:14px;line-height:1.5;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+
+/* ══ TOPNAV ══ */
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:var(--g0);border-bottom:1px solid var(--g200);
+  height:48px;display:flex;align-items:center;padding:0 16px;gap:8px;
+}
+.nav-search{
+  display:flex;align-items:center;gap:6px;
+  background:var(--g50);border:1px solid var(--g200);
+  border-radius:8px;padding:6px 12px;
+  font-size:13px;color:var(--g400);cursor:pointer;
+  min-width:180px;
+}
+.nav-sep{width:1px;height:16px;background:var(--g200);margin:0 4px}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-chip{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:5px 10px;border-radius:20px}
+.nav-dust{background:var(--w50);border:1px solid #FEDF89;color:var(--w700)}
+.nav-bal{background:var(--g50);border:1px solid var(--g200);color:var(--g700)}
+.nav-flag{font-size:18px;cursor:pointer}
+.nav-icon{width:28px;height:28px;border-radius:6px;background:var(--g50);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;color:var(--g500);cursor:pointer;font-size:13px}
+
+/* ══ 메인 ══ */
+.page{max-width:1140px;margin:0 auto;padding:0 16px 80px}
+
+/* ══ 토큰 헤더 ══ */
+.token-header{display:flex;align-items:flex-start;gap:10px;padding:14px 0 8px}
+.th-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#C8B498,#A08060);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.th-name{font-size:15px;font-weight:700;color:var(--g900)}
+.th-sym{font-size:14px;font-weight:500;color:var(--g500);margin-left:4px}
+.th-actions{display:flex;gap:6px;align-items:center;margin-left:8px}
+.th-btn{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--g200);background:var(--g0);cursor:pointer;color:var(--g500);font-size:12px;transition:all .12s}
+.th-btn:hover{background:var(--g50)}
+.th-tags{display:flex;gap:5px;margin-top:3px;align-items:center}
+.tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.03em}
+.tag-token{background:var(--g100);color:var(--g600)}
+.tag-chain{background:var(--p50);color:var(--p600);display:flex;align-items:center;gap:3px}
+.tag-new{background:var(--s50);color:var(--s700);border:1px solid var(--s200)}
+.tag-days{font-size:10px;color:var(--g400)}
+
+/* 가격 블록 */
+.price-row{padding:4px 0 10px}
+.price-main{font-size:28px;font-weight:800;color:var(--g900);font-family:var(--mono);letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.price-change{font-size:14px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--s50);color:var(--s700)}
+.price-change.neg{background:var(--e50);color:var(--e700)}
+.price-fdv{font-size:12px;color:var(--g500);margin-top:3px;display:flex;gap:10px}
+.price-fdv strong{color:var(--g700);font-weight:600}
+
+/* ══ 2컬럼 ══ */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+
+/* ══ LEFT ══ */
+.left{}
+
+/* 차트 */
+.chart-block{margin-bottom:0}
+.chart-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px}
+.cm-left{display:flex;gap:14px;font-size:11px;font-family:var(--mono)}
+.cm-left span{color:var(--g500)}
+.cm-left b{color:var(--g800)}
+.cm-right{display:flex;align-items:center;gap:8px}
+.tf-sel{padding:4px 10px;border-radius:6px;border:1px solid var(--g200);background:var(--g0);font-size:12px;color:var(--g600);cursor:pointer;display:flex;align-items:center;gap:4px}
+.tf-sel:hover{background:var(--g50)}
+.chart-wrap{position:relative;height:240px;border-radius:12px;overflow:hidden;border:1px solid var(--g100)}
+canvas#cv{position:absolute;inset:0;width:100%;height:100%}
+
+/* 통계 바 */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  border:1px solid var(--g200);border-radius:12px;
+  margin:12px 0 16px;overflow:hidden;
+}
+.sbar-item{padding:10px 14px;border-right:1px solid var(--g200)}
+.sbar-item:last-child{border-right:none}
+.sbar-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:3px}
+.sbar-val{font-size:15px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.sbar-val.pos{color:var(--s500)}
+.sbar-val.neg{color:var(--e500)}
+
+/* 탭 */
+.tabs{display:flex;border-bottom:1px solid var(--g200);margin-bottom:16px}
+.tab{padding:10px 16px;font-size:14px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.tab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.tab:hover:not(.on){color:var(--g700)}
+
+/* tab contents */
+.tc{display:none}.tc.on{display:block}
+
+/* Overview */
+.overview-text{font-size:14px;color:var(--g600);line-height:1.7;margin-bottom:14px}
+.read-more{font-weight:600;color:var(--g900);cursor:pointer;text-decoration:underline}
+.addr-box{border:1px solid var(--g200);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.addr-title{font-size:12px;font-weight:700;color:var(--g800);margin-bottom:10px}
+.addr-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.addr-item{display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--g600)}
+.addr-ico{color:var(--g400);flex-shrink:0;margin-top:1px}
+.addr-link{color:var(--p600);cursor:pointer;text-decoration:none}
+.open-badge{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--s50);color:var(--s700);border:1px solid var(--s200);margin-left:6px}
+
+/* 사진 그리드 */
+.photo-grid{
+  display:grid;
+  grid-template-columns:1fr 280px;
+  grid-template-rows:175px 175px;
+  gap:4px;border-radius:12px;overflow:hidden;
+  margin-bottom:16px;
+}
+.photo-main{grid-row:1/3;background:linear-gradient(160deg,#C8B498,#9A7050);position:relative;display:flex;align-items:center;justify-content:center}
+.photo-sub{background:linear-gradient(160deg,#D4C4A8,#B09070);position:relative;display:flex;align-items:center;justify-content:center}
+.photo-sub:nth-child(3){background:linear-gradient(160deg,#BCA88A,#9A7050)}
+.photo-sub:nth-child(4){background:linear-gradient(160deg,#CAB498,#A88060);position:relative}
+.pwm{font-size:52px;font-weight:900;color:rgba(255,255,255,.12);user-select:none;letter-spacing:-3px}
+.pwm-sm{font-size:38px;font-weight:900;color:rgba(255,255,255,.12);user-select:none}
+.photo-cnt{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;backdrop-filter:blur(8px);cursor:pointer}
+.photo-loc{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.45);color:#fff;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;backdrop-filter:blur(8px)}
+
+/* Amenities */
+.amen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.amen-card{background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px}
+.amen-ico{font-size:20px;flex-shrink:0}
+.amen-name{font-size:13px;font-weight:500;color:var(--g800)}
+.amen-sub{font-size:11px;color:var(--g500)}
+
+/* Reviews */
+.rv-sort{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.rsb{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.rsb.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.rv-item{padding:14px 0;border-bottom:1px solid var(--g100)}
+.rv-item:last-child{border-bottom:none}
+.rv-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rv-ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.rv-nm{font-size:13px;font-weight:600;color:var(--g800)}
+.rv-meta{font-size:11px;color:var(--g400);margin-top:1px}
+.rv-date{font-size:12px;color:var(--g400);margin-left:auto}
+.rv-stars{color:#F79009;font-size:13px;margin-bottom:4px}
+.rv-txt{font-size:13px;color:var(--g600);line-height:1.6}
+
+/* Location */
+.loc-box{background:var(--g50);border:1px solid var(--g200);border-radius:12px;height:200px;display:flex;align-items:center;justify-content:center;color:var(--g400);font-size:13px;margin-bottom:14px}
+
+/* ══ RIGHT: 주문 패널 ══ */
+.right-col{position:sticky;top:56px}
+
+.order-card{border:1px solid var(--g200);border-radius:16px;overflow:hidden;background:var(--g0)}
+
+/* Buy/Sell 탭 행 */
+.bs-header{display:flex;align-items:center;border-bottom:1px solid var(--g200)}
+.bsh-tab{flex:0;padding:11px 20px;font-size:14px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--g500);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.bsh-tab.on-buy{color:var(--p600);border-bottom-color:var(--p600)}
+.bsh-tab.on-sell{color:var(--e500);border-bottom-color:var(--e500)}
+.bsh-right{margin-left:auto;display:flex;align-items:center;gap:6px;padding:0 12px}
+.bsh-auto{font-size:11px;font-weight:500;padding:3px 8px;border-radius:6px;background:var(--g100);color:var(--g600);border:none;cursor:pointer}
+.bsh-pct{font-size:12px;color:var(--g500);font-family:var(--mono)}
+.bsh-gear{font-size:13px;color:var(--g400);cursor:pointer}
+
+/* Pay with */
+.pw-section{padding:12px 14px}
+.pw-label{font-size:11px;font-weight:500;color:var(--g500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.pw-box{
+  border:1px solid var(--g200);border-radius:10px;
+  padding:10px 12px;background:var(--g50);
+  display:flex;align-items:flex-end;justify-content:space-between;
+}
+.pw-left{flex:1}
+.pw-input{
+  font-size:26px;font-weight:700;font-family:var(--mono);color:var(--g900);
+  background:transparent;border:none;outline:none;width:100%;
+  line-height:1.1;margin-bottom:2px;
+}
+.pw-usd{font-size:12px;color:var(--g400);font-family:var(--mono)}
+.pw-token{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.pw-tok-ico{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#C8B498,#9A7050);flex-shrink:0}
+.pw-tok-name{font-size:14px;font-weight:600;color:var(--g900)}
+.pw-tok-arrow{color:var(--g400);font-size:10px}
+.pw-tok-bal{font-size:11px;color:var(--g400);font-family:var(--mono);margin-top:2px;text-align:right}
+
+/* 화살표 */
+.swap-arrow{display:flex;justify-content:center;padding:6px 0}
+.swap-arrow-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--g200);background:var(--g0);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--g500);font-size:14px;transition:all .12s}
+.swap-arrow-btn:hover{background:var(--g50);border-color:var(--g300)}
+
+/* Receive */
+.rc-section{padding:0 14px 12px}
+.rc-box{
+  border:1px solid var(--g200);border-radius:10px;
+  padding:10px 12px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+}
+.rc-val{font-size:26px;font-weight:700;font-family:var(--mono);color:var(--g300);line-height:1.1;margin-bottom:2px}
+.rc-usd{font-size:12px;color:var(--g400);font-family:var(--mono)}
+.rc-token{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.rc-ico{width:20px;height:20px;border-radius:50%;background:var(--p100);flex-shrink:0}
+.rc-nm{font-size:14px;font-weight:600;color:var(--g900)}
+
+/* 실행 버튼 */
+.exec-section{padding:0 14px 14px}
+.exec-btn{
+  width:100%;padding:12px 0;border-radius:10px;
+  font-size:15px;font-weight:700;border:none;cursor:pointer;
+  transition:all .12s;
+}
+.exec-btn.buy{background:var(--p500);color:#fff}
+.exec-btn.buy:hover{background:var(--p700)}
+.exec-btn.sell{background:var(--e500);color:#fff}
+.exec-btn.sell:hover{background:var(--e700)}
+
+/* 요약 */
+.order-info{padding:0 14px 12px;border-top:1px solid var(--g100)}
+.oi-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:12px}
+.oi-lbl{color:var(--g500)}
+.oi-val{color:var(--g800);font-weight:500;font-family:var(--mono)}
+.oi-div{height:1px;background:var(--g100);margin:2px 0}
+.dust-row2{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
+.dust-lbl2{font-size:12px;color:var(--g500);display:flex;align-items:center;gap:4px}
+.wdot{width:5px;height:5px;border-radius:50%;background:var(--w500)}
+.dust-val2{font-size:12px;font-weight:700;color:var(--w700);font-family:var(--mono)}
+
+/* 런치패드 배너 */
+.lp-card{border:1px solid var(--p100);border-radius:12px;overflow:hidden;margin-top:10px;background:var(--g0)}
+.lp-inner{padding:10px 14px;background:linear-gradient(135deg,rgba(41,112,255,.04),rgba(41,112,255,.02))}
+.lp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lp-title{font-size:12px;font-weight:700;color:var(--p700)}
+.lp-timer{font-size:12px;font-family:var(--mono);font-weight:500;color:var(--p500)}
+.lp-bar-bg{height:4px;background:var(--p100);border-radius:4px;overflow:hidden;margin-bottom:5px}
+.lp-bar{height:100%;width:68%;background:var(--p500);border-radius:4px}
+.lp-bot{display:flex;align-items:center;justify-content:space-between}
+.lp-amt{font-size:11px;color:var(--p600);font-family:var(--mono)}
+.lp-boost{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--p100);color:var(--p700)}
+
+/* ══ FOOTER ══ */
+.footer{
+  border-top:1px solid var(--g200);
+  background:var(--g0);
+  padding:0 16px;
+  height:44px;display:flex;align-items:center;gap:14px;
+  font-size:12px;color:var(--g500);
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+}
+.fl-live{display:flex;align-items:center;gap:5px;font-weight:500;color:var(--s700)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--s500);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fp-sep{width:1px;height:14px;background:var(--g200)}
+.fl-link{color:var(--g500);cursor:pointer;transition:color .12s}
+.fl-link:hover{color:var(--g900)}
+.footer-r{margin-left:auto;display:flex;align-items:center;gap:12px}
+.fr-bal{font-size:12px;font-weight:600;color:var(--g700);font-family:var(--mono);display:flex;align-items:center;gap:6px}
+.fr-mode{display:flex;gap:4px}
+.fr-btn{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g500);cursor:pointer;transition:all .12s}
+.fr-btn.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .right-col{position:static}
+  .stats-bar{grid-template-columns:repeat(3,1fr)}
+  .photo-grid{grid-template-columns:1fr;grid-template-rows:200px}
+  .photo-sub{display:none}
+  .amen-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-search">🔍 Search OpenSea&nbsp;&nbsp;&nbsp;/</div>
+  <div class="nav-r">
+    <div class="nav-chip nav-dust">★☆☆ 0%</div>
+    <div class="nav-icon">🔔</div>
+    <div class="nav-icon">⚡</div>
+    <div class="nav-chip nav-bal">💳 $0.00</div>
+    <div class="nav-flag">🇰🇷</div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- 토큰 헤더 -->
+  <div class="token-header">
+    <div class="th-icon">CAFE</div>
+    <div>
+      <div style="display:flex;align-items:center">
+        <span class="th-name">브루밍 카페</span>
+        <span class="th-sym">CAFE</span>
+        <div class="th-actions">
+          <div class="th-btn">☆</div>
+          <div class="th-btn">⊕</div>
+          <div class="th-btn">☰</div>
+          <div class="th-btn">🌐</div>
+          <div class="th-btn">✕</div>
+          <div class="th-btn">✈</div>
+          <div class="th-btn">⋯</div>
+        </div>
+      </div>
+      <div class="th-tags">
+        <span class="tag tag-token">TOKEN</span>
+        <span class="tag tag-chain">🟡 opBNB</span>
+        <span class="tag tag-new">NEW</span>
+        <span class="tag-days">· 5 DAYS AGO</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2컬럼 레이아웃 -->
+  <div class="layout">
+
+    <!-- ── LEFT ── -->
+    <div class="left">
+
+      <!-- 가격 -->
+      <div class="price-row">
+        <div class="price-main">
+          $0.0003921
+          <span class="price-change">+51%</span>
+        </div>
+        <div class="price-fdv">
+          <span>FDV: <strong>$3.5M</strong></span>
+          <span style="color:var(--g400)">Mar 26, 2026, 5:45 PM</span>
+        </div>
+      </div>
+
+      <!-- 차트 -->
+      <div class="chart-block">
+        <div class="chart-meta">
+          <div class="cm-left">
+            <span>O <b style="color:var(--g700)">108,412.77</b></span>
+            <span>H <b style="color:var(--s500)">109,534.23</b></span>
+            <span>L <b style="color:var(--e500)">107,657.08</b></span>
+            <span>C <b style="color:var(--g700)">106,536.02</b></span>
+            <span style="color:var(--e500)">-907.25 (-0.738%)</span>
+          </div>
+          <div class="cm-right">
+            <div class="tf-sel">Timeframe: 1d ▾</div>
+            <div class="tf-sel">Interval: 15m ▾</div>
+            <div class="th-btn">〰</div>
+            <div class="th-btn">📊</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="cv"></canvas>
+        </div>
+      </div>
+
+      <!-- 통계 바 -->
+      <div class="stats-bar">
+        <div class="sbar-item">
+          <div class="sbar-lbl">FDV</div>
+          <div class="sbar-val">$3.5M</div>
+        </div>
+        <div class="sbar-item">
+          <div class="sbar-lbl">1D VOLUME</div>
+          <div class="sbar-val">$1.6M</div>
+        </div>
+        <div class="sbar-item">
+          <div class="sbar-lbl">1D FDV</div>
+          <div class="sbar-val pos">+53%</div>
+        </div>
+        <div class="sbar-item">
+          <div class="sbar-lbl">7D VOLUME</div>
+          <div class="sbar-val">$3.7M</div>
+        </div>
+        <div class="sbar-item">
+          <div class="sbar-lbl">7D FDV</div>
+          <div class="sbar-val pos">+638.7%</div>
+        </div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="tabs">
+        <button class="tab on" onclick="swTab(this,'overview')">Overview</button>
+        <button class="tab" onclick="swTab(this,'amenities')">Amenities</button>
+        <button class="tab" onclick="swTab(this,'reviews')">Review</button>
+        <button class="tab" onclick="swTab(this,'location')">Location</button>
+      </div>
+
+      <!-- Overview -->
+      <div class="tc on" id="tc-overview">
+        <p class="overview-text">
+          성수동 핸드드립 스페셜티 카페. 2023년 오픈, 월 방문객 ~800명 유지.
+          에티오피아·케냐·과테말라 원두를 매주 직접 큐핑하여 선정합니다.
+          브런치 메뉴와 시즌 한정 음료 운영. CAFE 토큰 보유자에게 할인·신메뉴 사전 체험 혜택 제공.
+          <span class="read-more">Read More</span>
+        </p>
+
+        <div class="addr-box">
+          <div class="addr-title">Address Details</div>
+          <div class="addr-grid">
+            <div class="addr-item">
+              <span class="addr-ico">📍</span>
+              <span>서울시 성동구 성수동 2가 283-1</span>
+            </div>
+            <div class="addr-item">
+              <span class="addr-ico">🌐</span>
+              <a class="addr-link">www.bloomingcafe.kr</a>
+            </div>
+            <div class="addr-item">
+              <span class="addr-ico">🕐</span>
+              <span>Hour of Operation <span class="open-badge">Open</span></span>
+            </div>
+            <div class="addr-item">
+              <span class="addr-ico">📞</span>
+              <span>+82 2-123-4567</span>
+            </div>
+            <div class="addr-item" style="grid-column:1/-1">
+              <span class="addr-ico">🕐</span>
+              <span>Daily 09:00 – 21:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 사진 그리드 -->
+        <div class="photo-grid">
+          <div class="photo-main">
+            <div class="pwm">CAFE</div>
+            <div class="photo-loc">📍 성수동, 서울</div>
+          </div>
+          <div class="photo-sub"><div class="pwm-sm">☕</div></div>
+          <div class="photo-sub"><div class="pwm-sm">🥐</div></div>
+          <div class="photo-sub">
+            <div class="pwm-sm">🌿</div>
+            <div class="photo-cnt">8+</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="tc" id="tc-amenities">
+        <div class="amen-grid">
+          <div class="amen-card"><div class="amen-ico">☕</div><div><div class="amen-name">핸드드립</div><div class="amen-sub">스페셜티 원두</div></div></div>
+          <div class="amen-card"><div class="amen-ico">🥐</div><div><div class="amen-name">브런치</div><div class="amen-sub">시즌 메뉴</div></div></div>
+          <div class="amen-card"><div class="amen-ico">📶</div><div><div class="amen-name">무료 Wi-Fi</div><div class="amen-sub">고속 인터넷</div></div></div>
+          <div class="amen-card"><div class="amen-ico">🪑</div><div><div class="amen-name">좌석 30석</div><div class="amen-sub">테이블·바 좌석</div></div></div>
+          <div class="amen-card"><div class="amen-ico">🎵</div><div><div class="amen-name">라이브 재즈</div><div class="amen-sub">매월 첫째 금요일</div></div></div>
+          <div class="amen-card"><div class="amen-ico">🎁</div><div><div class="amen-name">토큰 혜택</div><div class="amen-sub">10% 할인 외</div></div></div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="tc" id="tc-reviews">
+        <div class="rv-sort">
+          <button class="rsb on">All</button>
+          <button class="rsb">Latest</button>
+          <button class="rsb">Oldest</button>
+          <button class="rsb">Positive</button>
+          <button class="rsb">Negative</button>
+          <button class="rsb">With Photo</button>
+        </div>
+        <div class="rv-item">
+          <div class="rv-head">
+            <div class="rv-ava" style="background:var(--p50);color:var(--p600)">김</div>
+            <div><div class="rv-nm">김지민</div><div class="rv-meta">CAFE 2,400개 보유 · 4 Guests · 2 Nights</div></div>
+            <div class="rv-date">2주 전</div>
+          </div>
+          <div class="rv-stars">★★★★★ 5.0</div>
+          <div class="rv-txt">핸드드립 퀄리티가 정말 뛰어납니다. 토큰 할인과 신메뉴 체험 혜택이 너무 좋아요. 상점이 잘 될수록 토큰 가치도 오르는 게 재밌고 신기합니다.</div>
+        </div>
+        <div class="rv-item">
+          <div class="rv-head">
+            <div class="rv-ava" style="background:#FEF3F2;color:var(--e500)">박</div>
+            <div><div class="rv-nm">박형철</div><div class="rv-meta">CAFE 800개 보유 · 4 Guests · 2 Nights</div></div>
+            <div class="rv-date">1달 전</div>
+          </div>
+          <div class="rv-stars">★★★★☆ 4.0</div>
+          <div class="rv-txt">성수 감성 가득한 공간. 브런치도 맛있고 분위기도 좋습니다. 토큰으로 할인 받으니 더 자주 오게 돼요.</div>
+        </div>
+        <div class="rv-item">
+          <div class="rv-head">
+            <div class="rv-ava" style="background:var(--s50);color:var(--s700)">이</div>
+            <div><div class="rv-nm">이수진</div><div class="rv-meta">CAFE 320개 보유 · 4 Guests · 2 Nights</div></div>
+            <div class="rv-date">2달 전</div>
+          </div>
+          <div class="rv-stars">★★★★★ 5.0</div>
+          <div class="rv-txt">Starzip 통해서 이 카페를 알게 됐어요. 좋아하는 카페에 투자하면서 응원하는 느낌이 새롭습니다. 가게가 잘 되면 같이 좋은 구조가 마음에 들어요.</div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="tc" id="tc-location">
+        <div class="loc-box">🗺 서울시 성동구 성수동 2가 지도</div>
+        <div style="font-size:13px;color:var(--g600)">서울특별시 성동구 성수동 2가 · 지하철 2호선 성수역 도보 5분</div>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- ── RIGHT ── -->
+    <div class="right-col">
+
+      <!-- 주문 카드 -->
+      <div class="order-card">
+
+        <!-- Buy / Sell 탭 -->
+        <div class="bs-header">
+          <button class="bsh-tab on-buy" id="bt-buy" onclick="swSide('buy')">Buy</button>
+          <button class="bsh-tab" id="bt-sell" onclick="swSide('sell')">Sell</button>
+          <div class="bsh-right">
+            <button class="bsh-auto">AUTO</button>
+            <span class="bsh-pct">1%</span>
+            <span class="bsh-gear">⚙</span>
+          </div>
+        </div>
+
+        <!-- Pay with -->
+        <div class="pw-section">
+          <div class="pw-label">Pay with</div>
+          <div class="pw-box">
+            <div class="pw-left">
+              <input class="pw-input" type="number" id="pay-in" value="0" placeholder="0" oninput="calcSwap()">
+              <div class="pw-usd" id="pay-usd">$0.00</div>
+            </div>
+            <div class="pw-token" style="flex-direction:column;align-items:flex-end;gap:2px">
+              <div style="display:flex;align-items:center;gap:5px">
+                <div class="pw-tok-ico"></div>
+                <span class="pw-tok-name" id="pay-token">USDT</span>
+                <span class="pw-tok-arrow">▾</span>
+              </div>
+              <div class="pw-tok-bal">0.00 <span id="pay-token2">USDT</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 화살표 -->
+        <div class="swap-arrow">
+          <button class="swap-arrow-btn" onclick="flipSide()">↓</button>
+        </div>
+
+        <!-- Receive -->
+        <div class="rc-section">
+          <div class="pw-label" style="margin-bottom:6px">Receive at least</div>
+          <div class="rc-box">
+            <div class="pw-left">
+              <div class="rc-val" id="rc-val">—</div>
+              <div class="rc-usd" id="rc-usd">$0.00</div>
+            </div>
+            <div class="rc-token" style="flex-direction:column;align-items:flex-end;gap:2px">
+              <div style="display:flex;align-items:center;gap:5px">
+                <div class="rc-ico"></div>
+                <span class="rc-nm" id="rc-token">CAFE</span>
+                <span style="color:var(--g400);font-size:10px">▾</span>
+              </div>
+              <div class="pw-tok-bal">0.00 <span id="rc-token2">CAFE</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 실행 버튼 -->
+        <div class="exec-section">
+          <button class="exec-btn buy" id="exec-btn" onclick="place()">Buy</button>
+        </div>
+
+        <!-- 정보 -->
+        <div class="order-info" style="padding-top:10px">
+          <div class="oi-row"><span class="oi-lbl">가격 (CAFE/USDT)</span><span class="oi-val">$0.0003921</span></div>
+          <div class="oi-row"><span class="oi-lbl">수수료 (0.39%)</span><span class="oi-val" id="oi-fee">—</span></div>
+          <div class="oi-div"></div>
+          <div class="oi-row" style="font-size:11px;color:var(--g400)">
+            <span>브루밍 카페 3%</span><span>Starzip 97%</span>
+          </div>
+          <div class="oi-div"></div>
+          <div class="dust-row2">
+            <span class="dust-lbl2"><div class="wdot"></div>DUST 적립</span>
+            <span class="dust-val2" id="oi-dust">—</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 런치패드 카드 -->
+      <div class="lp-card">
+        <div class="lp-inner">
+          <div class="lp-top">
+            <span class="lp-title">🚀 런치패드 진행중</span>
+            <span class="lp-timer">D-3</span>
+          </div>
+          <div class="lp-bar-bg"><div class="lp-bar"></div></div>
+          <div class="lp-bot">
+            <span class="lp-amt">$6,800 / $10,000 · 68%</span>
+            <span class="lp-boost">STAR 1.4× 부스트</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /right-col -->
+
+  </div><!-- /layout -->
+</div><!-- /page -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fl-live"><div class="live-dot"></div>Live</div>
+  <div class="fp-sep"></div>
+  <span class="fl-link">⚡ Aggregating</span>
+  <div class="fp-sep"></div>
+  <span class="fl-link">🔗 Networks</span>
+  <div class="fp-sep"></div>
+  <span class="fl-link">Terms of Service</span>
+  <span class="fl-link">Privacy Policy</span>
+  <div class="footer-r">
+    <div class="fr-bal">💳 $2,114.92</div>
+    <div class="fr-mode">
+      <button class="fr-btn on">Collector</button>
+      <button class="fr-btn">Pro</button>
+      <button class="fr-btn on">Crypto</button>
+      <button class="fr-btn">USD</button>
+    </div>
+    <div class="th-btn" style="font-size:16px">🔊</div>
+  </div>
+</div>
+
+<script>
+/* 탭 */
+const tcs=['overview','amenities','reviews','location'];
+function swTab(btn,id){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  tcs.forEach(t=>{document.getElementById('tc-'+t).classList.toggle('on',t===id)});
+}
+document.querySelectorAll('.rsb').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.rsb').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+}));
+
+/* Buy/Sell */
+let side='buy';
+function swSide(s){
+  side=s;
+  document.getElementById('bt-buy').className='bsh-tab'+(s==='buy'?' on-buy':'');
+  document.getElementById('bt-sell').className='bsh-tab'+(s==='sell'?' on-sell':'');
+  const btn=document.getElementById('exec-btn');
+  btn.className='exec-btn '+s;
+  btn.textContent=s==='buy'?'Buy':'Sell';
+  if(s==='sell'){
+    document.getElementById('pay-token').textContent='CAFE';
+    document.getElementById('pay-token2').textContent='CAFE';
+    document.getElementById('rc-token').textContent='USDT';
+    document.getElementById('rc-token2').textContent='USDT';
+  } else {
+    document.getElementById('pay-token').textContent='USDT';
+    document.getElementById('pay-token2').textContent='USDT';
+    document.getElementById('rc-token').textContent='CAFE';
+    document.getElementById('rc-token2').textContent='CAFE';
+  }
+  calcSwap();
+}
+function flipSide(){swSide(side==='buy'?'sell':'buy');}
+
+/* 계산 */
+const PRICE=0.0003921;
+function calcSwap(){
+  const v=parseFloat(document.getElementById('pay-in').value)||0;
+  if(v>0){
+    const rcv=side==='buy'?v/PRICE:v*PRICE;
+    document.getElementById('rc-val').textContent=rcv.toFixed(side==='buy'?0:6);
+    document.getElementById('rc-val').style.color='var(--g900)';
+    const usd=side==='buy'?v:v*PRICE;
+    document.getElementById('pay-usd').textContent='$'+usd.toFixed(2);
+    document.getElementById('rc-usd').textContent='$'+usd.toFixed(2);
+    document.getElementById('oi-fee').textContent='$'+(usd*0.0039).toFixed(6);
+    document.getElementById('oi-dust').textContent=(usd*0.001*1000).toFixed(1)+' DUST';
+  } else {
+    document.getElementById('rc-val').textContent='—';
+    document.getElementById('rc-val').style.color='var(--g300)';
+    document.getElementById('oi-fee').textContent='—';
+    document.getElementById('oi-dust').textContent='—';
+  }
+}
+
+/* 주문 */
+function place(){
+  const btn=document.getElementById('exec-btn');
+  const orig=btn.textContent;
+  btn.textContent='✓ 완료';btn.style.opacity='.7';
+  setTimeout(()=>{btn.textContent=orig;btn.style.opacity='1';},2000);
+}
+
+/* 푸터 버튼 */
+document.querySelectorAll('.fr-btn').forEach(b=>b.addEventListener('click',()=>{
+  const grp=b.parentElement;
+  const cur=grp.querySelectorAll('.fr-btn.on');
+  if(cur.length===2 && b.classList.contains('on')) return;
+  b.classList.toggle('on');
+}));
+
+/* 차트 (라인 + 파란 그라디언트, OpenSea 스타일) */
+function drawChart(){
+  const cv=document.getElementById('cv');
+  const wrap=cv.parentElement;
+  const W=wrap.clientWidth, H=wrap.clientHeight;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  /* 데이터 */
+  const N=80;
+  const pts=[];
+  let v=0.00020;
+  for(let i=0;i<N;i++){
+    v=Math.max(0.00015,Math.min(0.00060,v+(Math.random()-.44)*.000025));
+    pts.push(v);
+  }
+  /* 마지막 부분을 강하게 상승 */
+  for(let i=N-15;i<N;i++){
+    pts[i]=pts[i-1]*(1+Math.random()*.04);
+  }
+  pts[N-1]=0.0003921;
+
+  const minV=Math.min(...pts)*.98, maxV=Math.max(...pts)*1.02;
+  const padL=0, padR=0, padT=10, padB=30;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  const toX=i=>padL+(i/(N-1))*cW;
+  const toY=v=>padT+cH-((v-minV)/(maxV-minV))*cH;
+
+  /* 그라디언트 채우기 */
+  const grad=ctx.createLinearGradient(0,padT,0,padT+cH);
+  grad.addColorStop(0,'rgba(41,112,255,.25)');
+  grad.addColorStop(.7,'rgba(173,210,255,.12)');
+  grad.addColorStop(1,'rgba(173,210,255,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(toX(0),toY(pts[0]));
+  for(let i=1;i<N;i++) ctx.lineTo(toX(i),toY(pts[i]));
+  ctx.lineTo(toX(N-1),padT+cH);
+  ctx.lineTo(toX(0),padT+cH);
+  ctx.closePath();
+  ctx.fillStyle=grad;
+  ctx.fill();
+
+  /* 라인 */
+  ctx.beginPath();
+  ctx.moveTo(toX(0),toY(pts[0]));
+  for(let i=1;i<N;i++) ctx.lineTo(toX(i),toY(pts[i]));
+  ctx.strokeStyle='#2970FF';
+  ctx.lineWidth=2;
+  ctx.lineJoin='round';
+  ctx.stroke();
+
+  /* 끝점 dot */
+  const ex=toX(N-1), ey=toY(pts[N-1]);
+  ctx.beginPath();
+  ctx.arc(ex,ey,4,0,Math.PI*2);
+  ctx.fillStyle='#2970FF';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(ex,ey,8,0,Math.PI*2);
+  ctx.fillStyle='rgba(41,112,255,.2)';
+  ctx.fill();
+
+  /* X축 레이블 */
+  ctx.fillStyle='#98A2B3';
+  ctx.font='10px DM Mono,monospace';
+  ctx.textAlign='center';
+  const times=['7 PM','8 PM','9 PM','11 PM','2 AM','4 AM','6 AM','7 AM','8 AM','9 AM','11 AM','1 PM','2 PM','3 PM','4 PM','5 PM'];
+  const step=Math.floor(N/times.length);
+  times.forEach((t,i)=>{
+    const x=padL+(i/times.length)*(W-padL-padR);
+    ctx.fillText(t,x,H-8);
+  });
+}
+window.addEventListener('load',drawChart);
+window.addEventListener('resize',drawChart);
+setTimeout(drawChart,150);
+</script>
+</body>
+</html>

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 브루밍 카페</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g25:#FCFCFD;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p50:#EFF4FF;--p100:#D1E0FF;--p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s500:#12B76A;--s700:#027A48;
+  --e50:#FEF3F2;--e500:#F04438;--e700:#B42318;
+  --w50:#FFFAEB;--w500:#F79009;--w700:#B54708;
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:#fff;color:var(--g900);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+
+/* ══ TOPNAV ══ */
+.nav{
+  position:sticky;top:0;z-index:200;background:#fff;
+  border-bottom:1px solid var(--g200);height:52px;
+  display:flex;align-items:center;padding:0 20px;gap:8px;
+}
+.nav-logo{font-size:15px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:7px;margin-right:20px}
+.nav-logo-mark{width:26px;height:26px;border-radius:6px;background:var(--p600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.nl{padding:6px 10px;border-radius:var(--r6);font-size:13px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;transition:all .12s}
+.nl:hover{color:var(--g700);background:var(--g50)}
+.nl.on{color:var(--p600);background:var(--p50)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.dust-chip{padding:5px 10px;border-radius:20px;background:var(--w50);border:1px solid #FEDF89;font-size:12px;font-weight:500;color:var(--w700);display:flex;align-items:center;gap:5px}
+.dust-dot{width:6px;height:6px;border-radius:50%;background:var(--w500)}
+.btn-ghost{padding:7px 13px;border-radius:var(--r8);border:1px solid var(--g300);background:#fff;font-size:13px;font-weight:500;color:var(--g700);cursor:pointer}
+
+/* ══ PAGE BODY ══ */
+.page{max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+
+/* ══ PAGE HEADER ══ */
+.page-header{margin-bottom:14px}
+.ph-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px}
+.store-title{font-size:24px;font-weight:800;color:var(--g900);letter-spacing:-.02em}
+.ph-actions{display:flex;gap:6px;flex-shrink:0}
+.ph-btn{width:32px;height:32px;border-radius:var(--r8);border:1px solid var(--g200);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g500);font-size:13px;transition:all .12s}
+.ph-btn:hover{background:var(--g50);border-color:var(--g300)}
+.ph-btn.heart{color:var(--e500);background:var(--e50);border-color:#FECDCA}
+.ph-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ph-badge{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--g600);background:var(--g100);padding:3px 9px;border-radius:20px}
+.ph-rating{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--g800)}
+.ph-stars{color:#F79009}
+.ph-reviews{font-size:13px;font-weight:400;color:var(--g500)}
+.ph-addr{font-size:13px;color:var(--g500);display:flex;align-items:center;gap:4px}
+
+/* ══ 사진 그리드 ══ */
+.photo-grid{
+  display:grid;
+  grid-template-columns:1fr 280px;
+  grid-template-rows:175px 175px;
+  gap:4px;
+  border-radius:var(--r16);overflow:hidden;
+  margin-bottom:24px;
+}
+.photo-main{
+  grid-row:1/3;
+  background:linear-gradient(160deg,#C8B498,#A08060);
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.photo-sub{background:linear-gradient(160deg,#D4C4A8,#B49070);position:relative;display:flex;align-items:center;justify-content:center}
+.photo-sub:nth-child(3){background:linear-gradient(160deg,#BCA88A,#9A7050)}
+.photo-sub:nth-child(4){background:linear-gradient(160deg,#CAB498,#A88060)}
+.photo-wm{font-size:56px;font-weight:900;color:rgba(255,255,255,.12);user-select:none;letter-spacing:-3px}
+.photo-wm-sm{font-size:40px;font-weight:900;color:rgba(255,255,255,.12);user-select:none}
+.photo-loc{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;backdrop-filter:blur(8px);display:flex;align-items:center;gap:4px}
+.photo-count{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;backdrop-filter:blur(8px);cursor:pointer}
+.photo-count:hover{background:rgba(0,0,0,.8)}
+
+/* ══ 2컬럼 레이아웃 ══ */
+.content-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+
+/* ══ LEFT ══ */
+.left-col{}
+
+/* 차트 카드 */
+.chart-card{
+  border:1px solid var(--g200);border-radius:var(--r12);overflow:hidden;
+  margin-bottom:20px;
+}
+.chart-toolbar{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 14px;border-bottom:1px solid var(--g100);
+  background:#fff;
+}
+.ct-item{font-size:12px;font-weight:500;color:var(--g500);cursor:pointer;padding:4px 8px;border-radius:var(--r6);border:none;background:none;transition:all .12s}
+.ct-item:hover{color:var(--g700);background:var(--g50)}
+.ct-item.on{background:var(--g100);color:var(--g800)}
+.ct-sep{width:1px;height:14px;background:var(--g200)}
+.ct-info{display:flex;gap:10px;font-size:11px;font-family:var(--mono);margin-left:2px}
+.ct-o{color:var(--g400)}
+.ct-h{color:var(--s500)}
+.ct-l{color:var(--e500)}
+.ct-c{color:var(--g700)}
+.ct-chg.pos{color:var(--s500)}
+.ct-chg.neg{color:var(--e500)}
+.chart-wrap{background:#fff;height:260px;position:relative}
+canvas#cv{position:absolute;inset:0;width:100%;height:100%}
+.chart-tf{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 14px;background:#fff;border-top:1px solid var(--g100);
+}
+.tf-row{display:flex;gap:2px}
+.tf{padding:3px 8px;border-radius:var(--r6);font-size:11px;font-weight:500;font-family:var(--mono);border:none;cursor:pointer;background:none;color:var(--g400);transition:all .12s}
+.tf.on{background:var(--p50);color:var(--p600)}
+.tf:hover:not(.on){color:var(--g700);background:var(--g50)}
+
+/* 탭 네비 */
+.content-tabs{display:flex;gap:0;border-bottom:1px solid var(--g200);margin-bottom:16px}
+.ctab{padding:10px 14px;font-size:14px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.ctab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.ctab:hover:not(.on){color:var(--g700)}
+
+/* About */
+.about-text{font-size:14px;color:var(--g600);line-height:1.7;margin-bottom:16px}
+.read-more{color:var(--g900);font-weight:600;cursor:pointer;text-decoration:underline}
+
+/* 정보 그리드 */
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.info-card{background:var(--g50);border-radius:var(--r8);padding:12px;border:1px solid var(--g200)}
+.info-card .lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:4px}
+.info-card .val{font-size:15px;font-weight:700;color:var(--g900)}
+.info-card .sub{font-size:11px;color:var(--g500);margin-top:1px}
+
+/* 혜택 박스 */
+.benefit-box{background:var(--p50);border:1px solid var(--p100);border-radius:var(--r12);padding:14px 16px;margin-bottom:16px}
+.benefit-title{font-size:12px;font-weight:600;color:var(--p700);margin-bottom:8px}
+.benefit-list{display:flex;flex-direction:column;gap:6px}
+.benefit-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--p600)}
+
+/* 리뷰 */
+.review-sort{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.rsort-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:#fff;color:var(--g600);cursor:pointer;transition:all .12s}
+.rsort-btn.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.review-item{padding:14px 0;border-bottom:1px solid var(--g100)}
+.review-item:last-child{border-bottom:none}
+.rv-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rv-ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.rv-name{font-size:13px;font-weight:600;color:var(--g800)}
+.rv-info{font-size:11px;color:var(--g400);margin-top:1px}
+.rv-date{font-size:12px;color:var(--g400);margin-left:auto}
+.rv-stars{color:#F79009;font-size:13px;margin-bottom:5px}
+.rv-text{font-size:13px;color:var(--g600);line-height:1.6}
+
+/* 공시 */
+.disc-table{width:100%;border-collapse:collapse}
+.disc-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);padding:8px 8px;text-align:left;border-bottom:1px solid var(--g200)}
+.disc-table td{padding:10px 8px;border-bottom:1px solid var(--g100);font-size:13px}
+.disc-table tr:hover td{background:var(--g50)}
+.db-ok{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--s50);color:var(--s700)}
+.db-late{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--w50);color:var(--w700)}
+.disc-hash{font-size:10px;color:var(--g400);font-family:var(--mono)}
+
+/* DAO */
+.dao-item{padding:12px 0;border-bottom:1px solid var(--g100)}
+.dao-item:last-child{border-bottom:none}
+.dao-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.dao-title{font-size:13px;font-weight:600;color:var(--g800)}
+.dao-date{font-size:11px;color:var(--g400);white-space:nowrap}
+.dao-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.db-active{background:var(--p50);color:var(--p600)}
+.db-pass{background:var(--s50);color:var(--s700)}
+.db-fail{background:var(--e50);color:var(--e700)}
+.dao-vote{font-size:12px;font-weight:600;color:var(--p600);background:var(--p50);border:none;border-radius:var(--r6);padding:5px 12px;cursor:pointer;margin-top:6px}
+
+/* ══ RIGHT: 주문 패널 (sticky) ══ */
+.right-col{position:sticky;top:68px}
+
+/* 주문 카드 */
+.order-card{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:#fff;margin-bottom:12px}
+
+/* 런치패드 배너 */
+.lp-banner{padding:10px 14px;background:linear-gradient(135deg,#EFF4FF,#F0F7FF);border-bottom:1px solid var(--p100)}
+.lp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lp-title{font-size:12px;font-weight:700;color:var(--p700)}
+.lp-timer{font-size:12px;font-family:var(--mono);font-weight:500;color:var(--p500)}
+.lp-bar-bg{height:3px;background:var(--p100);border-radius:4px;overflow:hidden;margin-bottom:5px}
+.lp-bar-fill{height:100%;width:68%;background:var(--p500);border-radius:4px}
+.lp-bot{display:flex;align-items:center;justify-content:space-between}
+.lp-pct{font-size:12px;color:var(--p600);font-family:var(--mono)}
+.lp-boost{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--p100);color:var(--p700)}
+
+/* 탭: Limit / Market / Stop */
+.order-type-tabs{display:flex;padding:10px 10px 0;gap:4px}
+.ott{flex:1;padding:7px 6px;text-align:center;border-radius:var(--r8);font-size:13px;font-weight:600;border:1px solid var(--g200);background:#fff;color:var(--g500);cursor:pointer;transition:all .12s}
+.ott.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.ott:hover:not(.on){background:var(--g50)}
+
+/* buy/sell */
+.bs-row{display:flex;padding:10px 10px 0;gap:6px}
+.bs-buy{flex:1;padding:8px;text-align:center;border-radius:var(--r8);font-size:13px;font-weight:600;border:none;cursor:pointer;background:var(--s500);color:#fff;transition:background .12s}
+.bs-buy:hover{background:var(--s700)}
+.bs-sell{flex:1;padding:8px;text-align:center;border-radius:var(--r8);font-size:13px;font-weight:600;border:1px solid var(--g200);cursor:pointer;background:#fff;color:var(--g700);transition:all .12s}
+.bs-sell:hover{background:var(--g50)}
+.bs-buy.mode-sell{background:#fff;color:var(--g700);border:1px solid var(--g200)}
+.bs-buy.mode-sell:hover{background:var(--g50)}
+.bs-sell.mode-sell{background:var(--e500);color:#fff;border-color:var(--e500)}
+.bs-sell.mode-sell:hover{background:var(--e700)}
+
+/* available */
+.avail-row{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 0;font-size:12px}
+.avail-lbl{color:var(--g500)}
+.avail-val{font-family:var(--mono);font-weight:500;color:var(--g800)}
+
+/* 인풋 */
+.form-body{padding:8px 10px 10px;display:flex;flex-direction:column;gap:8px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg-lbl{font-size:11px;font-weight:500;color:var(--g500);padding:0 2px}
+.fg-wrap{
+  display:flex;align-items:center;
+  border:1px solid var(--g300);border-radius:var(--r8);background:#fff;
+  overflow:hidden;transition:border-color .15s;
+}
+.fg-wrap:focus-within{border-color:var(--p500);box-shadow:0 0 0 3px rgba(41,112,255,.08)}
+.fg-input{flex:1;padding:8px 10px;border:none;outline:none;font-size:14px;font-weight:500;font-family:var(--mono);color:var(--g900);background:transparent}
+.fg-unit{padding:8px 10px;font-size:12px;font-weight:500;color:var(--g400);background:var(--g50);border-left:1px solid var(--g200);white-space:nowrap}
+.fg-badge{padding:4px 8px;font-size:11px;font-weight:600;color:var(--p600);cursor:pointer;background:transparent;border:none;border-left:1px solid var(--g200)}
+
+/* 슬라이더 스타일 */
+.slider-row{padding:2px 2px 0}
+.slider-wrap{position:relative;padding:2px 0}
+input[type=range]{width:100%;height:4px;border-radius:4px;background:var(--g200);-webkit-appearance:none;cursor:pointer;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--g900);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer}
+.slider-pcts{display:flex;justify-content:space-between;margin-top:4px}
+.sp{font-size:10px;color:var(--g400);cursor:pointer;font-weight:500}
+.sp:hover{color:var(--g700)}
+
+/* 요약 */
+.order-summary{
+  margin:0 10px 10px;background:var(--g50);border-radius:var(--r8);
+  padding:10px;border:1px solid var(--g200);
+}
+.os-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0}
+.os-lbl{font-size:12px;color:var(--g500)}
+.os-val{font-size:12px;font-weight:500;color:var(--g800);font-family:var(--mono)}
+.os-div{height:1px;background:var(--g200);margin:4px 0}
+.os-dust{display:flex;align-items:center;gap:5px}
+.os-dust-lbl{font-size:12px;color:var(--g500);display:flex;align-items:center;gap:4px}
+.wdot{width:5px;height:5px;border-radius:50%;background:var(--w500)}
+.os-dust-val{font-size:12px;font-weight:700;color:var(--w700);font-family:var(--mono)}
+
+/* 실행버튼 */
+.exec-btn{
+  display:block;width:calc(100% - 20px);margin:0 10px 10px;
+  padding:11px 0;border-radius:var(--r8);font-size:14px;font-weight:700;
+  border:none;cursor:pointer;transition:all .12s;
+}
+.exec-btn.buy{background:var(--s500);color:#fff}
+.exec-btn.buy:hover{background:var(--s700)}
+.exec-btn.sell{background:var(--e500);color:#fff}
+.exec-btn.sell:hover{background:var(--e700)}
+
+/* 조건부 옵션 */
+.cond-opts{padding:0 14px 10px;display:flex;flex-direction:column;gap:6px}
+.co{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--g600);cursor:pointer}
+.co input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--g900)}
+
+/* ── 오더북 카드 ── */
+.ob-card{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:#fff}
+.ob-tabs{display:flex;border-bottom:1px solid var(--g200)}
+.ob-tab{flex:1;padding:9px 8px;text-align:center;font-size:12px;font-weight:600;color:var(--g500);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.ob-tab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.ob-cols{display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);border-bottom:1px solid var(--g100)}
+.ob-body{max-height:280px;overflow:hidden}
+.ob-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:4px 12px;font-size:12px;font-family:var(--mono);position:relative;cursor:default}
+.ob-row:hover{background:rgba(0,0,0,.015)}
+.ob-bg{position:absolute;top:0;right:0;height:100%;opacity:.07;pointer-events:none}
+.ob-row.ask .p{color:var(--e500)}.ob-row.ask .ob-bg{background:var(--e500)}
+.ob-row.bid .p{color:var(--s500)}.ob-row.bid .ob-bg{background:var(--s500)}
+.ob-row .q{color:var(--g600)}.ob-row .t{color:var(--g400);text-align:right}
+.ob-spread{display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--g50);border-top:1px solid var(--g100);border-bottom:1px solid var(--g100)}
+.ob-spread .sp-price{font-size:14px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.ob-spread .sp-pct{font-size:11px;color:var(--g400)}
+.ob-spread .sp-ratio{font-size:11px;color:var(--g500)}
+
+/* ══ BOTTOM BAR ══ */
+.btm{position:fixed;bottom:0;left:0;right:0;height:44px;background:#fff;border-top:1px solid var(--g200);display:flex;align-items:center;padding:0 16px;gap:4px;z-index:100}
+.bb{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;white-space:nowrap;transition:all .12s}
+.bb:hover{color:var(--g700);background:var(--g50)}
+.bb.on{color:var(--p600);background:var(--p50)}
+.bb-sep{width:1px;height:14px;background:var(--g200);margin:0 4px;flex-shrink:0}
+.bb-status{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;color:var(--g400);flex-shrink:0}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--s500)}
+
+/* ══ 반응형 ══ */
+@media(max-width:900px){
+  .content-grid{grid-template-columns:1fr}
+  .right-col{position:static}
+  .photo-grid{grid-template-columns:1fr;grid-template-rows:200px}
+  .photo-sub{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-logo-mark">SZ</div>Starzip</div>
+  <button class="nl">Explore</button>
+  <button class="nl on">Trade</button>
+  <button class="nl">Launchpad</button>
+  <button class="nl">DAO</button>
+  <div class="nav-r">
+    <div class="dust-chip"><div class="dust-dot"></div>2,480 DUST</div>
+    <button class="btn-ghost">0x7B4...E18</button>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="ph-top">
+      <h1 class="store-title">브루밍 카페</h1>
+      <div class="ph-actions">
+        <div class="ph-btn heart">♥</div>
+        <div class="ph-btn">⤴</div>
+        <div class="ph-btn">⋯</div>
+      </div>
+    </div>
+    <div class="ph-meta">
+      <div class="ph-badge">☕ 카페 · 핸드드립</div>
+      <div class="ph-rating"><span class="ph-stars">★★★★</span>☆ 4.3 <span class="ph-reviews">(186개 리뷰)</span></div>
+      <span class="ph-addr">📍 서울 성수동 2가 · 2년 운영 · 월 ~800명</span>
+    </div>
+  </div>
+
+  <!-- 사진 그리드 -->
+  <div class="photo-grid">
+    <div class="photo-main">
+      <div class="photo-wm">CAFE</div>
+      <div class="photo-loc">📍 성수동, 서울</div>
+    </div>
+    <div class="photo-sub"><div class="photo-wm-sm">☕</div></div>
+    <div class="photo-sub"><div class="photo-wm-sm">🥐</div></div>
+    <div class="photo-sub" style="grid-column:2;position:relative">
+      <div class="photo-wm-sm">🌿</div>
+      <div class="photo-count">사진 8+</div>
+    </div>
+  </div>
+
+  <!-- 2컬럼 -->
+  <div class="content-grid">
+
+    <!-- ── LEFT ── -->
+    <div class="left-col">
+
+      <!-- 차트 카드 -->
+      <div class="chart-card">
+        <div class="chart-toolbar">
+          <button class="ct-item on">1H</button>
+          <div class="ct-sep"></div>
+          <button class="ct-item" style="display:flex;align-items:center;gap:4px">📊 Indicators</button>
+          <div class="ct-sep"></div>
+          <span style="font-size:12px;color:var(--g600);font-weight:500">CAFE / USDT</span>
+          <div class="ct-info" style="margin-left:8px">
+            <span>O <span class="ct-o">0.00109</span></span>
+            <span>H <span class="ct-h">0.00138</span></span>
+            <span>L <span class="ct-l">0.00107</span></span>
+            <span>C <span class="ct-c">0.00124</span></span>
+            <span class="ct-chg pos">+8.06%</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="cv"></canvas>
+        </div>
+        <div class="chart-tf">
+          <div class="tf-row">
+            <button class="tf">3m</button>
+            <button class="tf">1m</button>
+            <button class="tf on">7d</button>
+            <button class="tf">3d</button>
+            <button class="tf">6h</button>
+            <button class="tf">1h</button>
+          </div>
+          <div style="font-size:11px;color:var(--g400);font-family:var(--mono)">KST (UTC+9)</div>
+        </div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="content-tabs">
+        <button class="ctab on" onclick="swTab(this,'about')">About</button>
+        <button class="ctab" onclick="swTab(this,'token')">Token</button>
+        <button class="ctab" onclick="swTab(this,'disclosure')">공시</button>
+        <button class="ctab" onclick="swTab(this,'dao')">DAO</button>
+        <button class="ctab" onclick="swTab(this,'reviews')">Reviews</button>
+      </div>
+
+      <!-- About 탭 -->
+      <div id="tab-about">
+        <p class="about-text">
+          성수동 핸드드립 스페셜티 카페. 2023년 오픈 이후 지역 커뮤니티의 사랑을 받고 있습니다.
+          에티오피아, 케냐, 과테말라 등 단일 원산지 원두를 매주 직접 큐핑하여 선정.
+          브런치 메뉴와 시즌 한정 음료를 운영하며, 토큰 보유자에게는 다양한 혜택이 제공됩니다.
+          <span class="read-more">더 보기</span>
+        </p>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="lbl">월 방문객</div>
+            <div class="val">~800명</div>
+            <div class="sub">전월 대비 +12%</div>
+          </div>
+          <div class="info-card">
+            <div class="lbl">운영 기간</div>
+            <div class="val">2년</div>
+            <div class="sub">2023년 3월 오픈</div>
+          </div>
+          <div class="info-card">
+            <div class="lbl">영업시간</div>
+            <div class="val">09–21시</div>
+            <div class="sub">주말 10–22시</div>
+          </div>
+        </div>
+
+        <div class="benefit-box">
+          <div class="benefit-title">🎁 토큰 보유자 혜택</div>
+          <div class="benefit-list">
+            <div class="benefit-item">☕ CAFE 100개↑ 보유 시 음료 10% 할인</div>
+            <div class="benefit-item">🌿 CAFE 1,000개↑ 보유 시 신메뉴 사전 체험 초대</div>
+            <div class="benefit-item">🏅 CAFE 10,000개↑ 보유 시 월 1회 브런치 무료</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Token 탭 -->
+      <div id="tab-token" style="display:none">
+        <div class="info-grid" style="margin-bottom:14px">
+          <div class="info-card"><div class="lbl">현재가</div><div class="val">$0.00124</div><div class="sub" style="color:var(--s500)">+8.06% 24H</div></div>
+          <div class="info-card"><div class="lbl">시가총액</div><div class="val">$124K</div><div class="sub">FDV $413K</div></div>
+          <div class="info-card"><div class="lbl">거래량 24H</div><div class="val">$24.8K</div><div class="sub">↑32%</div></div>
+          <div class="info-card"><div class="lbl">총 공급량</div><div class="val">500M</div><div class="sub">CAFE</div></div>
+          <div class="info-card"><div class="lbl">유통 공급량</div><div class="val">100M</div><div class="sub">20%</div></div>
+          <div class="info-card"><div class="lbl">네트워크</div><div class="val">opBNB</div><div class="sub">~$0.001 gas</div></div>
+        </div>
+        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);padding:12px">
+          <div style="font-size:12px;font-weight:600;color:var(--g700);margin-bottom:8px">수수료 배분 구조</div>
+          <div style="display:flex;height:6px;border-radius:4px;overflow:hidden;margin-bottom:6px">
+            <div style="width:3%;background:var(--p500)"></div>
+            <div style="flex:1;background:var(--g200)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px">
+            <span style="color:var(--p600);font-weight:600">브루밍 카페 3%</span>
+            <span style="color:var(--g500)">Starzip 97%</span>
+          </div>
+          <div style="font-size:11px;color:var(--g400);margin-top:6px">거래 수수료 0.39% · 거래마다 실시간 자동 분배</div>
+        </div>
+      </div>
+
+      <!-- 공시 탭 -->
+      <div id="tab-disclosure" style="display:none">
+        <table class="disc-table">
+          <tr><th>분기</th><th>상태</th><th>매출</th><th>방문객</th><th>온체인 해시</th></tr>
+          <tr><td style="font-weight:500">2026 Q1</td><td><span class="db-ok">정상</span></td><td>₩12.4M</td><td>2,400</td><td class="disc-hash">0x3a7f...c1e2</td></tr>
+          <tr><td style="font-weight:500">2025 Q4</td><td><span class="db-ok">정상</span></td><td>₩11.8M</td><td>2,280</td><td class="disc-hash">0x1c2e...9a4f</td></tr>
+          <tr><td style="font-weight:500">2025 Q3</td><td><span class="db-late">지연</span></td><td>₩10.2M</td><td>2,040</td><td class="disc-hash">0x9b4d...7e3c</td></tr>
+          <tr><td style="font-weight:500">2025 Q2</td><td><span class="db-ok">정상</span></td><td>₩9.6M</td><td>1,920</td><td class="disc-hash">0x5e1a...2b8d</td></tr>
+        </table>
+      </div>
+
+      <!-- DAO 탭 -->
+      <div id="tab-dao" style="display:none">
+        <div class="dao-item">
+          <div class="dao-head">
+            <div class="dao-title">봄 시즌 메뉴 가격 10% 인상 제안</div>
+            <div class="dao-date">2026-03-20</div>
+          </div>
+          <span class="dao-badge db-active">진행중</span>
+          <button class="dao-vote">투표 참여 →</button>
+        </div>
+        <div class="dao-item">
+          <div class="dao-head">
+            <div class="dao-title">500만 CAFE 토큰 소각 제안</div>
+            <div class="dao-date">2026-02-14</div>
+          </div>
+          <span class="dao-badge db-pass">가결</span>
+        </div>
+        <div class="dao-item">
+          <div class="dao-head">
+            <div class="dao-title">주말 할인 이벤트 종료 제안</div>
+            <div class="dao-date">2026-01-05</div>
+          </div>
+          <span class="dao-badge db-fail">부결</span>
+        </div>
+      </div>
+
+      <!-- 리뷰 탭 -->
+      <div id="tab-reviews" style="display:none">
+        <div class="review-sort">
+          <button class="rsort-btn on">전체</button>
+          <button class="rsort-btn">최신순</button>
+          <button class="rsort-btn">긍정</button>
+          <button class="rsort-btn">부정</button>
+          <button class="rsort-btn">사진</button>
+        </div>
+        <div class="review-item">
+          <div class="rv-header">
+            <div class="rv-ava" style="background:var(--p50);color:var(--p600)">김</div>
+            <div><div class="rv-name">김지민</div><div class="rv-info">토큰 보유자 · CAFE 2,400개</div></div>
+            <div class="rv-date">2주 전</div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <div class="rv-text">핸드드립 퀄리티가 정말 뛰어납니다. CAFE 토큰 보유하면 할인도 받고 신메뉴 체험도 먼저 할 수 있어서 자주 오게 돼요. 토큰 가치가 오르는 것도 재미있고요.</div>
+        </div>
+        <div class="review-item">
+          <div class="rv-header">
+            <div class="rv-ava" style="background:#FEF3F2;color:#F04438">박</div>
+            <div><div class="rv-name">박형철</div><div class="rv-info">토큰 보유자 · CAFE 800개</div></div>
+            <div class="rv-date">1달 전</div>
+          </div>
+          <div class="rv-stars">★★★★☆</div>
+          <div class="rv-text">성수 감성 가득한 공간이에요. 브런치도 맛있고 분위기도 좋아서 자주 찾게 됩니다. 토큰으로 할인 받으니 더 이득인 느낌.</div>
+        </div>
+        <div class="review-item">
+          <div class="rv-header">
+            <div class="rv-ava" style="background:#ECFDF3;color:#12B76A">이</div>
+            <div><div class="rv-name">이수진</div><div class="rv-info">토큰 보유자 · CAFE 320개</div></div>
+            <div class="rv-date">2달 전</div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <div class="rv-text">Starzip 통해서 이 카페를 알게 됐어요. 토큰 사면서 카페도 응원하는 기분이 새로워요. 상점 성장과 함께 투자 가치도 생기는 게 독특한 경험입니다.</div>
+        </div>
+      </div>
+
+    </div><!-- /left-col -->
+
+    <!-- ── RIGHT ── -->
+    <div class="right-col">
+
+      <!-- 주문 카드 -->
+      <div class="order-card">
+
+        <!-- 런치패드 배너 -->
+        <div class="lp-banner">
+          <div class="lp-top">
+            <span class="lp-title">🚀 런치패드 진행중</span>
+            <span class="lp-timer">D-3 남음</span>
+          </div>
+          <div class="lp-bar-bg"><div class="lp-bar-fill"></div></div>
+          <div class="lp-bot">
+            <span class="lp-pct">$6,800 / $10,000 · 68%</span>
+            <span class="lp-boost">STAR 1.4× 부스트</span>
+          </div>
+        </div>
+
+        <!-- Limit / Market / Stop -->
+        <div class="order-type-tabs">
+          <button class="ott on" onclick="swType(this)">Limit</button>
+          <button class="ott" onclick="swType(this)">Market</button>
+          <button class="ott" onclick="swType(this)">Stop Limit</button>
+        </div>
+
+        <!-- Buy / Sell -->
+        <div class="bs-row">
+          <button class="bs-buy" id="buy-btn" onclick="swSide('buy')">Buy</button>
+          <button class="bs-sell" id="sell-btn" onclick="swSide('sell')">Sell</button>
+        </div>
+
+        <!-- Available -->
+        <div class="avail-row">
+          <span class="avail-lbl">Available</span>
+          <span class="avail-val">24,521.40 USDT</span>
+        </div>
+
+        <!-- 폼 -->
+        <div class="form-body">
+          <div class="fg">
+            <div class="fg-lbl">Price</div>
+            <div class="fg-wrap">
+              <input class="fg-input" type="number" id="price-in" value="0.00124" oninput="calc()">
+              <button class="fg-badge">Last</button>
+              <div class="fg-unit">USDT</div>
+            </div>
+          </div>
+          <div class="fg">
+            <div class="fg-lbl">Amount</div>
+            <div class="fg-wrap">
+              <input class="fg-input" type="number" id="qty-in" value="" placeholder="0" oninput="calc()">
+              <div class="fg-unit">CAFE ∨</div>
+            </div>
+          </div>
+
+          <!-- 슬라이더 -->
+          <div class="slider-row">
+            <input type="range" id="pct-slider" min="0" max="100" value="0" oninput="sliderChange(this.value)">
+            <div class="slider-pcts">
+              <span class="sp" onclick="setPct(0)">0%</span>
+              <span class="sp" onclick="setPct(25)">25%</span>
+              <span class="sp" onclick="setPct(50)">50%</span>
+              <span class="sp" onclick="setPct(75)">75%</span>
+              <span class="sp" onclick="setPct(100)">100%</span>
+            </div>
+          </div>
+
+          <div class="fg">
+            <div class="fg-lbl">Buy <span id="buy-label">0.00</span> USDT</div>
+            <div class="fg-wrap">
+              <input class="fg-input" type="number" id="total-in" value="" placeholder="0" oninput="calcFromTotal()">
+              <span style="padding:0 10px;font-size:12px;color:var(--g400)">Max 24,521.40 USDT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 조건부 옵션 -->
+        <div class="cond-opts">
+          <label class="co"><input type="checkbox"> Take Profit</label>
+          <label class="co"><input type="checkbox"> Trailing Take Profit</label>
+          <label class="co"><input type="checkbox"> Stop Loss</label>
+        </div>
+
+        <!-- 요약 -->
+        <div class="order-summary">
+          <div class="os-row"><span class="os-lbl">예상 체결금액</span><span class="os-val" id="s-total">—</span></div>
+          <div class="os-row"><span class="os-lbl">수수료 (0.39%)</span><span class="os-val" id="s-fee">—</span></div>
+          <div class="os-div"></div>
+          <div class="os-row" style="font-size:11px;color:var(--g400)">
+            <span>브루밍 카페 3%</span><span>Starzip 97%</span>
+          </div>
+          <div class="os-div"></div>
+          <div class="os-row">
+            <span class="os-dust-lbl"><div class="wdot"></div>DUST 예상</span>
+            <span class="os-dust-val" id="s-dust">—</span>
+          </div>
+        </div>
+
+        <button class="exec-btn buy" id="exec-btn" onclick="placeOrder()">Buy CAFE</button>
+
+      </div><!-- /order-card -->
+
+      <!-- 오더북 카드 -->
+      <div class="ob-card">
+        <div class="ob-tabs">
+          <button class="ob-tab on" onclick="swOb(this)">Order book</button>
+          <button class="ob-tab" onclick="swOb(this)">Recent trades</button>
+        </div>
+        <div class="ob-cols">
+          <span>Price USDT</span><span>Qty CAFE</span><span style="text-align:right">Total USDT</span>
+        </div>
+        <div class="ob-body" id="ob-body"></div>
+      </div>
+
+    </div><!-- /right-col -->
+
+  </div><!-- /content-grid -->
+
+</div><!-- /page -->
+
+<!-- BOTTOM BAR -->
+<div class="btm">
+  <button class="bb">🔔 Price Alert</button>
+  <button class="bb on">⭐ Watchlist</button>
+  <button class="bb on">📊 Positions</button>
+  <button class="bb">📡 Signal</button>
+  <div class="bb-sep"></div>
+  <div class="bb-status"><div class="sdot"></div>Stable</div>
+  <button class="btn-ghost" style="margin-left:8px;padding:4px 10px;font-size:11px">☀ Light</button>
+</div>
+
+<script>
+/* ── 탭 ── */
+const tabIds = ['about','token','disclosure','dao','reviews'];
+function swTab(btn, id){
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  tabIds.forEach(t=>{ document.getElementById('tab-'+t).style.display = t===id?'block':'none'; });
+}
+
+/* ── 차트 탭 ── */
+document.querySelectorAll('.tf').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tf').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); drawChart();
+}));
+
+/* ── 주문 유형 ── */
+function swType(btn){
+  document.querySelectorAll('.ott').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+/* ── Buy/Sell ── */
+let side='buy';
+function swSide(s){
+  side=s;
+  const bb=document.getElementById('buy-btn'), sb=document.getElementById('sell-btn');
+  const eb=document.getElementById('exec-btn');
+  bb.className = s==='buy'?'bs-buy':'bs-buy mode-sell';
+  sb.className = s==='sell'?'bs-sell mode-sell':'bs-sell';
+  eb.className='exec-btn '+s;
+  eb.textContent = s==='buy'?'Buy CAFE':'Sell CAFE';
+  document.getElementById('buy-label').textContent = s==='buy'?'0.00':'0.00';
+}
+
+/* ── 계산 ── */
+function calc(){
+  const p=parseFloat(document.getElementById('price-in').value)||0;
+  const q=parseFloat(document.getElementById('qty-in').value)||0;
+  const total=p*q;
+  document.getElementById('total-in').value = total>0?total.toFixed(4):'';
+  document.getElementById('buy-label').textContent = total.toFixed(2);
+  updateSummary(total);
+}
+function calcFromTotal(){
+  const p=parseFloat(document.getElementById('price-in').value)||0;
+  const t=parseFloat(document.getElementById('total-in').value)||0;
+  if(p>0) document.getElementById('qty-in').value=(t/p).toFixed(0);
+  updateSummary(t);
+}
+function updateSummary(total){
+  if(total>0){
+    document.getElementById('s-total').textContent='$'+total.toFixed(4);
+    document.getElementById('s-fee').textContent='$'+(total*0.0039).toFixed(6);
+    document.getElementById('s-dust').textContent=(total*1000*0.001).toFixed(1)+' DUST';
+  } else {
+    document.getElementById('s-total').textContent='—';
+    document.getElementById('s-fee').textContent='—';
+    document.getElementById('s-dust').textContent='—';
+  }
+}
+
+/* ── 슬라이더 ── */
+function sliderChange(v){
+  const bal=24521, p=parseFloat(document.getElementById('price-in').value)||0.00124;
+  const total=bal*(v/100);
+  const qty=total/p;
+  document.getElementById('qty-in').value=Math.floor(qty);
+  document.getElementById('total-in').value=total.toFixed(4);
+  document.getElementById('buy-label').textContent=total.toFixed(2);
+  updateSummary(total);
+}
+function setPct(v){
+  document.getElementById('pct-slider').value=v;
+  sliderChange(v);
+}
+
+/* ── 주문 ── */
+function placeOrder(){
+  const btn=document.getElementById('exec-btn');
+  const orig=btn.textContent;
+  btn.textContent='✓ Order placed';
+  btn.style.opacity='.7';
+  setTimeout(()=>{btn.textContent=orig;btn.style.opacity='1';},2000);
+}
+
+/* ── OB 탭 ── */
+function swOb(btn){
+  document.querySelectorAll('.ob-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+/* ── 오더북 ── */
+function buildOB(){
+  const base=0.00124;
+  const asks=[], bids=[];
+  for(let i=0;i<6;i++){
+    asks.push({p:(base+(i+1)*0.00001).toFixed(5),q:(Math.random()*8000+1000).toFixed(2),pct:Math.random()*80+10});
+    bids.push({p:(base-i*0.000008).toFixed(5),q:(Math.random()*9000+1200).toFixed(2),pct:Math.random()*80+10});
+  }
+  const mq=Math.max(...asks.map(a=>+a.q),...bids.map(b=>+b.q));
+  let h='<div>';
+  asks.reverse().forEach(a=>{
+    const w=(+a.q/mq*100).toFixed(0);
+    const t=(+a.p*+a.q).toFixed(2);
+    h+=`<div class="ob-row ask"><span class="p">${a.p}</span><span class="q">${(+a.q).toLocaleString('en',{maximumFractionDigits:2})}</span><span class="t">${(+t).toLocaleString('en',{maximumFractionDigits:2})}</span><div class="ob-bg" style="width:${w}%"></div></div>`;
+  });
+  h+='</div>';
+  h+=`<div class="ob-spread"><span class="sp-price">${base.toFixed(5)}</span><span class="sp-pct">스프레드 0.8%</span><span class="sp-ratio">B 63% / S 37%</span></div>`;
+  h+='<div>';
+  bids.forEach(b=>{
+    const w=(+b.q/mq*100).toFixed(0);
+    const t=(+b.p*+b.q).toFixed(2);
+    h+=`<div class="ob-row bid"><span class="p">${b.p}</span><span class="q">${(+b.q).toLocaleString('en',{maximumFractionDigits:2})}</span><span class="t">${(+t).toLocaleString('en',{maximumFractionDigits:2})}</span><div class="ob-bg" style="width:${w}%"></div></div>`;
+  });
+  h+='</div>';
+  document.getElementById('ob-body').innerHTML=h;
+}
+buildOB(); setInterval(buildOB,3500);
+
+/* ── 캔들 차트 ── */
+function drawChart(){
+  const cv=document.getElementById('cv');
+  const wrap=cv.parentElement;
+  const W=wrap.clientWidth, H=wrap.clientHeight;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const N=48, bars=[];
+  let p=0.00109;
+  for(let i=0;i<N;i++){
+    const o=p;
+    const move=(Math.random()-.46)*.00008;
+    const c=Math.max(0.00095,Math.min(0.00145,o+move));
+    const h=Math.max(o,c)+(Math.random()*.00003);
+    const l=Math.min(o,c)-(Math.random()*.00003);
+    bars.push({o,h,l,c}); p=c;
+  }
+  bars[N-1].c=0.00124;
+
+  const allH=bars.map(b=>b.h), allL=bars.map(b=>b.l);
+  const maxP=Math.max(...allH), minP=Math.min(...allL);
+  const padL=42, padR=12, padT=14, padB=28;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  const toX=i=>padL+(i/(N-1))*cW;
+  const toY=v=>padT+cH-((v-minP)/(maxP-minP))*cH;
+
+  // 그리드
+  ctx.strokeStyle='#F2F4F7'; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){
+    const y=padT+(g/4)*cH;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+  }
+
+  // 캔들
+  const bw=Math.max(3,cW/N*.6);
+  bars.forEach((b,i)=>{
+    const x=toX(i);
+    const isUp=b.c>=b.o;
+    const col=isUp?'#12B76A':'#F04438';
+    ctx.strokeStyle=col; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,toY(b.h)); ctx.lineTo(x,toY(b.l)); ctx.stroke();
+    ctx.fillStyle=col;
+    const y1=toY(Math.max(b.o,b.c)), y2=toY(Math.min(b.o,b.c));
+    const bh=Math.max(1,y2-y1);
+    ctx.fillRect(x-bw/2,y1,bw,bh);
+    if(!isUp){ctx.strokeStyle=col;ctx.strokeRect(x-bw/2,y1,bw,bh);}
+  });
+
+  // 현재가
+  const curY=toY(0.00124);
+  ctx.setLineDash([3,3]); ctx.strokeStyle='#98A2B3'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(padL,curY); ctx.lineTo(W-padR-36,curY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#344054';
+  const tx=W-padR-34;
+  if(ctx.roundRect) ctx.roundRect(tx,curY-9,34,18,3);
+  else { ctx.rect(tx,curY-9,34,18); }
+  ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='500 9px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('0.00124',tx+17,curY+3);
+
+  // 볼륨 바
+  const volH=28;
+  const maxV=400000;
+  bars.forEach((b,i)=>{
+    const x=toX(i);
+    const h2=((Math.random()*.3+.05)*volH);
+    ctx.fillStyle=b.c>=b.o?'rgba(18,183,106,.25)':'rgba(240,68,56,.25)';
+    ctx.fillRect(x-bw/2,H-padB-h2+4,bw,h2);
+  });
+
+  // Y축 라벨
+  ctx.fillStyle='#98A2B3'; ctx.font='10px DM Mono,monospace'; ctx.textAlign='right';
+  for(let g=0;g<=4;g++){
+    const v=minP+((4-g)/4)*(maxP-minP);
+    ctx.fillText(v.toFixed(5),padL-4,padT+(g/4)*cH+4);
+  }
+
+  // X축 라벨
+  ctx.textAlign='center';
+  const lblCount=6;
+  for(let i=0;i<lblCount;i++){
+    const idx=Math.floor(i*(N-1)/(lblCount-1));
+    const h2=String(9+Math.floor(idx/2)).padStart(2,'0');
+    ctx.fillText(h2+':00',toX(idx),H-2);
+  }
+}
+window.addEventListener('load',drawChart);
+window.addEventListener('resize',drawChart);
+setTimeout(drawChart,200);
+</script>
+</body>
+</html>
