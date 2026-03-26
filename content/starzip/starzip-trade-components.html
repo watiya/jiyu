@@ -19,9 +19,9 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 .grid{display:flex;flex-direction:column;gap:6px}
 .row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
 .row:hover,.row.open{border-color:#d0cfc8}
-.hd{display:grid;grid-template-columns:26px 1fr 76px 64px;align-items:center;padding:9px 13px;gap:10px}
+.hd{display:grid;grid-template-columns:26px 200px 1fr 76px 64px;align-items:center;padding:9px 13px;gap:10px}
 .num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
-.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}.desc{font-size:12px;color:#6b6a65;line-height:1.4}
 .nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
 .nb-st{background:#FFF4E3;color:#633806}
 .pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
@@ -74,7 +74,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">A1</div><div class="nm">글로벌 내비게이션 바</div><div class="pri must">필수</div><div class="src">공통</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">A1</div><div class="nm">글로벌 내비게이션 바</div><div class="desc">로고 · 5개 메뉴 탭 · DUST 잔액 pill · 지갑 연결 · 테마 전환</div><div class="pri must">필수</div><div class="src">공통</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>구성</h5><ul><li>STARZIP 로고 + 5개 메뉴 탭</li><li>DUST 잔액 pill (실시간, 주황 dot)</li><li>지갑 연결 버튼 (단축 주소 표시)</li><li>다크/라이트 테마 전환 아이콘</li></ul></div>
     <div class="dc"><h5>Trade 특이점</h5><ul><li>Trade 탭 active — 흰색 언더라인</li><li>테마 전환 시 차트 즉시 재렌더링</li><li>height 44px, flex-shrink:0 고정</li></ul></div>
@@ -82,7 +82,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">A2</div><div class="nm">심볼 바 (2행) <span class="nb nb-st">Starzip 고유</span></div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">A2</div><div class="nm">심볼 바 (2행) <span class="nb nb-st">Starzip 고유</span></div><div class="desc">썸네일 + 상점명 + 페어 · 위치·운영기간·월고객 메타 (2행) · 현재가 + 패널 토글</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>1행: 토큰 선택기</h5><ul><li>30px 썸네일 (티커 워터마크)</li><li>상점명 + CAFE/USDT 페어</li><li>런치패드 진행중 뱃지 (파랑)</li><li>▾ 클릭 → 토큰 드롭다운 오픈</li></ul></div>
     <div class="dc"><h5>2행: 상점 메타 <span class="nb nb-st">고유</span></h5><ul><li>위치 아이콘 + 성수동·서울·🇰🇷</li><li>시계 아이콘 + 2년 운영</li><li>사람 아이콘 + 월 고객 ~800명</li><li>문서 아이콘 + 카페·핸드드립·브런치</li></ul></div>
@@ -91,7 +91,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">A3</div><div class="nm">토큰 검색 드롭다운</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">A3</div><div class="nm">토큰 검색 드롭다운</div><div class="desc">심볼 바 클릭 오픈 · 카테고리 탭 · ★ 즐겨찾기 · 선택 시 동기화</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>진입 / 위치</h5><ul><li>심볼 바 클릭 → 바로 아래 오픈</li><li>오버레이 클릭 / ESC 닫기</li><li>토큰 선택 → 자동 닫힘</li></ul></div>
     <div class="dc"><h5>검색 + 필터</h5><ul><li>검색창 자동 포커스</li><li>카테고리 탭 (★·전체·카페·음식점...)</li><li>가격순 / 변동률순 정렬 헤더</li></ul></div>
@@ -105,7 +105,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B1</div><div class="nm">상점 패널 컨테이너</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B1</div><div class="nm">상점 패널 컨테이너</div><div class="desc">width:360px · □ 버튼 토글 (collapse) · transition .24s · resizeChart()</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>레이아웃</h5><ul><li>너비 360px, left-col position:absolute inset:0</li><li>심볼 바 □ 버튼으로 토글 (width 0 collapse)</li><li>닫힐 때 transition .24s cubic-bezier</li><li>닫힌 후 차트 resizeChart() 호출</li></ul></div>
     <div class="dc"><h5>topbar</h5><ul><li>상점명 · 심볼 (좌측)</li><li>현재 가격 컬러 (우측, 상승/하락 자동)</li><li>토큰 드롭다운 선택 시 자동 업데이트</li></ul></div>
@@ -113,7 +113,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B2</div><div class="nm">상점 사진 그리드</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B2</div><div class="nm">상점 사진 그리드</div><div class="desc">2열 2행 grid 130px · 메인+서브 2장 · 워터마크 opacity .12</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>구성</h5><ul><li>2열 2행 grid, 높이 130px</li><li>메인 사진: 좌측 전체 높이 (grid-row 1/3)</li><li>서브 2장: 우측 상하</li><li>우하단 사진 수 카운트 pill (999+)</li></ul></div>
     <div class="dc"><h5>썸네일 스타일</h5><ul><li>업종별 단색 배경 (#C8B498 카페)</li><li>티커 워터마크 opacity .12</li><li>Phase 2: 실제 사진 API 연동</li></ul></div>
@@ -121,7 +121,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B3</div><div class="nm">상점 패널 메인 탭 (5탭)</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B3</div><div class="nm">상점 패널 메인 탭 (5탭)</div><div class="desc">상점 정보(기본) · 분기 공시 · Store DAO · 체결 내역 · 내 주문</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>탭 목록</h5><ul><li>상점 정보 (기본 active)</li><li>분기 공시</li><li>Store DAO</li><li>체결 내역</li><li>내 주문</li></ul></div>
     <div class="dc"><h5>스타일</h5><ul><li>flex:1 균등 분배</li><li>active: 언더라인 2px</li><li>sticky top:0 유지</li></ul></div>
@@ -130,7 +130,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B4</div><div class="nm">상점 정보 탭 — 3컬럼 인포 그리드</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B4</div><div class="nm">상점 정보 탭 — 3컬럼 인포 그리드</div><div class="desc">Col1: 상점 기본 · Col2: 토큰 정보 (monospace) · Col3: 소개 + 액션</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>Col 1: 상점 기본 정보</h5><ul><li>상점명·위치·업종·운영기간</li><li>월 고객·영업시간·전화·주차</li><li>key-value 행, 하단 border 구분</li></ul></div>
     <div class="dc"><h5>Col 2: 토큰 정보</h5><ul><li>심볼·총공급량·유통량·FDV</li><li>거래수수료·상장일·네트워크·혜택</li><li>숫자값 monospace font</li></ul></div>
@@ -139,7 +139,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B5</div><div class="nm">상점 정보 탭 — 서브탭 (4탭)</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B5</div><div class="nm">상점 정보 탭 — 서브탭 (4탭)</div><div class="desc">홈·메뉴·토큰·리뷰 4서브탭 · 별점 · 할인 안내 · 스탯 카드</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>홈 탭</h5><ul><li>별점 4.3 + 리뷰 수</li><li>주소·영업시간·업종·전화·주차 행</li><li>토큰 보유자 할인 안내</li></ul></div>
     <div class="dc"><h5>메뉴 탭</h5><ul><li>메뉴명 + 가격 8개</li><li>대표 메뉴 파랑 뱃지</li><li>토큰 보유자 10% 할인 안내</li></ul></div>
@@ -148,7 +148,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B6</div><div class="nm">분기 공시 탭</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B6</div><div class="nm">분기 공시 탭</div><div class="desc">분기·상태·내용·해시 4컬럼 · 초록/주황 뱃지 · Optimistic Compliance</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>테이블 구성</h5><ul><li>4컬럼: 분기·상태·내용·온체인 해시</li><li>정상 제출: 초록 뱃지</li><li>지연 제출: 주황 뱃지</li><li>sticky 헤더 (s2 배경)</li></ul></div>
     <div class="dc"><h5>데이터</h5><ul><li>분기별 매출·방문객·제출일</li><li>온체인 해시 단축 표시 (0x...)</li><li>Optimistic Compliance 방식</li></ul></div>
@@ -156,7 +156,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B7</div><div class="nm">Store DAO 탭</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#EAF3DE;color:#27500A">B7</div><div class="nm">Store DAO 탭</div><div class="desc">날짜·내용·결과 3컬럼 · 진행중 파랑 + 투표 CTA · 가결/부결 뱃지</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>테이블 구성</h5><ul><li>3컬럼: 날짜·내용·결과</li><li>진행중: 파랑 배경 + 투표 참여 → CTA</li><li>가결: 초록 뱃지 / 부결: 빨강 뱃지</li><li>sticky 헤더</li></ul></div>
     <div class="dc"><h5>인터랙션</h5><ul><li>투표 참여 → 버튼 클릭 시 이동</li><li>온체인 해시 우측 표시</li></ul></div>
@@ -169,7 +169,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#FAEEDA;color:#633806">C1</div><div class="nm">차트 탭 + 시간대 버튼</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
+  <div class="hd"><div class="num" style="background:#FAEEDA;color:#633806">C1</div><div class="nm">차트 탭 + 시간대 버튼</div><div class="desc">차트·Depth 탭 · 1s/1m/5m/1H/4H/1D · 캔들/라인 전환 · MA·BB·RSI</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>탭</h5><ul><li>차트 (기본) · Depth</li><li>active 언더라인 강조</li></ul></div>
     <div class="dc"><h5>시간대</h5><ul><li>1s · 1m · 5m · 1H · 4H · 1D</li><li>캔들 / 라인 전환</li></ul></div>
@@ -178,7 +178,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#FAEEDA;color:#633806">C2</div><div class="nm">캔들 차트 (Canvas)</div><div class="pri must">필수</div><div class="src src-hl">HL 참고</div></div>
+  <div class="hd"><div class="num" style="background:#FAEEDA;color:#633806">C2</div><div class="nm">캔들 차트 (Canvas)</div><div class="desc">Canvas 캔들스틱 · 상승 초록/하락 빨강 · 현재가 점선 · 테마 재드로잉</div><div class="pri must">필수</div><div class="src src-hl">HL 참고</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>렌더링</h5><ul><li>Canvas 기반 캔들스틱</li><li>상승 초록 / 하락 빨강</li><li>위아래 꼬리 + 그리드 5H×7V</li></ul></div>
     <div class="dc"><h5>현재가 표시</h5><ul><li>수평 점선 dash[4,4]</li><li>우측 가격 태그 (tp 배경)</li><li>resize 시 자동 재측정</li></ul></div>
@@ -192,7 +192,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#FCEBEB;color:#A32D2D">D1</div><div class="nm">호가창 오더북 (220px)</div><div class="pri must">필수</div><div class="src src-hl">HL 참고</div></div>
+  <div class="hd"><div class="num" style="background:#FCEBEB;color:#A32D2D">D1</div><div class="nm">호가창 오더북 (220px)</div><div class="desc">매도 상단(빨강) · 스프레드 중앙 · 매수 하단(초록) · 비율 바 B63%/S37%</div><div class="pri must">필수</div><div class="src src-hl">HL 참고</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>레이아웃</h5><ul><li>매도 호가 상단 (빨강)</li><li>스프레드 + 현재가 중앙</li><li>매수 호가 하단 (초록)</li><li>컬럼 너비 220px</li></ul></div>
     <div class="dc"><h5>데이터</h5><ul><li>가격 + 수량 2컬럼</li><li>수량 비례 배경 바</li><li>행 호버 opacity 감소</li></ul></div>
@@ -201,7 +201,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#FCEBEB;color:#A32D2D">D2</div><div class="nm">오더북 타입 선택</div><div class="pri high">높음</div><div class="src src-bn">BN 참고</div></div>
+  <div class="hd"><div class="num" style="background:#FCEBEB;color:#A32D2D">D2</div><div class="nm">오더북 타입 선택</div><div class="desc">양방향(기본) · 매도만 · 매수만 · 3등분 버튼 active s2 배경</div><div class="pri high">높음</div><div class="src src-bn">BN 참고</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>3가지 타입</h5><ul><li>양방향 (기본)</li><li>매도만</li><li>매수만</li></ul></div>
     <div class="dc"><h5>UX</h5><ul><li>3등분 버튼 행</li><li>active s2 배경 강조</li></ul></div>
@@ -214,7 +214,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E1</div><div class="nm">매수/매도 탭</div><div class="pri must">필수</div><div class="src">공통</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E1</div><div class="nm">매수/매도 탭</div><div class="desc">매수: 초록 언더라인+버튼 / 매도: 빨강 언더라인+버튼 · 탭 전환 동기화</div><div class="pri must">필수</div><div class="src">공통</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>상태</h5><ul><li>매수: 초록 언더라인 + 버튼 초록</li><li>매도: 빨강 언더라인 + 버튼 빨강</li></ul></div>
     <div class="dc"><h5>연동</h5><ul><li>탭 전환 시 실행 버튼 컬러·텍스트 동기화</li></ul></div>
@@ -222,7 +222,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E2</div><div class="nm">런치패드 배너 <span class="nb nb-st">Starzip 고유</span></div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E2</div><div class="nm">런치패드 배너 <span class="nb nb-st">Starzip 고유</span></div><div class="desc">진행률 % + D-day · 현재/목표 금액 · STAR 부스트 배율 · 파란 배경</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>표시 내용</h5><ul><li>진행률 68% + D-3</li><li>$6,800 / $10,000</li><li>STAR 1.4x 부스트 배율</li></ul></div>
     <div class="dc"><h5>조건</h5><ul><li>런치패드 진행 중인 상점만</li><li>파란 배경·진행 바 3px</li></ul></div>
@@ -230,7 +230,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E3</div><div class="nm">주문 유형 + 가격/수량 입력</div><div class="pri must">필수</div><div class="src">공통</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E3</div><div class="nm">주문 유형 + 가격/수량 입력</div><div class="desc">지정가/시장가/GTC · 가격+수량 입력 (monospace) · 25%/50%/75%/MAX</div><div class="pri must">필수</div><div class="src">공통</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>주문 유형</h5><ul><li>지정가 (기본) · 시장가 · GTC</li><li>active s2 배경</li></ul></div>
     <div class="dc"><h5>입력 필드</h5><ul><li>가격 (USDT) monospace</li><li>수량 (CAFE) + 잔액 표시</li><li>입력 시 요약 실시간 계산</li></ul></div>
@@ -239,7 +239,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E4</div><div class="nm">주문 요약 + DUST 적립 <span class="nb nb-st">Starzip 고유</span></div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E4</div><div class="nm">주문 요약 + DUST 적립 <span class="nb nb-st">Starzip 고유</span></div><div class="desc">예상 체결금액 + 수수료 0.39% · 배분 3%+97% 공시 · DUST 적립 주황</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>요약 박스</h5><ul><li>예상 체결금액 (실시간)</li><li>수수료 0.39% (실시간)</li><li>→ 브루밍 카페 3% + Starzip 97%</li></ul></div>
     <div class="dc"><h5>DUST 적립</h5><ul><li>거래금액 기반 예상량</li><li>주황색 강조</li><li>입력 변동 시 실시간 갱신</li></ul></div>
@@ -248,7 +248,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E5</div><div class="nm">매수/매도 실행 버튼</div><div class="pri must">필수</div><div class="src">공통</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E5</div><div class="nm">매수/매도 실행 버튼</div><div class="desc">매수 초록/매도 빨강 "실행" 버튼 · 미연결: 지갑 연결하기 · 토스트</div><div class="pri must">필수</div><div class="src">공통</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>상태</h5><ul><li>매수: 초록 배경 "매수 주문"</li><li>매도: 빨강 배경 "매도 주문"</li><li>미연결: "지갑 연결하기" 텍스트</li></ul></div>
     <div class="dc"><h5>피드백</h5><ul><li>클릭 → 토스트 "주문 접수됨 ✓"</li><li>hover opacity .88</li></ul></div>
@@ -256,7 +256,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E6</div><div class="nm">자산 현황 (USDT·CAFE·DUST) <span class="nb nb-st">Starzip 고유</span></div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
+  <div class="hd"><div class="num" style="background:#E6F1FB;color:#0C447C">E6</div><div class="nm">자산 현황 (USDT·CAFE·DUST) <span class="nb nb-st">Starzip 고유</span></div><div class="desc">USDT · CAFE · DUST 잔액 (주황) · 입금·출금·전송 3등분 버튼</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>잔액</h5><ul><li>USDT 잔액</li><li>CAFE 잔액</li><li>DUST 잔액 (주황 강조)</li></ul></div>
     <div class="dc"><h5>액션</h5><ul><li>입금 · 출금 · 전송 (3등분)</li><li>DUST 포함은 Starzip 고유</li></ul></div>
@@ -269,7 +269,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">F1</div><div class="nm">주문 내역 탭 (3탭)</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
+  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">F1</div><div class="nm">주문 내역 탭 (3탭)</div><div class="desc">Open Orders(카운트) · Order History · Trade History · height 160px</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>탭</h5><ul><li>Open Orders (0) — 카운트 표시</li><li>Order History</li><li>Trade History</li></ul></div>
     <div class="dc"><h5>그리드</h5><ul><li>날짜·유형·가격·수량·상태</li><li>Trade: 시간·가격·수량·총액·구분</li><li>sticky 탭 헤더</li></ul></div>
@@ -283,7 +283,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 <div class="grid">
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">G1</div><div class="nm">공유 카드 모달 <span class="nb nb-st">Starzip 고유</span></div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
+  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">G1</div><div class="nm">공유 카드 모달 <span class="nb nb-st">Starzip 고유</span></div><div class="desc">썸네일+가격+통계 카드 · X·카카오·이미지저장·URL 복사 (2초 피드백)</div><div class="pri must">필수</div><div class="src src-g">고유</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>카드</h5><ul><li>썸네일 + 위치 배지 + 가격·변동률</li><li>심볼·상점명·24H 통계·월 고객</li><li>STARZIP 브랜드 + 타임스탬프</li></ul></div>
     <div class="dc"><h5>공유</h5><ul><li>X(트위터) · 카카오톡 · 이미지 저장</li><li>URL 복사 (복사됨! 피드백 2초)</li></ul></div>
@@ -292,7 +292,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">G2</div><div class="nm">하단 기능 바 (Bottom Bar)</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
+  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">G2</div><div class="nm">하단 기능 바 (Bottom Bar)</div><div class="desc">Price Alert · Watchlist · My Positions · Stable 도트 · 테마 전환</div><div class="pri must">필수</div><div class="src src-bn">BN 참고</div></div>
   <div class="bd"><div class="dc3">
     <div class="dc"><h5>기능 버튼</h5><ul><li>Price Alert</li><li>Watchlist (on)</li><li>My Positions (on)</li><li>Signal · AI Assistant</li></ul></div>
     <div class="dc"><h5>우측 유틸</h5><ul><li>Stable 도트 (초록)</li><li>다크/라이트 테마 전환</li><li>localStorage 저장</li></ul></div>
@@ -301,7 +301,7 @@ body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:2
 </div>
 
 <div class="row" onclick="tog(this)">
-  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">G3</div><div class="nm">토스트 알림</div><div class="pri high">높음</div><div class="src">공통</div></div>
+  <div class="hd"><div class="num" style="background:#F1EFE8;color:#444441">G3</div><div class="nm">토스트 알림</div><div class="desc">주문접수·즐겨찾기·URL복사·입출금 트리거 · 슬라이드업 2초 fade out</div><div class="pri high">높음</div><div class="src">공통</div></div>
   <div class="bd"><div class="dc2">
     <div class="dc"><h5>트리거</h5><ul><li>주문 접수 · 즐겨찾기 · URL 복사</li><li>입금·출금·전송 클릭</li><li>토큰 선택 확인</li></ul></div>
     <div class="dc"><h5>동작</h5><ul><li>translateY 슬라이드업 등장</li><li>2초 후 자동 fade out</li><li>화면 하단 중앙 고정</li></ul></div>
