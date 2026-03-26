@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEX 비교분석 — Starzip이 가져가야 할 것들</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#ffffff;--bg2:#f7f6f3;--bg3:#efefec;--border:#e3e2de;
+  --tp:#1a1917;--ts:#5e5d5b;--tt:#9b9a97;
+  --hl:#00D4F5;--hl-bg:#001F2B;--hl-muted:#003344;
+  --dy:#7B5BF2;--dy-bg:#0E0825;--dy-muted:#1A1040;
+  --bn:#F0B90B;--bn-bg:#181A20;--bn-muted:#222430;
+  --on:#6C63FF;--on-bg:#0A0A14;--on-muted:#14142A;
+  --sz:#1A4FDB;--sz-bg:#EBF0FF;--sz-muted:#DCEAFF;
+  --green:#1B7A4A;--green-bg:#EBF5EF;
+  --red:#C0392B;--red-bg:#FDECEA;
+  --amber:#7A4500;--amber-bg:#FFF3E0;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--tp);font-size:13px;padding:32px 24px 80px;max-width:1100px;margin:0 auto;line-height:1.6}
+
+/* 헤딩 */
+.page-title{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--tt);margin-bottom:28px;display:flex;gap:16px;flex-wrap:wrap}
+
+/* 탭 */
+.tab-row{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--ts);transition:all .15s}
+.tab:hover{background:var(--bg3)}
+.tab.on-hl{background:var(--hl-bg);color:var(--hl);border-color:var(--hl)}
+.tab.on-dy{background:var(--dy-bg);color:var(--dy);border-color:var(--dy)}
+.tab.on-bn{background:var(--bn-bg);color:var(--bn);border-color:var(--bn)}
+.tab.on-on{background:var(--on-bg);color:var(--on);border-color:var(--on)}
+.tab.on-sz{background:var(--sz-bg);color:var(--sz);border-color:var(--sz)}
+.tab.on-all{background:var(--tp);color:#fff;border-color:var(--tp)}
+
+/* 플랫폼 패널 */
+.panel{display:none}.panel.on{display:block}
+
+/* 플랫폼 헤더카드 */
+.platform-header{border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid}
+.platform-header.hl{background:var(--hl-bg);border-color:var(--hl-muted)}
+.platform-header.dy{background:var(--dy-bg);border-color:var(--dy-muted)}
+.platform-header.bn{background:var(--bn-bg);border-color:var(--bn-muted)}
+.platform-header.on{background:var(--on-bg);border-color:var(--on-muted)}
+.ph-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ph-logo{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.ph-hl{color:var(--hl)}.ph-dy{color:var(--dy)}.ph-bn{color:var(--bn)}.ph-on{color:var(--on)}
+.ph-tagline{font-size:11px;opacity:.7;margin-top:2px}
+.ph-stats{display:flex;gap:20px;flex-wrap:wrap}
+.ph-stat{text-align:right}
+.ph-stat .val{font-size:16px;font-weight:600;font-family:var(--mono)}
+.ph-stat .lbl{font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:.05em}
+.ph-stat.hl-c .val{color:var(--hl)}
+.ph-stat.dy-c .val{color:var(--dy)}
+.ph-stat.bn-c .val{color:var(--bn)}
+.ph-stat.on-c .val{color:var(--on)}
+.ph-desc{font-size:12px;opacity:.65;margin-top:12px;line-height:1.6}
+
+/* 섹션 그리드 */
+.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.section-grid.col3{grid-template-columns:1fr 1fr 1fr}
+.section-grid.col1{grid-template-columns:1fr}
+
+/* 카드 */
+.card{background:var(--bg2);border-radius:12px;padding:16px;border:.5px solid var(--border)}
+.card-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--tt);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.card-title .dot{width:6px;height:6px;border-radius:50%}
+
+/* 피처 리스트 */
+.feat-list{display:flex;flex-direction:column;gap:7px}
+.feat{display:flex;align-items:flex-start;gap:8px}
+.feat-icon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px}
+.feat-text{font-size:12px;line-height:1.45;color:var(--ts)}
+.feat-text strong{color:var(--tp);font-weight:500}
+
+/* 배지 */
+.badge{display:inline-block;font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;vertical-align:middle;margin-left:4px}
+.bd-must{background:var(--red-bg);color:var(--red)}
+.bd-high{background:var(--amber-bg);color:var(--amber)}
+.bd-med{background:var(--green-bg);color:var(--green)}
+.bd-skip{background:var(--bg3);color:var(--ts)}
+
+/* 비교 테이블 */
+.cmp-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.cmp-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tt);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0}
+.cmp-table td{padding:9px 10px;border-bottom:.5px solid var(--border);font-size:12px;vertical-align:top}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr:hover td{background:var(--bg2)}
+.cmp-table td:first-child{font-weight:500;color:var(--tp);white-space:nowrap;width:160px}
+.cmp-table .hl-cell{color:var(--hl);font-family:var(--mono);font-size:11px}
+.cmp-table .dy-cell{color:var(--dy);font-family:var(--mono);font-size:11px}
+.cmp-table .bn-cell{color:var(--bn);font-family:var(--mono);font-size:11px}
+.cmp-table .on-cell{color:var(--on);font-family:var(--mono);font-size:11px}
+.cmp-table .sz-cell{color:var(--sz);font-weight:600;font-size:11px}
+
+/* Starzip 가져가기 섹션 */
+.adopt-section{background:var(--sz-bg);border-radius:16px;padding:20px 24px;border:1px solid var(--sz);margin-top:20px}
+.adopt-title{font-size:13px;font-weight:600;color:var(--sz);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.adopt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.adopt-item{background:#fff;border-radius:10px;padding:12px 14px;border:.5px solid var(--border)}
+.adopt-item .pri{font-size:10px;font-weight:600;margin-bottom:5px}
+.adopt-item .from{font-size:9px;color:var(--tt);margin-bottom:3px;font-family:var(--mono)}
+.adopt-item .nm{font-size:13px;font-weight:500;margin-bottom:3px}
+.adopt-item .desc{font-size:11px;color:var(--ts);line-height:1.45}
+
+/* 전체 요약 테이블 */
+.matrix{width:100%;border-collapse:collapse;margin-bottom:20px}
+.matrix th{padding:8px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tt);border-bottom:1px solid var(--border);text-align:left}
+.matrix th.platform-col{text-align:center;padding:8px 6px}
+.matrix td{padding:8px 12px;border-bottom:.5px solid var(--border);font-size:12px;vertical-align:middle}
+.matrix td.center{text-align:center}
+.matrix tr:last-child td{border-bottom:none}
+.matrix tr:hover td{background:var(--bg2)}
+.check{font-size:13px}
+.matrix .feat-name{font-weight:500;color:var(--tp)}
+.matrix .feat-cat{font-size:10px;color:var(--tt);display:block;margin-top:1px}
+
+/* 섹션 구분 */
+.sec-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--tt);padding:20px 0 8px;display:flex;align-items:center;gap:8px;border-bottom:.5px solid var(--border);margin-bottom:12px}
+.sec-line{flex:1;height:.5px;background:var(--border)}
+
+/* 인사이트 박스 */
+.insight{background:var(--sz-bg);border-left:3px solid var(--sz);border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0;font-size:12px;color:var(--ts);line-height:1.5}
+.insight strong{color:var(--sz)}
+
+/* 하단 요약 */
+.footer-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.footer-card{background:var(--bg2);border-radius:10px;padding:14px;border:.5px solid var(--border)}
+.footer-card .fc-num{font-size:28px;font-weight:700;font-family:var(--mono);line-height:1;margin-bottom:4px}
+.footer-card .fc-lbl{font-size:11px;color:var(--tt)}
+
+@media(max-width:700px){
+  .section-grid,.section-grid.col3{grid-template-columns:1fr}
+  .adopt-grid{grid-template-columns:1fr}
+  .footer-summary{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="page-title">DEX 비교분석 — Starzip이 가져가야 할 것들</div>
+<div class="page-sub">
+  <span>📅 2026-03-26 기준</span>
+  <span>📊 Hyperliquid · dYdX · Binance DEX · Ondo Finance</span>
+  <span>🎯 Starzip 적용 우선순위 포함</span>
+</div>
+
+<!-- 탭 -->
+<div class="tab-row">
+  <button class="tab on-all" onclick="sw('all',this)">전체 요약</button>
+  <button class="tab" onclick="sw('hl',this)">⚡ Hyperliquid</button>
+  <button class="tab" onclick="sw('dy',this)">🟣 dYdX</button>
+  <button class="tab" onclick="sw('bn',this)">🟡 Binance DEX</button>
+  <button class="tab" onclick="sw('on',this)">🔵 Ondo Finance</button>
+</div>
+
+<!-- ═══════════════════════════════ 전체 요약 ═══════════════════════════════ -->
+<div class="panel on" id="p-all">
+
+<div class="sec-label">기능 매트릭스 — 누가 뭘 갖고 있고, Starzip은 무엇을 가져갈 것인가 <div class="sec-line"></div></div>
+
+<div class="card" style="margin-bottom:20px">
+<table class="matrix">
+<thead>
+<tr>
+  <th style="width:220px">기능 · 특징</th>
+  <th class="platform-col" style="color:#00D4F5">HL</th>
+  <th class="platform-col" style="color:#7B5BF2">dYdX</th>
+  <th class="platform-col" style="color:#F0B90B">BN</th>
+  <th class="platform-col" style="color:#6C63FF">Ondo</th>
+  <th class="platform-col" style="color:#1A4FDB">Starzip</th>
+  <th style="width:80px">우선순위</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><span class="feat-name">오프체인 오더북 + 온체인 정산</span><span class="feat-cat">아키텍처</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">실시간 통계 바 (거래량·지표)</span><span class="feat-cat">UX — 상단</span></td><td class="center">✅</td><td class="center">—</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">트렌딩 상점/자산 스트립</span><span class="feat-cat">UX — 상단</span></td><td class="center">✅</td><td class="center">—</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">지정가·시장가·GTC·IOC·FOK</span><span class="feat-cat">주문 유형</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">Canvas 캔들 차트 (다크/라이트)</span><span class="feat-cat">차트</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">실시간 호가창 + 비율 바</span><span class="feat-cat">오더북</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">수수료 배분 투명 공시</span><span class="feat-cat">신뢰 · 고유</span></td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">✅</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">Bottom Bar (기능 가로 스크롤)</span><span class="feat-cat">UX — 하단</span></td><td class="center">—</td><td class="center">—</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">Leaderboard / 공개 포지션</span><span class="feat-cat">커뮤니티</span></td><td class="center">✅</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">🔜</td><td><span class="badge bd-high">높음</span></td></tr>
+<tr><td><span class="feat-name">가스비 대납 (AA/Paymaster)</span><span class="feat-cat">UX — 온보딩</span></td><td class="center">✅</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">볼륨 기반 수수료 할인 티어</span><span class="feat-cat">수수료</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center">🔜</td><td><span class="badge bd-high">높음</span></td></tr>
+<tr><td><span class="feat-name">HIP-3 신규 마켓 부트스트랩</span><span class="feat-cat">유동성</span></td><td class="center">✅</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">RWA 온체인 공시 (분기 실적)</span><span class="feat-cat">신뢰 · 고유</span></td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">✅</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">DAO 거버넌스 (온체인 투표)</span><span class="feat-cat">거버넌스</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center">✅</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">Circuit Breaker / 긴급 정지</span><span class="feat-cat">보안</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">DUST 포인트 / 리워드 루프</span><span class="feat-cat">리텐션 · 고유</span></td><td class="center">—</td><td class="center">—</td><td class="center">✅</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">Telegram/소셜 거래</span><span class="feat-cat">배포 채널</span></td><td class="center">—</td><td class="center">✅</td><td class="center">—</td><td class="center">—</td><td class="center">🔜</td><td><span class="badge bd-high">높음</span></td></tr>
+<tr><td><span class="feat-name">교차 체인 입금 (멀티체인)</span><span class="feat-cat">접근성</span></td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">🔜</td><td><span class="badge bd-high">높음</span></td></tr>
+<tr><td><span class="feat-name">위치 기반 상점 탐색</span><span class="feat-cat">마켓 · 고유</span></td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+<tr><td><span class="feat-name">Passkey / 생체인증 지갑</span><span class="feat-cat">UX — 고유</span></td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center check" style="color:#1A4FDB">✅</td><td><span class="badge bd-must">필수</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sec-label">Starzip이 가져가야 할 핵심 요소 — 플랫폼별 <div class="sec-line"></div></div>
+
+<div class="adopt-section">
+<div class="adopt-title">🎯 Starzip 채택 목록 (우선순위순)</div>
+<div class="adopt-grid">
+
+<div class="adopt-item">
+  <div class="from">⚡ Hyperliquid에서</div>
+  <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+  <div class="nm">실시간 통계 바 + Leaderboard</div>
+  <div class="desc">24H 거래량·상장 상점 수·참여국을 상단 바에 인라인 표시. HL의 "공개 포지션" 개념을 Store Leaderboard(월 거래량 TOP 상점)로 전환.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">⚡ Hyperliquid에서</div>
+  <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+  <div class="nm">CEX급 UX — 지문 한 번으로 끝</div>
+  <div class="desc">HL은 자체 L1으로 가스비 0에 가까운 UX를 구현. Starzip은 Passkey + AA Paymaster로 동일 효과. "블록체인인 줄 몰랐다"는 경험이 목표.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">⚡ Hyperliquid에서</div>
+  <div class="pri"><span class="badge bd-high">높음</span></div>
+  <div class="nm">HIP-3 신시장 수수료 감면 → 런치패드 부스트</div>
+  <div class="desc">HL이 신규 마켓 출시 시 프로토콜 수수료 90% 감면해 유동성 부트스트랩. Starzip은 런치패드 기간 수수료를 0.1%로 인하 → 초기 거래 활성화.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">🟣 dYdX에서</div>
+  <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+  <div class="nm">마켓 상태 탭 바 (전체/거래량/런치패드/신규/즐겨찾기)</div>
+  <div class="desc">dYdX의 깔끔한 마켓 탭 구조를 그대로 채택. "런치패드"와 "신규 7일" 탭을 추가해 Starzip 고유 동선 구현.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">🟣 dYdX에서</div>
+  <div class="pri"><span class="badge bd-high">높음</span></div>
+  <div class="nm">Telegram 거래 채널</div>
+  <div class="desc">dYdX가 2025년 Pocket Protector 인수로 TG 800M 유저 타겟. Starzip도 TG Bot으로 상점 토큰 시세 알림·간편 매수 지원 → Phase 2 목표.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">🟡 Binance DEX에서</div>
+  <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+  <div class="nm">Bottom Bar + 다크/라이트 테마</div>
+  <div class="desc">BN Web3의 가로 스크롤 Bottom Bar(Price Alert·Watchlist·Positions). localStorage로 테마 저장. 이미 설계 완료, 구현 우선.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">🟡 Binance DEX에서</div>
+  <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+  <div class="nm">DUST 리워드 루프 (BN의 BNB 수수료 할인과 동치)</div>
+  <div class="desc">BN은 BNB 보유자에게 수수료 25% 할인. Starzip은 STAR 스테이킹 → 수수료 10% 할인 + DUST 적립 → TGE 후 STAR 전환. 더 강력한 플라이휠.</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">🔵 Ondo Finance에서</div>
+  <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+  <div class="nm">RWA 온체인 공시 → 분기 매출 공시</div>
+  <div class="desc">Ondo는 US Treasury를 온체인으로 투명 공시. Starzip은 상점 분기 매출을 온체인 해시로 기록 → Optimistic Compliance. 실물 상점의 "신뢰 인프라".</div>
+</div>
+
+<div class="adopt-item">
+  <div class="from">🔵 Ondo Finance에서</div>
+  <div class="pri"><span class="badge bd-high">높음</span></div>
+  <div class="nm">기관급 비율 공시 (FDV·공급량·베스팅 투명성)</div>
+  <div class="desc">Ondo의 OUSG·USDY는 실시간 NAV·자산 구성 공개. Starzip 상점 패널 토큰 탭에서 총공급량·유통량·FDV·베스팅 일정 실시간 표시.</div>
+</div>
+
+</div>
+</div>
+
+<div class="footer-summary">
+  <div class="footer-card"><div class="fc-num" style="color:#1A4FDB">19</div><div class="fc-lbl">비교 기능 항목</div></div>
+  <div class="footer-card"><div class="fc-num" style="color:#1B7A4A">12</div><div class="fc-lbl">필수 즉시 채택</div></div>
+  <div class="footer-card"><div class="fc-num" style="color:#7A4500">5</div><div class="fc-lbl">Phase 2 목표</div></div>
+  <div class="footer-card"><div class="fc-num" style="color:#6C63FF">7</div><div class="fc-lbl">Starzip 고유 (경쟁사 無)</div></div>
+</div>
+
+</div>
+<!-- ═══ END ALL ═══ -->
+
+<!-- ═══════════════════════════════ HYPERLIQUID ═══════════════════════════════ -->
+<div class="panel" id="p-hl">
+<div class="platform-header hl">
+  <div class="ph-top">
+    <div>
+      <div class="ph-logo ph-hl">⚡ Hyperliquid</div>
+      <div class="ph-tagline" style="color:#aaa">자체 L1 · CEX급 UX · 완전 온체인 오더북</div>
+    </div>
+    <div class="ph-stats">
+      <div class="ph-stat hl-c"><div class="val">$208B</div><div class="lbl">30일 거래량</div></div>
+      <div class="ph-stat hl-c"><div class="val">70~80%</div><div class="lbl">Perp DEX 점유율</div></div>
+      <div class="ph-stat hl-c"><div class="val">200K/s</div><div class="lbl">오더 처리량</div></div>
+      <div class="ph-stat hl-c"><div class="val">0.035%</div><div class="lbl">Taker 수수료</div></div>
+    </div>
+  </div>
+  <div class="ph-desc" style="color:#aaa">2024년 혜성처럼 등장해 Perp DEX 시장을 장악. 외부 투자 없이 자체 자금으로 L1 블록체인을 구축. 가장 낮은 수수료와 CEX 수준의 UX로 트레이더를 흡수. 2026년 3월 기준 DEX-CEX 스팟 비중 22% 달성.</div>
+</div>
+
+<div class="section-grid col3">
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#00D4F5"></div>아키텍처 강점</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">🔗</div><div class="feat-text"><strong>완전 온체인 오더북</strong> — 모든 주문·취소·체결이 HyperCore 위에서 처리. sub-second 최종성.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">⚡</div><div class="feat-text"><strong>200,000 OPS</strong> — 초당 20만 건 처리. CEX 대비 손색없는 실행 속도.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">🔒</div><div class="feat-text"><strong>HyperEVM 통합</strong> — 동일 컨센서스 보안을 EVM 앱에도 상속. 별도 롤업/사이드체인 불필요.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#00D4F5"></div>UX/성장 전략</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">📊</div><div class="feat-text"><strong>공개 포지션 Leaderboard</strong> — 고래 트레이더의 실시간 포지션 공개. James Wynn·White Whale 등 바이럴 효과.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">💸</div><div class="feat-text"><strong>HIP-3 신시장 감면</strong> — 신규 마켓 수수료 90% 감면으로 유동성 부트스트랩.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">🎯</div><div class="feat-text"><strong>가스비 = 0에 수렴</strong> — 자체 L1이므로 사용자 가스비 사실상 없음. 온보딩 마찰 최소.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#00D4F5"></div>수수료 구조</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">💰</div><div class="feat-text"><strong>Maker 0.01% / Taker 0.035%</strong> — 업계 최저. 고볼륨 시 0% 또는 리베이트.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">📈</div><div class="feat-text"><strong>볼륨 티어 할인</strong> — 14일 롤링 기준, 누적량에 따라 단계적 인하.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#001F2B;color:#00D4F5">🔄</div><div class="feat-text"><strong>Buyback 구조</strong> — 수수료 일부로 HYPE 매수·소각 → 토큰 가치 유지.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="adopt-section" style="margin-top:16px">
+  <div class="adopt-title">🎯 Starzip이 HL에서 가져갈 것</div>
+  <div class="adopt-grid">
+    <div class="adopt-item">
+      <div class="from">HL → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">실시간 통계 바</div>
+      <div class="desc">24H 거래량·상장 상점 수·런치패드 진행·STAR 가격·참여국을 상단 A2 통계 바에 인라인 표시. HL 특유의 "시장이 살아있다" 느낌을 구현.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">HL → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">가스비 0 UX (Passkey + Paymaster)</div>
+      <div class="desc">HL은 자체 L1으로 달성. Starzip은 AA Paymaster가 BNB를 대납. 사업주 콘솔: 지문 → 온체인 완료. 사용자는 가스비 개념 불필요.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">HL → Starzip (변형)</div>
+      <div class="pri"><span class="badge bd-high">높음 Phase 2</span></div>
+      <div class="nm">Store Leaderboard</div>
+      <div class="desc">HL의 트레이더 리더보드 → 월 거래량·성장률·리뷰 수 TOP 상점 리더보드로 전환. 상점 간 경쟁 유도 + 발견 동선 강화.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">HL → Starzip (변형)</div>
+      <div class="pri"><span class="badge bd-high">높음 Phase 2</span></div>
+      <div class="nm">런치패드 수수료 감면</div>
+      <div class="desc">HIP-3의 신시장 90% 감면 개념을 채택. 런치패드 기간 거래 수수료 0.39% → 0.1%로 인하 → 초기 거래 활성화 후 정상화.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════ dYdX ═══════════════════════════════ -->
+<div class="panel" id="p-dy">
+<div class="platform-header dy">
+  <div class="ph-top">
+    <div>
+      <div class="ph-logo ph-dy">🟣 dYdX</div>
+      <div class="ph-tagline" style="color:#aaa">Cosmos 앱체인 · 고급 주문 유형 · 거버넌스</div>
+    </div>
+    <div class="ph-stats">
+      <div class="ph-stat dy-c"><div class="val">$25~30B</div><div class="lbl">30일 거래량</div></div>
+      <div class="ph-stat dy-c"><div class="val">220+</div><div class="lbl">마켓 수</div></div>
+      <div class="ph-stat dy-c"><div class="val">0.05%</div><div class="lbl">Taker 수수료</div></div>
+      <div class="ph-stat dy-c"><div class="val">50x</div><div class="lbl">최대 레버리지</div></div>
+    </div>
+  </div>
+  <div class="ph-desc" style="color:#aaa">2017년 창업, 가장 오래된 DEX 중 하나. v4에서 Cosmos 기반 자체 앱체인으로 전환. HL에 점유율을 잃고 있지만 거버넌스·고급 주문 유형·MEV 저항성에서 차별화. 2025년 Telegram 거래 통합으로 신규 유저 채널 확보.</div>
+</div>
+
+<div class="section-grid col3">
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#7B5BF2"></div>UX 특징</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">📋</div><div class="feat-text"><strong>마켓 탭 구조</strong> — 전체/즐겨찾기/카테고리 분류. 깔끔하고 직관적.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">📱</div><div class="feat-text"><strong>Telegram 거래 통합</strong> — Pocket Protector 인수. TG 800M 유저 대상 직접 거래.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">🛡</div><div class="feat-text"><strong>MEV 저항 설계</strong> — 오프체인 오더북으로 프론트러닝 방지. 기관 트레이더 친화.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#7B5BF2"></div>주문 유형</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">📌</div><div class="feat-text"><strong>Stop/Limit/TP 지원</strong> — 고급 조건부 주문. 기관급 리스크 관리.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">📌</div><div class="feat-text"><strong>GTC·IOC·FOK</strong> — 전 주문 유형 지원으로 트레이딩 전략 폭 확대.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">⚖️</div><div class="feat-text"><strong>MegaVault</strong> — 패시브 수익 수단. DYDX 스테이킹 = 수수료 일부 수령.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#7B5BF2"></div>거버넌스</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">🗳</div><div class="feat-text"><strong>DYDX 토큰 거버넌스</strong> — 수수료율·업그레이드·재무 지출을 온체인 투표로 결정.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">💵</div><div class="feat-text"><strong>$8M 에코시스템 펀드</strong> — 연구·개발·트레이더 인센티브에 배분.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0E0825;color:#7B5BF2">🔗</div><div class="feat-text"><strong>Cosmos IBC</strong> — Ethereum·Arbitrum 등 6개 체인에서 입금. 멀티체인 접근성.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="adopt-section" style="margin-top:16px">
+  <div class="adopt-title">🎯 Starzip이 dYdX에서 가져갈 것</div>
+  <div class="adopt-grid">
+    <div class="adopt-item">
+      <div class="from">dYdX → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">마켓 상태 탭 구조</div>
+      <div class="desc">전체·거래량상위·런치패드·신규·즐겨찾기 탭 바. dYdX의 깔끔한 카테고리 분류를 상점 맥락에 맞게 변형. 이미 D1 구성요소로 설계 완료.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">dYdX → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">DEX DAO + Store DAO 이중 거버넌스</div>
+      <div class="desc">dYdX처럼 DYDX 홀더가 플랫폼 정책 투표. Starzip은 STAR(DEX DAO) + Store Token(Store DAO)으로 이중 레이어. 상점 단위 미시 거버넌스가 추가 차별점.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">dYdX → Starzip (Phase 2)</div>
+      <div class="pri"><span class="badge bd-high">높음 Phase 2</span></div>
+      <div class="nm">Telegram 거래 봇</div>
+      <div class="desc">dYdX가 TG 800M 유저를 타겟. Starzip은 TG Bot으로 상점 토큰 시세 알림·간편 매수 지원. 한국 카카오톡 채널도 병행 검토.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">dYdX → Starzip (변형)</div>
+      <div class="pri"><span class="badge bd-high">높음 Phase 2</span></div>
+      <div class="nm">수수료 수익 스테이킹 배분</div>
+      <div class="desc">dYdX MegaVault처럼 STAR 스테이킹 → 플랫폼 수수료 일부 수령. "좋아하는 플랫폼에 투자하면 수익이 온다"는 참여 동기 강화.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════ Binance DEX ═══════════════════════════════ -->
+<div class="panel" id="p-bn">
+<div class="platform-header bn">
+  <div class="ph-top">
+    <div>
+      <div class="ph-logo ph-bn">🟡 Binance DEX (AsterDEX)</div>
+      <div class="ph-tagline" style="color:#aaa">CEX 브랜드 파워 · 깊은 유동성 · 멀티체인</div>
+    </div>
+    <div class="ph-stats">
+      <div class="ph-stat bn-c"><div class="val">$40B+</div><div class="lbl">스테이블코인 잔고</div></div>
+      <div class="ph-stat bn-c"><div class="val">3위</div><div class="lbl">DEX 점유율 (2026)</div></div>
+      <div class="ph-stat bn-c"><div class="val">USDT</div><div class="lbl">전 계약 결제 통화</div></div>
+      <div class="ph-stat bn-c"><div class="val">1000x</div><div class="lbl">최대 레버리지 (Shield)</div></div>
+    </div>
+  </div>
+  <div class="ph-desc" style="color:#aaa">Binance의 DEX 브랜드 AsterDEX. CEX 수준의 유동성과 멀티체인 입금(ETH·BNB·ARB·SOL)이 강점. Shield Trading으로 1000x 레버리지, Grid Bot 자동화 지원. BNB 보유 시 수수료 25% 할인. Bybit의 Apex Omni와 함께 CEX 배경 DEX로 신뢰도 우위.</div>
+</div>
+
+<div class="section-grid col3">
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#F0B90B"></div>UX 특징</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">📊</div><div class="feat-text"><strong>Bottom Bar</strong> — 기능 가로 스크롤 바. Price Alert·Watchlist·Positions·Signal 배치.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">🌙</div><div class="feat-text"><strong>다크/라이트 테마</strong> — 전체 CSS 변수 전환. 사용자 선호 localStorage 저장.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">🤖</div><div class="feat-text"><strong>Grid Bot</strong> — 자동화 매매 봇. 범위 설정 후 자동 매수/매도 반복.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#F0B90B"></div>리워드 구조</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">💰</div><div class="feat-text"><strong>BNB 수수료 25% 할인</strong> — 생태계 토큰 보유가 플랫폼 이용 혜택과 직결.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">🎁</div><div class="feat-text"><strong>거래 마이닝</strong> — 거래량 기반 BNB 리워드 지급. 초기 유저 획득에 효과적.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">🔗</div><div class="feat-text"><strong>멀티체인 입금</strong> — Ethereum·BNB Chain·Arbitrum·Solana 동시 지원.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#F0B90B"></div>트렌딩 / 마켓</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">🔥</div><div class="feat-text"><strong>트렌딩 스트립</strong> — 상단에 인기 자산 가로 스크롤. "지금 뜨는 것"을 즉시 발견.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">📈</div><div class="feat-text"><strong>Stable 상태 표시</strong> — 플랫폼 정상 동작 여부 실시간 표시 (하단 바 우측 초록 dot).</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#181A20;color:#F0B90B">🎯</div><div class="feat-text"><strong>거래량 그룹핑 정렬</strong> — 볼륨·변동률·신규 기준 정렬. 빠른 기회 발견.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="adopt-section" style="margin-top:16px">
+  <div class="adopt-title">🎯 Starzip이 Binance DEX에서 가져갈 것</div>
+  <div class="adopt-grid">
+    <div class="adopt-item">
+      <div class="from">BN → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">Bottom Bar + 다크/라이트 테마</div>
+      <div class="desc">이미 F1·F2·F3으로 설계 완료. Price Alert·Watchlist·My Positions 좌측, Stable 도트·테마 전환 우측. localStorage 저장.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">BN → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">트렌딩 상점 스트립</div>
+      <div class="desc">BN의 인기 자산 가로 스크롤 → TOP 5 상점 스트립(상점명+업종+도시+국기). A3 구성요소로 설계 완료. 홈 첫 인상에 "시장이 살아있다" 느낌.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">BN → Starzip (강화)</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">DUST 리워드 루프 (BNB 할인 강화판)</div>
+      <div class="desc">BNB 25% 할인보다 강력: STAR 스테이킹→10% 할인 + DUST 적립(거래량 0.1%)→TGE 후 STAR 전환. 복리 효과로 장기 보유 유도.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">BN → Starzip (Phase 2)</div>
+      <div class="pri"><span class="badge bd-high">높음 Phase 2</span></div>
+      <div class="nm">멀티체인 입금</div>
+      <div class="desc">현재 opBNB 단일. Phase 2에서 Ethereum·Arbitrum 입금 추가. 크립토 네이티브 유저의 진입 마찰 최소화. BNB 체인이 기반이므로 기술 난이도 낮음.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════ Ondo ═══════════════════════════════ -->
+<div class="panel" id="p-on">
+<div class="platform-header on">
+  <div class="ph-top">
+    <div>
+      <div class="ph-logo ph-on">🔵 Ondo Finance</div>
+      <div class="ph-tagline" style="color:#aaa">RWA 토큰화 리더 · 기관급 온체인 공시 · 투명성</div>
+    </div>
+    <div class="ph-stats">
+      <div class="ph-stat on-c"><div class="val">$1.6B</div><div class="lbl">TVL (2025.9)</div></div>
+      <div class="ph-stat on-c"><div class="val">$2B</div><div class="lbl">2025년 거래량</div></div>
+      <div class="ph-stat on-c"><div class="val">17%</div><div class="lbl">토큰화 국채 점유율</div></div>
+      <div class="ph-stat on-c"><div class="val">100+</div><div class="lbl">토큰화 주식 수</div></div>
+    </div>
+  </div>
+  <div class="ph-desc" style="color:#aaa">실물 자산(US Treasury·주식·ETF)을 블록체인에 올리는 RWA 토큰화 리더. Goldman Sachs 출신 팀, BlackRock·Fidelity·JPMorgan과 파트너십. SEC 조사 무혐의 종결(2025.11). Ondo Global Markets로 100개 이상 미국 주식 토큰화. Starzip과 가장 가까운 철학: "실물 자산 + 온체인 투명성".</div>
+</div>
+
+<div class="section-grid col3">
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#6C63FF"></div>핵심 철학</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">📜</div><div class="feat-text"><strong>온체인 NAV 실시간 공시</strong> — OUSG·USDY의 자산 구성·수익률을 블록체인에 실시간 기록. 누구나 검증 가능.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">🏛</div><div class="feat-text"><strong>규제 친화 설계</strong> — SEC 등록 브로커딜러 인수(Oasis Pro). 컴플라이언스가 경쟁력.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">🌐</div><div class="feat-text"><strong>멀티체인 브릿지</strong> — Ethereum·BNB Chain·Solana·XRP Ledger·Stellar. 어디서든 접근.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#6C63FF"></div>성장 동력</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">🏦</div><div class="feat-text"><strong>기관 파트너십</strong> — BlackRock BUIDL·Fidelity·JPMorgan Kinexys·State Street·Galaxy 협업.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">💎</div><div class="feat-text"><strong>SWEEP 토큰화 펀드</strong> — State Street + Galaxy $200M 시드. 2026년 출시 예정.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">🔬</div><div class="feat-text"><strong>제로 슬리피지 실증</strong> — NVDA 주식 $10M 환매를 수 분 내 처리. 기관급 실행력 입증.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:#6C63FF"></div>Starzip과의 유사점</div>
+    <div class="feat-list">
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">🏪</div><div class="feat-text"><strong>실물 자산의 토큰화</strong> — Ondo: 국채·주식 → Starzip: 지역 상점. "실물 가치"를 온체인으로.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">🔍</div><div class="feat-text"><strong>온체인 투명성이 신뢰</strong> — Ondo: NAV 공시 → Starzip: 분기 매출 공시. 공시가 곧 신뢰.</div></div>
+      <div class="feat"><div class="feat-icon" style="background:#0A0A14;color:#6C63FF">📊</div><div class="feat-text"><strong>토큰 = 실물 소유권</strong> — Ondo: OUSG = 국채 지분 → Starzip: CAFE = 상점 커뮤니티 지분.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="adopt-section" style="margin-top:16px">
+  <div class="adopt-title">🎯 Starzip이 Ondo에서 가져갈 것</div>
+  <div class="adopt-grid">
+    <div class="adopt-item">
+      <div class="from">Ondo → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시 (핵심)</span></div>
+      <div class="nm">온체인 분기 공시 = 신뢰 인프라</div>
+      <div class="desc">Ondo가 NAV를 실시간 온체인 공시해 기관 신뢰를 얻듯, Starzip은 상점 분기 매출을 온체인 해시로 기록. "공시 = 베스팅 해제" 연결로 자동 집행 강제.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">Ondo → Starzip</div>
+      <div class="pri"><span class="badge bd-must">필수 즉시</span></div>
+      <div class="nm">토큰 정보 투명 공시 (FDV·베스팅·유통량)</div>
+      <div class="desc">Ondo가 OUSG 구성 자산·수익률 실시간 공개. Starzip 상점 패널 토큰 탭: 총공급량·유통량·FDV·베스팅 스케줄·소각 내역 실시간 표시. 투자자 신뢰 기반.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">Ondo → Starzip (변형)</div>
+      <div class="pri"><span class="badge bd-high">높음 Phase 2</span></div>
+      <div class="nm">Optimistic Compliance 법적 프레임</div>
+      <div class="desc">Ondo처럼 SEC 친화 컴플라이언스 설계. 챌린지 기간·DAO 항소·멀티시그 심사로 "기본 신뢰 + 문제 시 개입" 원칙. 지역별 규제 대응 프레임워크 조기 정립.</div>
+    </div>
+    <div class="adopt-item">
+      <div class="from">Ondo → Starzip (장기)</div>
+      <div class="pri"><span class="badge bd-med">중간 Phase 3</span></div>
+      <div class="nm">기관 파트너십 → 지역 가맹점 협회</div>
+      <div class="desc">Ondo의 BlackRock·Fidelity 파트너십 전략처럼, Starzip은 지역 상공회의소·가맹점 협회와 파트너십. "파트너 경유 온보딩"이 이미 플랫폼 설계에 내장.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function sw(id, el) {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.className = 'tab';
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+
+  const classMap = {all:'on-all', hl:'on-hl', dy:'on-dy', bn:'on-bn', on:'on-on'};
+  el.classList.add(classMap[id] || 'on-all');
+  document.getElementById('p-' + id).classList.add('on');
+}
+</script>
+</body>
+</html>
