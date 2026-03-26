@@ -17,7 +17,7 @@
   --am:#7A4500;--abg:#FFF3E0;
   --font-body:'DM Sans',sans-serif;
   --font-mono:'IBM Plex Mono',monospace;
-  --left-w:260px;
+  --left-w:360px;
 }
 html.dark{
   --bg:#0E0E11;--s:#16161A;--s2:#1E1E24;--s3:#26262E;
@@ -47,8 +47,22 @@ html.dark .topnav{background:#0A0A0E}
 .btn-theme-nav{width:26px;height:26px;background:rgba(255,255,255,.08);border:none;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55)}
 .btn-theme-nav svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
 
+/* ── SYM-BAR v9 확장 ── */
+.sym-thumb-lg{width:44px;height:44px;border-radius:10px;background:#C8B498;position:relative;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sym-wm-lg{font-family:var(--font-mono);font-weight:700;font-size:22px;opacity:.14;color:#6B4A2A}
+.sym-tk-lg{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:7px;background:rgba(0,0,0,.3);color:rgba(255,255,255,.95);padding:1px 5px;border-radius:3px;white-space:nowrap}
+.sym-names-v9{display:flex;flex-direction:column;gap:3px;min-width:0}
+.sym-top-row{display:flex;align-items:center;gap:7px;flex-wrap:nowrap}
+.sym-top-row .n1{font-size:15px;font-weight:600;white-space:nowrap}
+.sym-top-row .n2{font-family:var(--font-mono);font-size:11px;color:var(--tt);white-space:nowrap}
+.sym-badge-v9{display:inline-flex;align-items:center;gap:3px;background:var(--bbg);color:var(--bl);font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.sym-meta-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sym-meta-item{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--ts);white-space:nowrap}
+.sym-meta-item svg{color:var(--tt);flex-shrink:0}
+.sym-meta-sep{color:var(--tt);font-size:10px}
+
 /* ── SYMBOL BAR ── */
-.sym-bar{background:var(--s);border-bottom:1px solid var(--b);height:48px;display:flex;align-items:center;padding:0 14px;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.sym-bar{background:var(--s);border-bottom:1px solid var(--b);height:64px;display:flex;align-items:center;padding:0 14px;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
 .sym-bar::-webkit-scrollbar{display:none}
 .sym-info{display:flex;align-items:center;gap:10px;margin-right:14px;flex-shrink:0}
 .sym-thumb{width:30px;height:30px;border-radius:7px;background:#C8B498;position:relative;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
@@ -79,79 +93,18 @@ html.dark .topnav{background:#0A0A0E}
 /* ── MAIN AREA (아래 전체) ── */
 .main-area{flex:1;display:flex;min-height:0;overflow:hidden;position:relative}
 
-/* ── LEFT PANEL CONTAINER ── */
 .left-col{
   width:var(--left-w);min-width:var(--left-w);
   height:100%;border-right:1px solid var(--b);
   position:relative;overflow:hidden;flex-shrink:0;
   background:var(--s);
+  transition:width .24s cubic-bezier(.4,0,.2,1),min-width .24s cubic-bezier(.4,0,.2,1);
 }
+.left-col.collapsed{width:0;min-width:0;border-right:none}
 
-/* ── MARKET LIST — 항상 자리 유지 (뒤에서 살아있음) ── */
-.market-list-panel{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;
-  background:var(--s);
-  /* 상점 패널이 올라오면 살짝 dim + scale */
-  transition:transform .3s cubic-bezier(.4,0,.2,1), opacity .3s, filter .3s;
-  transform-origin:center bottom;
-}
-.market-list-panel.under{
-  opacity:.35;
-  transform:scale(.97) translateY(4px);
-  filter:blur(1px);
-  pointer-events:none;
-}
 
-.ml-search{padding:8px;border-bottom:1px solid var(--b);flex-shrink:0}
-.ml-search-input{width:100%;background:var(--s2);border:.5px solid var(--b);border-radius:6px;padding:6px 10px 6px 28px;font-size:11px;color:var(--tp);outline:none;font-family:var(--font-body);position:relative}
-.ml-search-wrap{position:relative}
-.ml-search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--tt);pointer-events:none}
-.ml-search-icon svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5;display:block}
-.ml-cats{display:flex;padding:6px 8px;border-bottom:1px solid var(--b);gap:4px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
-.ml-cats::-webkit-scrollbar{display:none}
-.ml-cat{padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;color:var(--tt);border:none;background:transparent;font-family:var(--font-body);white-space:nowrap;border-bottom:2px solid transparent;font-weight:500}
-.ml-cat.active{color:var(--tp);border-bottom-color:var(--tp)}
-.ml-header{display:grid;grid-template-columns:1fr 80px 60px;padding:5px 10px;border-bottom:.5px solid var(--b);flex-shrink:0}
-.ml-header span{font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em}
-.ml-header span:nth-child(2){text-align:right}
-.ml-header span:last-child{text-align:right}
-.ml-body{flex:1;overflow-y:auto;scrollbar-width:thin}
-.ml-body::-webkit-scrollbar{width:3px}
-.ml-body::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
-.ml-row{display:grid;grid-template-columns:1fr 80px 60px;padding:7px 10px;cursor:pointer;transition:background .1s;align-items:center;border-bottom:.5px solid var(--b)}
-.ml-row:hover{background:var(--s2)}
-.ml-row.active{background:var(--s2)}
-.ml-row-left{display:flex;align-items:center;gap:6px}
-.ml-thumb{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:6px;font-weight:700;flex-shrink:0}
-.ml-token{font-size:11px;font-weight:500}
-.ml-vol{font-size:9px;color:var(--tt)}
-.ml-price{font-family:var(--font-mono);font-size:11px;font-weight:500;text-align:right}
-.ml-chg{font-family:var(--font-mono);font-size:10px;text-align:right;font-weight:500}
-
-/* ── STORE PANEL — 위에서 슬라이드 다운 레이어 ── */
-.store-panel{
-  position:absolute;
-  top:0;left:0;right:0;
-  /* 닫혀있을 때: 위로 숨김 */
-  transform:translateY(-100%);
-  /* 최대 높이는 컨테이너 전체 */
-  max-height:100%;
-  height:100%;
-  display:flex;flex-direction:column;
-  transition:transform .32s cubic-bezier(.4,0,.2,1), box-shadow .32s;
-  background:var(--s);
-  z-index:10;
-  box-shadow:none;
-  overflow:hidden;
-}
-.store-panel.active{
-  transform:translateY(0);
-  box-shadow:0 8px 32px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.10);
-}
-html.dark .store-panel.active{
-  box-shadow:0 8px 32px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
-}
+/* ── STORE PANEL — 항상 표시 ── */
+.store-panel{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--s);overflow:hidden}
 
 /* store panel header with close + drag handle */
 .sp-topbar{
@@ -159,24 +112,7 @@ html.dark .store-panel.active{
   padding:8px 10px 8px 10px;
   border-bottom:1px solid var(--b);
   flex-shrink:0;background:var(--s);
-  /* 레이어임을 암시하는 미묘한 상단 accent */
-  border-top:2px solid var(--bl);
-  position:relative;
 }
-/* 드래그 핸들 힌트 (상단 중앙) */
-.sp-topbar::before{
-  content:'';
-  position:absolute;top:4px;left:50%;transform:translateX(-50%);
-  width:28px;height:2px;border-radius:1px;
-  background:var(--b2);
-}
-.sp-back{
-  width:26px;height:26px;border:.5px solid var(--b);border-radius:5px;
-  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  color:var(--ts);flex-shrink:0;transition:background .1s;margin-top:4px;
-}
-.sp-back:hover{background:var(--s2)}
-.sp-back svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}
 .sp-topbar-name{font-size:12px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sp-topbar-price{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--g);flex-shrink:0}
 
@@ -197,6 +133,7 @@ html.dark .store-panel.active{
 .sp-body::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
 .spt-panel{display:none;padding:12px}
 .spt-panel.active{display:block}
+#spt-info{padding:0}
 
 /* header in sp */
 .sp-hero{margin-bottom:10px}
@@ -485,6 +422,67 @@ html.dark .btm-bar{background:#0A0A0E;border-top-color:#1E1E28}
 .theme-btn{width:28px;height:28px;border-radius:5px;border:.5px solid var(--b);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts)}
 .theme-btn svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}
 
+
+/* ── INFO GRID (Image1 3컬럼) ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.info-col{padding:12px 10px;border-right:.5px solid var(--b)}
+.info-col:last-child{border-right:none}
+.info-col-title{font-size:9px;font-weight:500;color:var(--tt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.info-kv{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:.5px solid var(--b);gap:6px}
+.info-kv:last-child{border-bottom:none}
+.ik{font-size:10px;color:var(--tt);flex-shrink:0}
+.iv{font-size:11px;color:var(--tp);text-align:right}
+.info-desc{font-size:11px;color:var(--ts);line-height:1.6}
+
+/* ── DISC TABLE (Image2) ── */
+.disc-table-hd{display:grid;grid-template-columns:52px 68px 1fr 76px;gap:6px;padding:5px 10px;border-bottom:.5px solid var(--b);font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em;background:var(--s2);position:sticky;top:0}
+.disc-table-row{display:grid;grid-template-columns:52px 68px 1fr 76px;gap:6px;padding:9px 10px;border-bottom:.5px solid var(--b);align-items:center}
+.disc-table-row:last-child{border-bottom:none}
+.disc-q2{font-family:var(--font-mono);font-size:10px;color:var(--ts)}
+.disc-content{font-size:11px;color:var(--ts)}
+.disc-hash{font-family:var(--font-mono);font-size:9px;color:var(--tt);text-align:right}
+
+/* ── DAO TABLE (Image3) ── */
+.dao-table-hd{display:grid;grid-template-columns:60px 1fr 64px;gap:8px;padding:5px 10px;border-bottom:.5px solid var(--b);font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em;background:var(--s2);position:sticky;top:0}
+.dao-row{display:grid;grid-template-columns:60px 1fr 64px;gap:8px;padding:10px 10px;border-bottom:.5px solid var(--b);align-items:center}
+.dao-row:last-child{border-bottom:none}
+.dao-row.dao-active{background:var(--bbg)}
+.dao-date{font-family:var(--font-mono);font-size:10px;color:var(--ts)}
+.dao-content{font-size:11px;color:var(--ts);line-height:1.45}
+.dao-vote-btn{font-size:11px;color:var(--bl);cursor:pointer;white-space:nowrap;text-align:right;font-weight:500}
+.dao-vote-btn:hover{text-decoration:underline}
+
+
+/* ── 서브탭 (상점 정보 탭 내부) ── */
+.sub-tabs{display:flex;border-bottom:1px solid var(--b);border-top:1px solid var(--b);background:var(--s);flex-shrink:0}
+.subtab{flex:1;padding:7px 0;text-align:center;font-size:11px;color:var(--tt);cursor:pointer;border-bottom:2px solid transparent;transition:all .1s;font-weight:400}
+.subtab.active{color:var(--tp);font-weight:500;border-bottom-color:var(--tp)}
+.sub-panel{display:none;padding:12px}
+.sub-panel.active{display:block}
+
+/* 토큰 통계 그리드 (서브탭) */
+.tok-grid2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px}
+.tok-card2{background:var(--s2);border-radius:5px;padding:8px 9px}
+.tok-card2 .tl{font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.tok-card2 .tv{font-family:var(--font-mono);font-size:12px;font-weight:500}
+.tok-card2 .tv.g{color:var(--g)}.tok-card2 .tv.r{color:var(--r)}
+
+/* 별점 */
+.sp-rating2{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.stars2{display:flex;gap:1px}
+.stars2 svg{width:12px;height:12px}
+
+/* 리뷰 */
+.rv2{padding:9px 0;border-bottom:.5px solid var(--b)}
+.rv2:last-child{border-bottom:none}
+.rv2-hd{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.rv2-av{width:22px;height:22px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:var(--ts)}
+.rv2-nm{font-size:12px;font-weight:500}
+.rv2-dt{font-size:10px;color:var(--tt);margin-left:auto}
+.rv2-stars{display:flex;gap:1px;margin-bottom:3px}
+.rv2-stars svg{width:10px;height:10px}
+.rv2-txt{font-size:11px;color:var(--ts);line-height:1.5}
+
 #toast{position:fixed;bottom:64px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--tp);color:var(--bg);padding:6px 14px;border-radius:6px;font-size:11px;font-weight:500;opacity:0;transition:all .2s;z-index:600;pointer-events:none;white-space:nowrap}
 </style>
 </head>
@@ -511,26 +509,41 @@ html.dark .btm-bar{background:#0A0A0E;border-top-color:#1E1E28}
   </div>
 </div>
 
-<!-- SYMBOL BAR -->
+<!-- SYMBOL BAR (Image4 리디자인) -->
 <div class="sym-bar" id="sym-bar">
+  <!-- 좌: 토큰 선택기 -->
   <div class="sym-info" id="sym-info-btn" onclick="toggleTokenDD(event)">
-    <div class="sym-thumb"><div class="sym-wm">C</div><div class="sym-tk">CAFE</div></div>
-    <div class="sym-names"><div class="n1">브루밍 카페</div><div class="n2">CAFE/USDT</div></div>
-    <span class="sym-info-arrow">▾</span>
+    <div class="sym-thumb-lg"><div class="sym-wm-lg">C</div><div class="sym-tk-lg">CAFE</div></div>
+    <div class="sym-names-v9">
+      <div class="sym-top-row">
+        <span class="n1">브루밍 카페</span>
+        <span class="n2">CAFE / USDT</span>
+        <span class="sym-badge-v9"><span class="badge-dot"></span>런치패드 진행중</span>
+        <span class="sym-info-arrow">▾</span>
+      </div>
+      <div class="sym-meta-row" id="sym-meta-row">
+        <span class="sym-meta-item"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><circle cx="5.5" cy="4.5" r="2"/><path d="M5.5 6.5c-2 0-4 1.5-4 2" stroke-linecap="round"/><path d="M5.5 6.5c2 0 4 1.5 4 2" stroke-linecap="round"/></svg>성수동 · 서울 · 🇰🇷</span>
+        <span class="sym-meta-sep">·</span>
+        <span class="sym-meta-item"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3v2.5l1.5 1" stroke-linecap="round"/></svg>2년 운영</span>
+        <span class="sym-meta-sep">·</span>
+        <span class="sym-meta-item"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><path d="M2 9c0-2 1.5-3.5 3.5-3.5S9 7 9 9" stroke-linecap="round"/><circle cx="5.5" cy="3.5" r="2"/></svg>월 고객 ~800명</span>
+        <span class="sym-meta-sep">·</span>
+        <span class="sym-meta-item"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><rect x="1" y="2" width="9" height="7" rx="1"/><path d="M3 5h5M3 7h3" stroke-linecap="round"/></svg>카페 · 핸드드립 · 브런치</span>
+      </div>
+    </div>
   </div>
-  <span class="sym-badge"><span class="badge-dot"></span>런치패드</span>
   <div class="sdiv"></div>
+  <!-- 중: 가격 -->
   <span class="sym-price up">$0.00067</span>
   <span class="sym-chg up-bg">+12.4%</span>
   <div class="sdiv"></div>
-  <div class="sym-stat"><span class="sl">24h 시가</span><span class="sv">$0.000596</span></div>
+  <!-- 24h 스탯 -->
   <div class="sym-stat"><span class="sl">24h 고가</span><span class="sv up">$0.000710</span></div>
   <div class="sym-stat"><span class="sl">24h 저가</span><span class="sv dn">$0.000580</span></div>
   <div class="sym-stat"><span class="sl">24h 거래량</span><span class="sv">$24.6K</span></div>
   <div class="sym-stat"><span class="sl">시가총액</span><span class="sv">$335K</span></div>
-  <div class="sym-stat"><span class="sl">위치</span><span class="sv">성수동 · 서울 🇰🇷</span></div>
+  <!-- 우: 액션 -->
   <div class="sym-actions">
-    <!-- 상점 정보 토글 버튼 (핵심) -->
     <button class="btn-ic" id="store-toggle-btn" onclick="toggleStorePanel()" title="상점 정보">
       <svg viewBox="0 0 14 14"><rect x="1.5" y="2" width="11" height="10" rx="1.5"/><path d="M5.5 2v10M1.5 6h4" stroke-linecap="round"/></svg>
     </button>
@@ -575,37 +588,13 @@ html.dark .btm-bar{background:#0A0A0E;border-top-color:#1E1E28}
 <div class="main-area">
 
   <!-- LEFT PANEL (마켓 리스트 + 상점 패널이 같은 공간 공유) -->
-  <div class="left-col">
+  <div class="left-col" id="left-col">
 
-    <!-- ① 마켓 리스트 (v3 바이낸스식, 기본 보임) -->
-    <div class="market-list-panel" id="market-list">
-      <div class="ml-search">
-        <div class="ml-search-wrap">
-          <div class="ml-search-icon"><svg viewBox="0 0 11 11"><circle cx="5" cy="5" r="3.5"/><line x1="7.5" y1="7.5" x2="10" y2="10" stroke-linecap="round"/></svg></div>
-          <input class="ml-search-input" placeholder="검색" oninput="filterMarkets(this.value)">
-        </div>
-      </div>
-      <div class="ml-cats">
-        <button class="ml-cat active" onclick="setMLCat(this)">전체</button>
-        <button class="ml-cat" onclick="setMLCat(this)">카페</button>
-        <button class="ml-cat" onclick="setMLCat(this)">음식점</button>
-        <button class="ml-cat" onclick="setMLCat(this)">피트니스</button>
-        <button class="ml-cat" onclick="setMLCat(this)">뷰티</button>
-        <button class="ml-cat" onclick="setMLCat(this)">서점</button>
-      </div>
-      <div class="ml-header"><span>상점 / 심볼</span><span>가격</span><span>변동률</span></div>
-      <div class="ml-body" id="ml-body"></div>
-    </div>
-
-    <!-- ② 상점 패널 (v2 네이버/구글맵식, 위에서 슬라이드인) -->
+    <!-- 상점 패널 (v2 네이버/구글맵식, 위에서 슬라이드인) -->
     <div class="store-panel" id="store-panel">
-      <!-- 상단 바: 닫기 + 상점명 + 현재가 -->
       <div class="sp-topbar">
-        <button class="sp-back" onclick="closeStorePanel()" title="닫기">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
-        </button>
         <span class="sp-topbar-name" id="sp-topbar-name">브루밍 카페 · CAFE</span>
-        <span class="sp-topbar-price" id="sp-topbar-price">$0.00067</span>
+        <span class="sp-topbar-price" id="sp-topbar-price" style="margin-left:auto">$0.00067</span>
       </div>
 
       <!-- 사진 그리드 -->
@@ -617,97 +606,212 @@ html.dark .btm-bar{background:#0A0A0E;border-top-color:#1E1E28}
 
       <!-- 탭 -->
       <div class="sp-tabs">
-        <div class="sptab active" onclick="setSPTab(this,'home')">홈</div>
-        <div class="sptab" onclick="setSPTab(this,'menu')">메뉴</div>
-        <div class="sptab" onclick="setSPTab(this,'token')">토큰</div>
-        <div class="sptab" onclick="setSPTab(this,'disc')">공시</div>
-        <div class="sptab" onclick="setSPTab(this,'review')">리뷰</div>
+        <div class="sptab active" onclick="setSPTab(this,'info')">상점 정보</div>
+        <div class="sptab" onclick="setSPTab(this,'disc')">분기 공시</div>
+        <div class="sptab" onclick="setSPTab(this,'dao')">Store DAO</div>
+        <!-- <div class="sptab" onclick="setSPTab(this,'trades')">체결 내역</div>
+        <div class="sptab" onclick="setSPTab(this,'orders')">내 주문</div> -->
       </div>
 
       <div class="sp-body">
-        <!-- 홈 -->
-        <div class="spt-panel active" id="spt-home">
-          <div class="sp-hero">
-            <div class="sp-name">브루밍 카페</div>
-            <div class="sp-rating">
-              <div class="stars">
+
+        <!-- 탭1: 상점 정보 — 3컬럼 인포 + 서브탭 -->
+        <div class="spt-panel active" id="spt-info">
+
+          <!-- 상단: 3컬럼 요약 인포 (Image1) -->
+          <div class="info-grid">
+            <div class="info-col">
+              <div class="info-col-title">상점 기본 정보</div>
+              <div class="info-kv"><span class="ik">상점명</span><span class="iv">브루밍 카페</span></div>
+              <div class="info-kv"><span class="ik">위치</span><span class="iv">성수동 · 서울 · 🇰🇷</span></div>
+              <div class="info-kv"><span class="ik">업종</span><span class="iv">카페 · 음료</span></div>
+              <div class="info-kv"><span class="ik">운영 기간</span><span class="iv">2년 4개월</span></div>
+              <div class="info-kv"><span class="ik">월 고객</span><span class="iv">~800명</span></div>
+              <div class="info-kv"><span class="ik">영업시간</span><span class="iv si-open">영업 중 · 21:10 라스트오더</span></div>
+              <div class="info-kv"><span class="ik">전화</span><span class="iv">02-515-3469</span></div>
+              <div class="info-kv"><span class="ik">주차</span><span class="iv">발렛파킹 가능</span></div>
+            </div>
+            <div class="info-col">
+              <div class="info-col-title">토큰 정보</div>
+              <div class="info-kv"><span class="ik">심볼</span><span class="iv" style="font-family:var(--font-mono)">CAFE / USDT</span></div>
+              <div class="info-kv"><span class="ik">총 공급량</span><span class="iv" style="font-family:var(--font-mono)">500,000,000</span></div>
+              <div class="info-kv"><span class="ik">유통량</span><span class="iv" style="font-family:var(--font-mono)">170,000,000</span></div>
+              <div class="info-kv"><span class="ik">FDV</span><span class="iv" style="font-family:var(--font-mono)">$33,500</span></div>
+              <div class="info-kv"><span class="ik">거래 수수료</span><span class="iv" style="font-family:var(--font-mono)">0.39%</span></div>
+              <div class="info-kv"><span class="ik">상장일</span><span class="iv">2026년 1월</span></div>
+              <div class="info-kv"><span class="ik">네트워크</span><span class="iv">opBNB</span></div>
+              <div class="info-kv"><span class="ik">토큰 혜택</span><span class="iv up">음료 10% 할인</span></div>
+            </div>
+            <div class="info-col">
+              <div class="info-col-title">상점 소개</div>
+              <div class="info-desc">성수동 골목에 위치한 스페셜티 커피 전문점. 핸드드립과 브런치로 인기. 단골 커뮤니티 중심으로 운영하며, CAFE 토큰 보유자에게 음료 10% 할인을 제공합니다.</div>
+              <div style="margin-top:10px;display:flex;gap:7px;flex-wrap:wrap">
+                <button class="spa primary" onclick="openShare()" style="flex:none;padding:5px 10px;border-radius:5px;font-size:10px">
+                  <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="3" r="1.5"/><circle cx="3" cy="7" r="1.5"/><circle cx="11" cy="11" r="1.5"/><line x1="4.4" y1="7.6" x2="9.7" y2="10.4"/><line x1="9.7" y1="3.6" x2="4.4" y2="6.4"/></svg>
+                  공유
+                </button>
+                <button class="spa" onclick="toast('Store DAO 이동')" style="flex:none;padding:5px 10px;border-radius:5px;font-size:10px">
+                  <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M4.5 7l1.5 1.5 3.5-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  DAO
+                </button>
+                <span class="sp-feat" style="align-self:center">★ Featured</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 서브탭: 홈 / 메뉴 / 토큰 / 리뷰 -->
+          <div class="sub-tabs">
+            <div class="subtab active" onclick="setSubTab(this,'sub-home')">홈</div>
+            <div class="subtab" onclick="setSubTab(this,'sub-menu')">메뉴</div>
+            <div class="subtab" onclick="setSubTab(this,'sub-token')">토큰</div>
+            <div class="subtab" onclick="setSubTab(this,'sub-review')">리뷰</div>
+          </div>
+
+          <!-- 서브탭: 홈 -->
+          <div class="sub-panel active" id="sub-home">
+            <div class="sp-rating2">
+              <div class="stars2">
                 <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg>
                 <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg>
                 <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg>
                 <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg>
                 <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#D0CFC8"/></svg>
               </div>
-              <span class="rating-score">4.3</span>
-              <span class="rating-cnt">리뷰 4,954</span>
+              <span style="font-size:12px;font-weight:500;color:var(--am)">4.3</span>
+              <span style="font-size:10px;color:var(--tt)">방문 리뷰 4,954 · 블로그 6,917</span>
             </div>
-            <span class="sp-feat">★ Starzip Featured 상점</span>
-            <div class="sp-actions">
-              <button class="spa" onclick="toast('저장됨 ★')"><svg viewBox="0 0 14 14"><path d="M7 12S2 8.5 2 5a3 3 0 016 0 3 3 0 016 0c0 3.5-5 7-5 7z"/></svg>저장</button>
-              <button class="spa primary" onclick="openShare()"><svg viewBox="0 0 14 14"><circle cx="11" cy="3" r="1.5"/><circle cx="3" cy="7" r="1.5"/><circle cx="11" cy="11" r="1.5"/><line x1="4.4" y1="7.6" x2="9.7" y2="10.4" stroke-linecap="round"/><line x1="9.7" y1="3.6" x2="4.4" y2="6.4" stroke-linecap="round"/></svg>공유</button>
-              <button class="spa" onclick="toast('DAO 투표 화면')"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5"/><path d="M4.5 7l1.5 1.5 3.5-3" stroke-linecap="round" stroke-linejoin="round"/></svg>DAO</button>
+            <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="6" r="3"/><path d="M7 9c0 0-5 3.5-5 0a5 5 0 0110 0c0 3.5-5 0-5 0z"/></svg></div><div><div class="si-main">서울 강남구 학동로 305-3</div><div class="si-sub">학동역 10번 출구 366m</div></div></div>
+            <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M7 4v3.5l2.5 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-main"><span class="si-open">영업 중</span> · 21:10 라스트오더</div><div class="si-sub">월–금 10:00–22:00 · 주말 11:00–22:00</div></div></div>
+            <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><rect x="2" y="4" width="10" height="8" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1" stroke-linecap="round"/></svg></div><div><div class="si-main">카페 · 핸드드립 · 브런치</div><div class="si-sub">02-515-3469 · 주차·발렛파킹</div></div></div>
+            <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M4 7h6M7 4c-1.5 1.5-1.5 4.5 0 6M7 4c1.5 1.5 1.5 4.5 0 6" stroke-linecap="round"/></svg></div><div><div class="si-main">CAFE 토큰 보유 시 음료 10% 할인</div><div class="si-sub">결제 시 지갑 연결 후 자동 적용</div></div></div>
+          </div>
+
+          <!-- 서브탭: 메뉴 -->
+          <div class="sub-panel" id="sub-menu">
+            <div style="font-size:10px;color:var(--tt);margin-bottom:8px">CAFE 토큰 보유 시 10% 할인 적용</div>
+            <div class="menu-row"><span>핸드드립 아메리카노<span class="menu-badge">대표</span></span><span style="font-family:var(--font-mono);font-weight:500">7,000원</span></div>
+            <div class="menu-row"><span>스페셜티 라떼</span><span style="font-family:var(--font-mono);font-weight:500">8,500원</span></div>
+            <div class="menu-row"><span>에그 브런치 세트</span><span style="font-family:var(--font-mono);font-weight:500">15,000원</span></div>
+            <div class="menu-row"><span>과일 스무디</span><span style="font-family:var(--font-mono);font-weight:500">9,000원</span></div>
+            <div class="menu-row"><span>크로플</span><span style="font-family:var(--font-mono);font-weight:500">6,500원</span></div>
+            <div class="menu-row"><span>티라미수</span><span style="font-family:var(--font-mono);font-weight:500">8,000원</span></div>
+            <div class="menu-row"><span>아이스 아메리카노</span><span style="font-family:var(--font-mono);font-weight:500">6,000원</span></div>
+            <div class="menu-row"><span>플랫화이트</span><span style="font-family:var(--font-mono);font-weight:500">7,500원</span></div>
+          </div>
+
+          <!-- 서브탭: 토큰 -->
+          <div class="sub-panel" id="sub-token">
+            <div class="tok-grid2">
+              <div class="tok-card2"><div class="tl">현재 가격</div><div class="tv g">$0.00067</div></div>
+              <div class="tok-card2"><div class="tl">24H 변동</div><div class="tv g">+12.4%</div></div>
+              <div class="tok-card2"><div class="tl">시가총액</div><div class="tv">$335K</div></div>
+              <div class="tok-card2"><div class="tl">24H 거래량</div><div class="tv">$24.6K</div></div>
+              <div class="tok-card2"><div class="tl">총 공급량</div><div class="tv">500M</div></div>
+              <div class="tok-card2"><div class="tl">유통량</div><div class="tv">170M</div></div>
+            </div>
+            <div class="lp-mini">
+              <div class="lp-mini-hd"><span class="lp-mini-t">런치패드 진행중</span><span class="lp-mini-p">68% · D-3</span></div>
+              <div class="lp-mini-bar"><div class="lp-mini-fill" style="width:68%"></div></div>
+              <div class="lp-mini-ft"><span>$6,800 / $10,000</span><span>STAR 1.4x 부스트</span></div>
+            </div>
+            <div style="font-size:10px;color:var(--ts);line-height:1.6">공모금 배분: 즉시 40% · 마켓메이킹 10%(12개월 락업) · 12개월 베스팅 50%</div>
+          </div>
+
+          <!-- 서브탭: 리뷰 -->
+          <div class="sub-panel" id="sub-review">
+            <div class="rv2">
+              <div class="rv2-hd"><div class="rv2-av">지민</div><span class="rv2-nm">park_jimin</span><span class="rv2-dt">03.20</span></div>
+              <div class="rv2-stars"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg></div>
+              <div class="rv2-txt">핸드드립이 정말 맛있어요! CAFE 토큰 보유하면 할인도 되고, 가게 성장에 기여하는 느낌이 신선합니다.</div>
+            </div>
+            <div class="rv2">
+              <div class="rv2-hd"><div class="rv2-av">형철</div><span class="rv2-nm">hc_crypto</span><span class="rv2-dt">03.15</span></div>
+              <div class="rv2-stars"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#D0CFC8"/></svg></div>
+              <div class="rv2-txt">분기 공시도 정상이고 매출도 꾸준히 성장. Store DAO 소각안도 기대됩니다.</div>
+            </div>
+            <div class="rv2">
+              <div class="rv2-hd"><div class="rv2-av">수진</div><span class="rv2-nm">sj_investor</span><span class="rv2-dt">03.10</span></div>
+              <div class="rv2-stars"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#D0CFC8"/></svg></div>
+              <div class="rv2-txt">단골 카페인데 토큰으로 직접 투자까지 할 수 있다는 게 신기해요. 커뮤니티도 활발하고 좋습니다.</div>
             </div>
           </div>
-          <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="6" r="3"/><path d="M7 9c0 0-5 3.5-5 0a5 5 0 0110 0c0 3.5-5 0-5 0z"/></svg></div><div><div class="si-main">서울 강남구 학동로 305-3</div><div class="si-sub">학동역 10번 출구 366m</div></div></div>
-          <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M7 4v3.5l2.5 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-main"><span class="si-open">영업 중</span> · 21:10 라스트오더</div><div class="si-sub">월–금 10:00–22:00 · 주말 11:00–22:00</div></div></div>
-          <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><rect x="2" y="4" width="10" height="8" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1" stroke-linecap="round"/></svg></div><div><div class="si-main">카페 · 핸드드립 · 브런치</div><div class="si-sub">02-515-3469 · 주차·발렛파킹</div></div></div>
-          <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M4 7h6M7 4c-1.5 1.5-1.5 4.5 0 6M7 4c1.5 1.5 1.5 4.5 0 6" stroke-linecap="round"/></svg></div><div><div class="si-main">CAFE 토큰 보유 시 음료 10% 할인</div><div class="si-sub">결제 시 지갑 연결 후 자동 적용</div></div></div>
+
         </div>
 
-        <!-- 메뉴 -->
-        <div class="spt-panel" id="spt-menu">
-          <div style="font-size:10px;color:var(--tt);margin-bottom:7px">CAFE 토큰 보유 시 10% 할인 적용</div>
-          <div class="menu-row"><span>핸드드립 아메리카노<span class="menu-badge">대표</span></span><span style="font-family:var(--font-mono);font-weight:500">7,000원</span></div>
-          <div class="menu-row"><span>스페셜티 라떼</span><span style="font-family:var(--font-mono);font-weight:500">8,500원</span></div>
-          <div class="menu-row"><span>에그 브런치 세트</span><span style="font-family:var(--font-mono);font-weight:500">15,000원</span></div>
-          <div class="menu-row"><span>과일 스무디</span><span style="font-family:var(--font-mono);font-weight:500">9,000원</span></div>
-          <div class="menu-row"><span>크로플</span><span style="font-family:var(--font-mono);font-weight:500">6,500원</span></div>
-          <div class="menu-row"><span>티라미수</span><span style="font-family:var(--font-mono);font-weight:500">8,000원</span></div>
-          <div class="menu-row"><span>아이스 아메리카노</span><span style="font-family:var(--font-mono);font-weight:500">6,000원</span></div>
-        </div>
-
-        <!-- 토큰 -->
-        <div class="spt-panel" id="spt-token">
-          <div class="tok-grid">
-            <div class="tok-card"><div class="tl">현재 가격</div><div class="tv g">$0.00067</div></div>
-            <div class="tok-card"><div class="tl">24H 변동</div><div class="tv g">+12.4%</div></div>
-            <div class="tok-card"><div class="tl">시가총액</div><div class="tv">$335K</div></div>
-            <div class="tok-card"><div class="tl">24H 거래량</div><div class="tv">$24.6K</div></div>
-            <div class="tok-card"><div class="tl">총 공급량</div><div class="tv">500M</div></div>
-            <div class="tok-card"><div class="tl">유통량</div><div class="tv">170M</div></div>
-          </div>
-          <div class="lp-mini">
-            <div class="lp-mini-hd"><span class="lp-mini-t">런치패드 진행중</span><span class="lp-mini-p">68% · D-3</span></div>
-            <div class="lp-mini-bar"><div class="lp-mini-fill" style="width:68%"></div></div>
-            <div class="lp-mini-ft"><span>$6,800 / $10,000</span><span>STAR 1.4x</span></div>
-          </div>
-          <div style="font-size:10px;color:var(--ts);line-height:1.5">공모금 배분: 즉시 40% · 마켓메이킹 10%(12개월 락업) · 12개월 베스팅 50%</div>
-        </div>
-
-        <!-- 공시 -->
+        <!-- 탭2: 분기 공시 (Image2) -->
         <div class="spt-panel" id="spt-disc">
-          <div style="font-size:10px;font-weight:500;margin-bottom:7px">분기 매출 공시</div>
-          <div class="disc-row"><span class="disc-q">2026 Q1</span><span class="disc-st ds-ok">정상</span><span class="disc-d">매출 $28,400 · 2,380명 · 04-12</span></div>
-          <div class="disc-row"><span class="disc-q">2025 Q4</span><span class="disc-st ds-ok">정상</span><span class="disc-d">매출 $31,200 · 2,650명 · 01-11</span></div>
-          <div class="disc-row"><span class="disc-q">2025 Q3</span><span class="disc-st ds-ok">정상</span><span class="disc-d">매출 $26,800 · 2,210명 · 10-09</span></div>
-          <div class="disc-row"><span class="disc-q">2025 Q2</span><span class="disc-st ds-warn">지연</span><span class="disc-d">매출 $22,100 · D+14 초과</span></div>
-          <div style="font-size:10px;font-weight:500;margin:10px 0 7px">Store DAO</div>
-          <div class="disc-row"><span class="disc-q" style="color:var(--bl)">진행중</span><span class="disc-st" style="background:var(--bbg);color:var(--bl)">투표중</span><span class="disc-d">500만개 소각 · 찬성 68% · D-2</span></div>
-          <div class="disc-row"><span class="disc-q">2026-03</span><span class="disc-st ds-ok">가결</span><span class="disc-d">DUST 0.2% 지급 변경 · 82%</span></div>
+          <div class="disc-table-hd"><span>분기</span><span>상태</span><span>내용</span><span>온체인</span></div>
+          <div class="disc-table-row">
+            <span class="disc-q2">2026 Q1</span>
+            <span class="disc-st ds-ok">정상 제출</span>
+            <span class="disc-content">매출 $28,400 · 방문객 2,380명 · 제출일 2026-04-12</span>
+            <span class="disc-hash">0x3f2a...8c1d</span>
+          </div>
+          <div class="disc-table-row">
+            <span class="disc-q2">2025 Q4</span>
+            <span class="disc-st ds-ok">정상 제출</span>
+            <span class="disc-content">매출 $31,200 · 방문객 2,650명 · 제출일 2026-01-11</span>
+            <span class="disc-hash">0xa1b4...2e7f</span>
+          </div>
+          <div class="disc-table-row">
+            <span class="disc-q2">2025 Q3</span>
+            <span class="disc-st ds-ok">정상 제출</span>
+            <span class="disc-content">매출 $26,800 · 방문객 2,210명 · 제출일 2025-10-09</span>
+            <span class="disc-hash">0xd8c2...5a3e</span>
+          </div>
+          <div class="disc-table-row">
+            <span class="disc-q2">2025 Q2</span>
+            <span class="disc-st ds-warn">지연 제출</span>
+            <span class="disc-content">매출 $22,100 · 제출일 2025-07-28 (D+14 초과)</span>
+            <span class="disc-hash">0x7e9f...1c4b</span>
+          </div>
         </div>
 
-        <!-- 리뷰 -->
-        <div class="spt-panel" id="spt-review">
-          <div class="rv-item">
-            <div class="rv-hd"><div class="rv-av">지민</div><span class="rv-nm">park_jimin</span><span class="rv-dt">03.20</span></div>
-            <div class="rv-stars"><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg></div>
-            <div class="rv-txt">핸드드립이 정말 맛있어요! CAFE 토큰 보유하면 할인도 되고, 가게 성장에 기여하는 느낌이 신선합니다.</div>
+        <!-- 탭3: Store DAO (Image3) -->
+        <div class="spt-panel" id="spt-dao">
+          <div class="dao-table-hd"><span>날짜</span><span>내용</span><span>결과</span></div>
+          <div class="dao-row dao-active">
+            <span class="dao-date" style="color:var(--bl)">진행중</span>
+            <span class="dao-content">CAFE 토큰 5,000,000개 소각 제안 · 찬성 68% · 마감 2026-04-01</span>
+            <a class="dao-vote-btn" onclick="toast('투표 화면으로 이동')">투표 참여 →</a>
           </div>
-          <div class="rv-item">
-            <div class="rv-hd"><div class="rv-av">형철</div><span class="rv-nm">hc_crypto</span><span class="rv-dt">03.15</span></div>
-            <div class="rv-stars"><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#F0A500"/></svg><svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" fill="#D0CFC8"/></svg></div>
-            <div class="rv-txt">분기 공시 정상, 매출 성장 중. DAO 소각안도 통과될 것 같아 기대됩니다.</div>
+          <div class="dao-row">
+            <span class="dao-date">2026-03</span>
+            <span class="dao-content">리워드 프로그램 변경 — 구매 시 DUST 0.2% 지급 (기존 0.1%) · 찬성 82%</span>
+            <span class="disc-st ds-ok">가결</span>
+          </div>
+          <div class="dao-row">
+            <span class="dao-date">2026-01</span>
+            <span class="dao-content">토큰 추가 발행 1억개 제안 · 찬성 31% (정족수 미달)</span>
+            <span class="disc-st" style="background:var(--rbg);color:var(--r)">부결</span>
           </div>
         </div>
+
+        <!-- 탭4: 체결 내역 -->
+        <!-- <div class="spt-panel" id="spt-trades">
+          <div class="disc-table-hd" style="grid-template-columns:70px 1fr 70px 40px"><span>시간</span><span>가격</span><span>수량</span><span>구분</span></div>
+          <div class="disc-table-row" style="grid-template-columns:70px 1fr 70px 40px">
+            <span class="disc-q2">14:32:08</span><span class="disc-content up" style="font-family:var(--font-mono)">0.00067</span><span class="disc-hash" style="text-align:left;font-family:var(--font-mono)">42,000</span><span style="color:var(--g);font-size:10px">매수</span>
+          </div>
+          <div class="disc-table-row" style="grid-template-columns:70px 1fr 70px 40px">
+            <span class="disc-q2">14:31:55</span><span class="disc-content dn" style="font-family:var(--font-mono)">0.00066</span><span class="disc-hash" style="text-align:left;font-family:var(--font-mono)">15,500</span><span style="color:var(--r);font-size:10px">매도</span>
+          </div>
+          <div class="disc-table-row" style="grid-template-columns:70px 1fr 70px 40px">
+            <span class="disc-q2">14:31:42</span><span class="disc-content up" style="font-family:var(--font-mono)">0.00067</span><span class="disc-hash" style="text-align:left;font-family:var(--font-mono)">88,200</span><span style="color:var(--g);font-size:10px">매수</span>
+          </div>
+          <div class="disc-table-row" style="grid-template-columns:70px 1fr 70px 40px">
+            <span class="disc-q2">14:30:18</span><span class="disc-content dn" style="font-family:var(--font-mono)">0.00065</span><span class="disc-hash" style="text-align:left;font-family:var(--font-mono)">32,400</span><span style="color:var(--r);font-size:10px">매도</span>
+          </div>
+        </div> -->
+
+        <!-- 탭5: 내 주문 -->
+        <!-- <div class="spt-panel" id="spt-orders">
+          <div style="padding:24px 0;text-align:center;color:var(--tt);font-size:12px">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4" style="display:block;margin:0 auto 8px"><rect x="5" y="7" width="18" height="14" rx="2"/><line x1="9" y1="12" x2="19" y2="12"/><line x1="9" y1="16" x2="14" y2="16"/></svg>
+            미체결 주문이 없습니다
+          </div>
+        </div> -->
+
       </div>
     </div>
 
@@ -914,62 +1018,23 @@ const markets=[
   {sym:'HWKR',name:'Hawker Hub',cat:'음식점',price:'0.00076',chg:'+4.1',up:true,bg:'#C8E8D8',color:'#1A5A3A'},
 ];
 
-function renderMarkets(list){
-  const body=document.getElementById('ml-body');
-  body.innerHTML=list.map(m=>`
-    <div class="ml-row${m.sym==='CAFE'?' active':''}" onclick="selectMarket('${m.sym}','${m.name}','${m.price}',${m.up})">
-      <div class="ml-row-left">
-        <div class="ml-thumb" style="background:${m.bg};color:${m.color}">${m.sym.slice(0,3)}</div>
-        <div><div class="ml-token">${m.sym}</div><div class="ml-vol">${m.name}</div></div>
-      </div>
-      <div class="ml-price">${m.price}</div>
-      <div class="ml-chg ${m.up?'up':'dn'}">${m.chg}%</div>
-    </div>
-  `).join('');
-}
-renderMarkets(markets);
-
-function filterMarkets(q){
-  const f=markets.filter(m=>m.sym.toLowerCase().includes(q.toLowerCase())||m.name.includes(q)||m.cat.includes(q));
-  renderMarkets(f.length?f:markets);
-}
-function setMLCat(el){
-  el.closest('.ml-cats').querySelectorAll('.ml-cat').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  const cat=el.textContent;
-  renderMarkets(cat==='전체'?markets:markets.filter(m=>m.cat===cat));
-}
-function selectMarket(sym,name,price,up){
-  document.querySelectorAll('.ml-row').forEach(r=>r.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  openStorePanel(sym,name,price,up);
-}
-
-// ── STORE PANEL TOGGLE — 기본 열림 ──
-let storeOpen=true;
+// ── STORE PANEL TOGGLE — left-col 토글 ──
+let panelOpen=true;
 function openStorePanel(sym,name,price,up){
-  const topName=document.getElementById('sp-topbar-name');
-  const topPrice=document.getElementById('sp-topbar-price');
-  if(topName)topName.textContent=(name||'브루밍 카페')+' · '+(sym||'CAFE');
-  if(topPrice){topPrice.textContent='$'+(price||'0.00067');topPrice.style.color=up===false?'var(--r)':'var(--g)';}
-  storeOpen=true;
-  document.getElementById('store-panel').classList.add('active');
-  document.getElementById('market-list').classList.add('under');
-  document.getElementById('store-toggle-btn').classList.add('on');
+  const n=document.getElementById('sp-topbar-name');
+  const p=document.getElementById('sp-topbar-price');
+  if(n)n.textContent=(name||'브루밍 카페')+' · '+(sym||'CAFE');
+  if(p){p.textContent='$'+(price||'0.00067');p.style.color=up===false?'var(--r)':'var(--g)';}
 }
 function toggleStorePanel(){
-  if(storeOpen) closeStorePanel();
-  else openStorePanel();
+  panelOpen=!panelOpen;
+  document.getElementById('left-col').classList.toggle('collapsed',!panelOpen);
+  document.getElementById('store-toggle-btn').classList.toggle('on',panelOpen);
+  setTimeout(()=>resizeChart&&resizeChart(),260);
 }
-function closeStorePanel(){
-  storeOpen=false;
-  document.getElementById('store-panel').classList.remove('active');
-  document.getElementById('market-list').classList.remove('under');
-  document.getElementById('store-toggle-btn').classList.remove('on');
-}
-// 페이지 로드시 상점 패널 기본 열기
+// 페이지 로드시 상점 패널 기본 표시
 document.addEventListener('DOMContentLoaded',()=>{
-  openStorePanel('CAFE','브루밍 카페','0.00067',true);
+  document.getElementById('store-toggle-btn').classList.add('on');
 });
 
 
@@ -1030,7 +1095,6 @@ function selectTokenFromDD(sym,name,price,up){
   // 상점 패널 업데이트
   openStorePanel(sym,name,price,up);
   // 마켓 리스트 활성 행 업데이트
-  document.querySelectorAll('.tdd-row').forEach(r=>r.classList.remove('active'));
   toast(sym+' 선택됨');
 }
 
@@ -1059,6 +1123,14 @@ function closeTokenDD(){
 // ESC로 닫기
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTokenDD();}});
 
+
+
+function setSubTab(el,id){
+  el.closest('.sub-tabs').querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  el.closest('#spt-info').querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
 function setSPTab(el,id){
   el.closest('.sp-tabs').querySelectorAll('.sptab').forEach(t=>t.classList.remove('active'));

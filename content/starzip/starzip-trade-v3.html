@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — CAFE/USDT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F4F3EE;--s:#FFFFFF;--s2:#EEEEE8;--s3:#E8E7E1;
+  --b:#DDDDD6;--b2:#CACAC2;
+  --tp:#18171A;--ts:#64635E;--tt:#A3A29D;
+  --g:#1B7A4A;--gbg:#EBF5EF;
+  --r:#C0392B;--rbg:#FDECEA;
+  --bl:#1A4FDB;--bbg:#EBF0FF;
+  --am:#7A4500;--abg:#FFF3E0;
+  --fb:var(--font-body);--fm:var(--font-mono);
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+html.dark{
+  --bg:#0E0E11;--s:#16161A;--s2:#1E1E24;--s3:#26262E;
+  --b:#28283A;--b2:#38384A;
+  --tp:#E2E2EE;--ts:#9898B0;--tt:#52526A;
+  --g:#27C46A;--gbg:#0A2B1A;
+  --r:#E85050;--rbg:#2B0A0A;
+  --bl:#4A80FF;--bbg:#0A1530;
+  --am:#F0A500;--abg:#2B1800;
+}
+body{background:var(--bg);font-family:var(--font-body);color:var(--tp);font-size:12px;min-height:100vh;overflow:hidden}
+html.dark body{background:var(--bg)}
+
+/* ── NAV ── */
+.topnav{background:var(--tp);height:44px;display:flex;align-items:center;padding:0 14px;gap:0;position:relative;z-index:100;flex-shrink:0}
+html.dark .topnav{background:#0A0A0E}
+.nav-logo{font-family:var(--font-mono);font-weight:500;font-size:13px;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none;margin-right:18px}
+.logo-box{width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.logo-box svg{width:11px;height:11px;fill:var(--tp)}
+.nav-link{padding:0 10px;height:44px;display:flex;align-items:center;font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.nav-link:hover{color:rgba(255,255,255,.75)}
+.nav-link.active{color:#fff;font-weight:500;border-bottom-color:rgba(255,255,255,.45)}
+.nav-r{display:flex;align-items:center;gap:7px;margin-left:auto}
+.dust-pill{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);border-radius:5px;padding:3px 8px;font-size:11px;color:rgba(255,255,255,.65);font-family:var(--font-mono)}
+.dust-dot{width:5px;height:5px;border-radius:50%;background:#F0A500}
+.btn-wallet{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:4px 11px;font-size:11px;cursor:pointer;font-family:var(--font-body)}
+.btn-theme-nav{width:26px;height:26px;background:rgba(255,255,255,.08);border:none;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55)}
+.btn-theme-nav svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* ── SYMBOL BAR (바이낸스식) ── */
+.sym-bar{background:var(--s);border-bottom:1px solid var(--b);height:50px;display:flex;align-items:center;padding:0 14px;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.sym-bar::-webkit-scrollbar{display:none}
+.sym-info{display:flex;align-items:center;gap:10px;margin-right:16px;flex-shrink:0}
+.sym-thumb{width:30px;height:30px;border-radius:7px;background:#C8B498;position:relative;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sym-thumb-wm{font-family:var(--font-mono);font-weight:700;font-size:16px;opacity:.14;color:#6B4A2A}
+.sym-thumb-tk{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:6px;background:rgba(0,0,0,.3);color:rgba(255,255,255,.95);padding:1px 4px;border-radius:3px;white-space:nowrap}
+.sym-name{font-size:15px;font-weight:600;line-height:1.1}
+.sym-pair{font-size:10px;color:var(--tt);font-family:var(--font-mono)}
+.sym-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500;flex-shrink:0}
+.badge-launch{background:var(--bbg);color:var(--bl)}
+.badge-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+.sym-div{width:1px;height:26px;background:var(--b);margin:0 14px;flex-shrink:0}
+.sym-stat{display:flex;flex-direction:column;gap:1px;margin-right:18px;flex-shrink:0}
+.sym-stat .sl{font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em}
+.sym-stat .sv{font-family:var(--font-mono);font-size:12px;font-weight:500}
+.sym-price-big{font-family:var(--font-mono);font-size:20px;font-weight:500;margin-right:7px;flex-shrink:0}
+.sym-chg{font-family:var(--font-mono);font-size:11px;font-weight:500;padding:2px 6px;border-radius:5px;flex-shrink:0}
+.up{color:var(--g)}.dn{color:var(--r)}
+.up-bg{background:var(--gbg);color:var(--g)}
+.dn-bg{background:var(--rbg);color:var(--r)}
+.sym-actions{display:flex;align-items:center;gap:5px;margin-left:auto;flex-shrink:0}
+.btn-share{display:flex;align-items:center;gap:5px;background:var(--tp);color:var(--bg);border:none;border-radius:6px;padding:5px 11px;font-family:var(--font-body);font-size:11px;font-weight:500;cursor:pointer;transition:opacity .1s}
+.btn-share:hover{opacity:.85}
+.btn-share svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.5}
+.btn-ic{width:28px;height:28px;border:1px solid var(--b);border-radius:6px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts);transition:background .1s}
+.btn-ic:hover{background:var(--s2)}
+.btn-ic svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}
+.btn-ic.on{background:var(--tp);color:var(--bg);border-color:var(--tp)}
+
+/* ── MAIN GRID (바이낸스식 6-zone) ── */
+.trade-grid{
+  display:grid;
+  grid-template-columns:var(--col-chart, 1fr) var(--col-ob, 168px) var(--col-form, 240px);
+  grid-template-rows:var(--row-main, 1fr) var(--row-bottom, 170px);
+  height:calc(100vh - 44px - 50px - 52px);
+  gap:0;
+  --col-chart:1fr;--col-ob:168px;--col-form:240px;
+  --row-main:1fr;--row-bottom:170px;
+}
+.grid-cell{border-right:1px solid var(--b);border-bottom:1px solid var(--b);background:var(--s);overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.grid-cell:last-child{border-right:none}
+/* zone assignment */
+.zone-chart{grid-column:1;grid-row:1}
+.zone-ob{grid-column:2;grid-row:1}
+.zone-form{grid-column:3;grid-row:1 / 3;border-bottom:none}
+.zone-bottom{grid-column:1 / 3;grid-row:2}
+
+/* ── CHART ZONE ── */
+.chart-tabs{display:flex;border-bottom:1px solid var(--b);flex-shrink:0;background:var(--s)}
+.ctab{padding:8px 12px;font-size:11px;color:var(--tt);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .1s}
+.ctab.active{color:var(--tp);font-weight:500;border-bottom-color:var(--tp)}
+.chart-tf{display:flex;align-items:center;padding:0 10px;border-bottom:1px solid var(--b);height:34px;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.chart-tf::-webkit-scrollbar{display:none}
+.tf{padding:3px 7px;border-radius:4px;font-size:10px;cursor:pointer;color:var(--tt);border:none;background:transparent;font-family:var(--font-body);white-space:nowrap}
+.tf.active{background:var(--s2);color:var(--tp);font-weight:500}
+.tf-div{width:1px;height:13px;background:var(--b);margin:0 5px;flex-shrink:0}
+.chart-area{flex:1;position:relative;background:var(--s);min-height:0;overflow:hidden}
+.chart-price-tag{position:absolute;right:5px;background:var(--tp);color:var(--bg);font-family:var(--font-mono);font-size:9px;padding:1px 5px;border-radius:3px;pointer-events:none}
+
+/* chart content panels */
+.chart-content{position:absolute;inset:0}
+.cpanel{display:none;padding:14px;height:100%;overflow-y:auto}
+.cpanel.active{display:block}
+
+/* store info in chart panel */
+.store-photos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;height:110px;margin-bottom:12px;border-radius:8px;overflow:hidden}
+.sp-photo{background:var(--s2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.sp-photo-main{grid-column:1;grid-row:1/3;grid-row:span 2}
+.store-photos .wm{font-family:var(--font-mono);font-weight:700;font-size:36px;opacity:.13;color:#6B4A2A}
+.store-photos .wm-sm{font-family:var(--font-mono);font-weight:700;font-size:20px;opacity:.13;color:#6B4A2A}
+.photo-cnt{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.45);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px}
+.store-grid-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.sgi-card{background:var(--s2);border-radius:6px;padding:8px 10px}
+.sgi-l{font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.sgi-v{font-size:12px;font-weight:500}
+.sgi-v.g{color:var(--g)}.sgi-v.r{color:var(--r)}
+.si-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.si-row:last-child{margin-bottom:0}
+.si-ico{color:var(--tt);flex-shrink:0;margin-top:1px}
+.si-ico svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
+.si-lbl{font-size:11px;color:var(--tp);line-height:1.4}
+.si-sub{font-size:10px;color:var(--tt);margin-top:1px}
+.si-open{color:var(--g);font-weight:500}
+.menu-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid var(--b);font-size:11px}
+.menu-row:last-child{border:none}
+.menu-badge{font-size:9px;padding:1px 4px;border-radius:3px;background:var(--bbg);color:var(--bl);margin-left:4px}
+.disc-row{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:.5px solid var(--b);font-size:11px}
+.disc-row:last-child{border:none}
+.disc-q{font-family:var(--font-mono);font-size:10px;color:var(--ts);min-width:52px}
+.disc-st{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:500}
+.ds-ok{background:var(--gbg);color:var(--g)}
+.ds-warn{background:var(--abg);color:var(--am)}
+.disc-d{font-size:11px;color:var(--ts);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── ORDERBOOK ZONE ── */
+.ob-hd{display:grid;grid-template-columns:1fr 1fr;padding:4px 8px;border-bottom:1px solid var(--b);flex-shrink:0}
+.ob-hd span{font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.03em}
+.ob-hd span:last-child{text-align:right}
+.ob-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ob-asks{flex:1;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.ob-bids{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ob-mid{padding:4px 8px;border-top:.5px solid var(--b);border-bottom:.5px solid var(--b);flex-shrink:0}
+.ob-mid-price{font-family:var(--font-mono);font-size:13px;font-weight:500}
+.ob-mid-spread{font-size:9px;color:var(--tt);margin-top:1px}
+.ob-row{display:grid;grid-template-columns:1fr 1fr;padding:2px 8px;position:relative;cursor:pointer}
+.ob-row:hover{opacity:.75}
+.ob-bar{position:absolute;top:0;bottom:0;right:0;opacity:.11;pointer-events:none}
+.ob-row span{font-family:var(--font-mono);font-size:10px;position:relative;z-index:1}
+.ob-row span:last-child{text-align:right;color:var(--ts)}
+.ob-ask span:first-child{color:var(--r)}
+.ob-bid span:first-child{color:var(--g)}
+.ob-ask-bar{background:var(--r)}
+.ob-bid-bar{background:var(--g)}
+/* 바이낸스식: 탭 위에 ob 타입 선택 */
+.ob-type-row{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--b);flex-shrink:0}
+.ob-type-btn{flex:1;padding:4px 0;text-align:center;font-size:10px;border:.5px solid var(--b);border-radius:4px;cursor:pointer;color:var(--ts);background:transparent;transition:all .1s;font-family:var(--font-body)}
+.ob-type-btn.active{background:var(--s2);color:var(--tp);border-color:var(--b2);font-weight:500}
+
+/* ── BOTTOM ZONE ── */
+.bottom-tabs{display:flex;border-bottom:1px solid var(--b);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.bottom-tabs::-webkit-scrollbar{display:none}
+.btab{padding:7px 12px;font-size:11px;color:var(--tt);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .1s}
+.btab.active{color:var(--tp);font-weight:500;border-bottom-color:var(--tp)}
+.bottom-body{flex:1;overflow:auto;padding:0 14px;min-height:0}
+.bpanel{display:none}
+.bpanel.active{display:block}
+.table-hd{display:grid;padding:7px 0;border-bottom:.5px solid var(--b);font-size:9px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;background:var(--s)}
+.table-row{display:grid;padding:5px 0;border-bottom:.5px solid var(--b);font-size:11px;align-items:center}
+.table-row:last-child{border-bottom:none}
+.trade-cols{grid-template-columns:70px 1fr 1fr 1fr 55px}
+.order-cols{grid-template-columns:55px 80px 1fr 1fr 1fr 60px}
+.history-cols{grid-template-columns:70px 1fr 1fr 1fr 1fr}
+.col-center{text-align:center}
+.col-right{text-align:right}
+.empty-state{padding:28px 0;text-align:center;color:var(--tt)}
+.empty-state svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.2;opacity:.4;display:block;margin:0 auto 8px}
+.empty-state p{font-size:11px}
+
+/* ── ORDER FORM ZONE ── */
+.form-tabs{display:flex;border-bottom:1px solid var(--b);flex-shrink:0}
+.ftab{flex:1;padding:9px 0;text-align:center;font-size:12px;color:var(--tt);cursor:pointer;border-bottom:2px solid transparent;transition:all .1s;font-weight:400}
+.ftab.active{font-weight:500;border-bottom-color:var(--tp)}
+.ftab.buy.active{color:var(--g);border-bottom-color:var(--g)}
+.ftab.sell.active{color:var(--r);border-bottom-color:var(--r)}
+.form-body{flex:1;overflow-y:auto;padding:10px 12px;scrollbar-width:thin}
+.form-body::-webkit-scrollbar{width:3px}
+.form-body::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+/* launch banner */
+.lp-banner{background:var(--bbg);border-radius:6px;padding:8px 10px;margin-bottom:10px;border:.5px solid #B5D4F4}
+.lp-header{display:flex;justify-content:space-between;margin-bottom:5px}
+.lp-title{font-size:10px;font-weight:500;color:var(--bl)}
+.lp-pct{font-size:10px;font-family:var(--font-mono);color:var(--bl)}
+.lp-bar{background:rgba(0,0,0,.1);border-radius:3px;height:3px;margin-bottom:4px;overflow:hidden}
+.lp-fill{height:100%;background:var(--bl);border-radius:3px}
+.lp-foot{display:flex;justify-content:space-between;font-size:10px;color:var(--bl)}
+
+/* order type buttons */
+.otype-row{display:flex;gap:4px;margin-bottom:10px}
+.otype{flex:1;padding:5px 0;text-align:center;font-size:10px;border:.5px solid var(--b);border-radius:5px;cursor:pointer;color:var(--ts);background:transparent;font-family:var(--font-body);transition:all .1s}
+.otype.active{background:var(--s2);color:var(--tp);border-color:var(--b2);font-weight:500}
+
+/* form elements */
+.fg{margin-bottom:9px}
+.fg-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--tt);margin-bottom:4px}
+.fg-lbl span:last-child{color:var(--ts)}
+.fi-wrap{position:relative}
+.fi{width:100%;background:var(--s2);border:.5px solid var(--b);border-radius:6px;padding:8px 40px 8px 10px;font-family:var(--font-mono);font-size:12px;color:var(--tp);outline:none;transition:border-color .1s}
+.fi:focus{border-color:var(--b2)}
+.fi-suf{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--font-mono);font-size:10px;color:var(--tt);pointer-events:none}
+.pct-row{display:flex;gap:4px;margin-bottom:9px}
+.pct{flex:1;padding:4px 0;text-align:center;font-size:10px;border:.5px solid var(--b);border-radius:5px;cursor:pointer;color:var(--ts);background:transparent;font-family:var(--font-body);transition:all .1s}
+.pct:hover{background:var(--s2)}
+.summary-box{background:var(--s2);border-radius:6px;padding:8px 10px;margin-bottom:10px}
+.sum-row{display:flex;justify-content:space-between;margin-bottom:3px;font-size:10px}
+.sum-row:last-child{margin-bottom:0}
+.sum-l{color:var(--tt)}
+.sum-v{font-family:var(--font-mono);font-weight:500}
+.btn-buy-main{width:100%;padding:11px;border-radius:7px;border:none;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;background:var(--g);color:#fff;transition:opacity .1s}
+.btn-buy-main:hover{opacity:.88}
+.btn-sell-main{background:var(--r)}
+.form-div{height:.5px;background:var(--b);margin:10px 0}
+
+/* dust row */
+.dust-earn{background:var(--s2);border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;font-size:10px;margin-bottom:9px}
+.dust-earn .dl{color:var(--tt)}
+.dust-earn .dv{font-family:var(--font-mono);font-weight:500;color:var(--am)}
+
+/* assets box */
+.assets-box{margin-top:10px;background:var(--s2);border-radius:6px;padding:8px 10px}
+.assets-title{font-size:10px;font-weight:500;color:var(--ts);margin-bottom:7px}
+.asset-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:10px}
+.asset-row:last-child{margin-bottom:0}
+.asset-l{color:var(--tt)}
+.asset-v{font-family:var(--font-mono);font-weight:500}
+.asset-actions{display:flex;gap:5px;margin-top:8px}
+.asset-btn{flex:1;padding:5px 0;text-align:center;font-size:10px;border:.5px solid var(--b);border-radius:5px;cursor:pointer;color:var(--ts);background:transparent;font-family:var(--font-body);transition:background .1s}
+.asset-btn:hover{background:var(--s3)}
+
+/* ── SHARE MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:var(--s);border-radius:12px;width:360px;max-width:92vw;overflow:hidden}
+.modal-head{padding:12px 14px;border-bottom:.5px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:13px;font-weight:500}
+.modal-close{width:24px;height:24px;border:none;background:var(--s2);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts)}
+.modal-close svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.5}
+.share-card{margin:12px 14px;border-radius:8px;overflow:hidden;border:.5px solid var(--b)}
+.sc-thumb{height:76px;background:#C8B498;position:relative;display:flex;align-items:center;justify-content:center}
+.sc-wm{font-family:var(--font-mono);font-weight:700;font-size:44px;opacity:.1;color:#6B4A2A;user-select:none}
+.sc-content{position:absolute;inset:0;padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between}
+.sc-top{display:inline-flex;align-items:center;gap:3px;background:rgba(0,0,0,.35);color:white;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:500;width:fit-content}
+.sc-bottom{display:flex;align-items:flex-end;gap:6px}
+.sc-price{font-family:var(--font-mono);font-size:17px;font-weight:500;color:white}
+.sc-chg{font-family:var(--font-mono);font-size:10px;color:#4ADB8A;font-weight:500}
+.sc-body{padding:9px 11px;background:var(--s)}
+.sc-sym-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.sc-sym{font-family:var(--font-mono);font-size:11px;font-weight:500}
+.sc-name{font-size:11px;color:var(--ts)}
+.sc-stats{display:flex;gap:12px}
+.sc-stat .ssl{font-size:8px;color:var(--tt);text-transform:uppercase;letter-spacing:.04em}
+.sc-stat .ssv{font-family:var(--font-mono);font-size:10px;font-weight:500}
+.sc-foot{background:var(--s2);padding:5px 11px;display:flex;justify-content:space-between;font-size:9px;color:var(--tt)}
+.sc-foot .brand{font-family:var(--font-mono);font-weight:500;color:var(--ts)}
+.share-btns{display:flex;gap:6px;padding:0 14px 10px}
+.sh-btn{flex:1;padding:8px;border-radius:6px;border:.5px solid var(--b);background:var(--s);cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--tp);display:flex;align-items:center;justify-content:center;gap:4px;transition:background .1s}
+.sh-btn:hover{background:var(--s2)}
+.sh-btn.tw{background:#000;color:#fff;border-color:#000}
+.sh-btn.kk{background:#FAE300;color:#3C1E1E;border-color:#FAE300}
+.sh-link{padding:0 14px 12px;display:flex;gap:6px}
+.sh-li{flex:1;background:var(--s2);border:.5px solid var(--b);border-radius:5px;padding:6px 9px;font-family:var(--font-mono);font-size:10px;color:var(--ts);outline:none}
+.sh-cp{padding:6px 11px;border-radius:5px;border:.5px solid var(--b);background:var(--s);cursor:pointer;font-size:11px;font-weight:500;color:var(--tp);font-family:var(--font-body);white-space:nowrap}
+.sh-cp.copied{background:var(--gbg);color:var(--g)}
+
+/* ── BOTTOM BAR ── */
+.btm-bar{position:fixed;bottom:0;left:0;right:0;height:52px;background:var(--s);border-top:1px solid var(--b);display:flex;align-items:center;padding:0 12px;gap:1px;z-index:200;overflow-x:auto;scrollbar-width:none}
+.btm-bar::-webkit-scrollbar{display:none}
+html.dark .btm-bar{background:#0A0A0E;border-top-color:#1E1E28}
+.bb{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:5px;font-size:11px;color:var(--ts);cursor:pointer;border:none;background:transparent;font-family:var(--font-body);white-space:nowrap;transition:background .1s}
+.bb:hover{background:var(--s2);color:var(--tp)}
+.bb.on{background:var(--s2);color:var(--tp);font-weight:500}
+.bb svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}
+.bb-div{width:1px;height:16px;background:var(--b);margin:0 2px;flex-shrink:0}
+.bb-r{display:flex;align-items:center;gap:5px;margin-left:auto;flex-shrink:0}
+.stable-pill{display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:5px;background:var(--gbg);font-size:10px;font-weight:500;color:var(--g)}
+.stable-dot{width:5px;height:5px;border-radius:50%;background:var(--g)}
+.theme-btn{width:28px;height:28px;border-radius:5px;border:.5px solid var(--b);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts)}
+.theme-btn svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* TOAST */
+#toast{position:fixed;bottom:64px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--tp);color:var(--bg);padding:6px 14px;border-radius:6px;font-size:11px;font-weight:500;opacity:0;transition:all .2s;z-index:600;pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="topnav">
+  <a class="nav-logo" href="#">
+    <div class="logo-box"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+    STARZIP
+  </a>
+  <a class="nav-link" href="#">Markets</a>
+  <a class="nav-link active" href="#">Trade</a>
+  <a class="nav-link" href="#">Launchpad</a>
+  <a class="nav-link" href="#">Portfolio</a>
+  <a class="nav-link" href="#">DAO</a>
+  <div class="nav-r">
+    <div class="dust-pill"><div class="dust-dot"></div>DUST 1,240</div>
+    <button class="btn-wallet">0x4a2f...8c3d</button>
+    <button class="btn-theme-nav" onclick="toggleTheme()">
+      <svg id="ti-sun" viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><line x1="7" y1="1" x2="7" y2="2.5" stroke-linecap="round"/><line x1="7" y1="11.5" x2="7" y2="13" stroke-linecap="round"/><line x1="1" y1="7" x2="2.5" y2="7" stroke-linecap="round"/><line x1="11.5" y1="7" x2="13" y2="7" stroke-linecap="round"/></svg>
+      <svg id="ti-moon" style="display:none" viewBox="0 0 14 14"><path d="M11.5 8.5A5 5 0 015.5 2.5a5 5 0 100 9 5 5 0 006-3z" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- SYMBOL BAR (바이낸스식) -->
+<div class="sym-bar">
+  <div class="sym-info">
+    <div class="sym-thumb">
+      <div class="sym-thumb-wm">C</div>
+      <div class="sym-thumb-tk">CAFE</div>
+    </div>
+    <div>
+      <div class="sym-name">브루밍 카페</div>
+      <div class="sym-pair">CAFE/USDT</div>
+    </div>
+  </div>
+  <span class="sym-badge badge-launch"><span class="badge-dot"></span>런치패드</span>
+  <div class="sym-div"></div>
+  <span class="sym-price-big up">$0.00067</span>
+  <span class="sym-chg up-bg">+12.4%</span>
+  <div class="sym-div"></div>
+  <div class="sym-stat"><span class="sl">24h 시가</span><span class="sv">$0.000596</span></div>
+  <div class="sym-stat"><span class="sl">24h 고가</span><span class="sv up">$0.000710</span></div>
+  <div class="sym-stat"><span class="sl">24h 저가</span><span class="sv dn">$0.000580</span></div>
+  <div class="sym-stat"><span class="sl">24h 거래량(CAFE)</span><span class="sv">36,700K</span></div>
+  <div class="sym-stat"><span class="sl">24h 거래량(USDT)</span><span class="sv">$24.6K</span></div>
+  <div class="sym-stat"><span class="sl">시가총액</span><span class="sv">$335K</span></div>
+  <div class="sym-stat"><span class="sl">월 고객</span><span class="sv">~800명</span></div>
+  <div class="sym-stat"><span class="sl">위치</span><span class="sv">성수동 · 서울 🇰🇷</span></div>
+  <div class="sym-actions">
+    <button class="btn-share" onclick="openShare()">
+      <svg viewBox="0 0 14 14"><circle cx="11" cy="3" r="1.5"/><circle cx="3" cy="7" r="1.5"/><circle cx="11" cy="11" r="1.5"/><line x1="4.4" y1="7.6" x2="9.7" y2="10.4" stroke-linecap="round"/><line x1="9.7" y1="3.6" x2="4.4" y2="6.4" stroke-linecap="round"/></svg>
+      공유하기
+    </button>
+    <button class="btn-ic" id="fav-btn" onclick="toggleFav()"><svg viewBox="0 0 14 14"><path d="M7 12S2 8.5 2 5a3 3 0 016 0 3 3 0 016 0c0 3.5-5 7-5 7z"/></svg></button>
+    <button class="btn-ic"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5"/><path d="M4.5 7l1.5 1.5 3.5-3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="btn-ic"><svg viewBox="0 0 14 14"><path d="M7 2a4 4 0 014 4v3l1 1.5H2L3 9V6a4 4 0 014-4z"/><path d="M5.5 12a1.5 1.5 0 003 0" stroke-linecap="round"/></svg></button>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="trade-grid" id="trade-grid">
+
+  <!-- ZONE 1: CHART -->
+  <div class="grid-cell zone-chart">
+    <div class="chart-tabs">
+      <div class="ctab active" onclick="setChartTab(this,'chart')">차트</div>
+      <div class="ctab" onclick="setChartTab(this,'store')">상점 정보</div>
+      <div class="ctab" onclick="setChartTab(this,'menu')">메뉴</div>
+      <div class="ctab" onclick="setChartTab(this,'disc')">공시 / DAO</div>
+    </div>
+    <!-- 시간대 버튼 (차트 탭만) -->
+    <div class="chart-tf" id="chart-tf">
+      <button class="tf" onclick="setTF(this)">1s</button>
+      <button class="tf" onclick="setTF(this)">1m</button>
+      <button class="tf" onclick="setTF(this)">5m</button>
+      <button class="tf" onclick="setTF(this)">15m</button>
+      <button class="tf active" onclick="setTF(this)">1H</button>
+      <button class="tf" onclick="setTF(this)">4H</button>
+      <button class="tf" onclick="setTF(this)">1D</button>
+      <div class="tf-div"></div>
+      <button class="tf" onclick="setTF(this)">캔들</button>
+      <button class="tf" onclick="setTF(this)">라인</button>
+      <div class="tf-div"></div>
+      <button class="tf" onclick="setTF(this)">MA</button>
+      <button class="tf" onclick="setTF(this)">BB</button>
+      <button class="tf" onclick="setTF(this)">RSI</button>
+      <button class="tf" onclick="setTF(this)">MACD</button>
+    </div>
+    <div class="chart-area" id="chart-area">
+      <!-- chart canvas -->
+      <div class="chart-content cpanel active" id="cp-chart" style="padding:0;position:absolute;inset:0">
+        <canvas id="chart-canvas" style="width:100%;height:100%;display:block"></canvas>
+        <div class="chart-price-tag" id="price-tag" style="top:36%">$0.00067</div>
+      </div>
+
+      <!-- store info panel -->
+      <div class="chart-content cpanel" id="cp-store">
+        <div class="store-photos">
+          <div class="sp-photo sp-photo-main"><div class="wm">CAFE</div><div class="photo-cnt">999+장</div></div>
+          <div class="sp-photo" style="background:#D4C4B0"><div class="wm-sm">인</div></div>
+          <div class="sp-photo" style="background:#BCA898"><div class="wm-sm">테</div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:16px;font-weight:600;margin-bottom:4px">브루밍 카페</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span style="color:var(--am);font-size:13px;font-weight:500">★ 4.3</span>
+            <span style="font-size:11px;color:var(--tt)">방문 리뷰 4,954 · 블로그 6,917</span>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#FDECEA;color:#A32D2D;font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px">
+            ★ Starzip Featured 상점
+          </span>
+        </div>
+        <div class="store-grid-info">
+          <div class="sgi-card"><div class="sgi-l">현재 가격</div><div class="sgi-v g">$0.00067</div></div>
+          <div class="sgi-card"><div class="sgi-l">24H 변동</div><div class="sgi-v g">+12.4%</div></div>
+          <div class="sgi-card"><div class="sgi-l">운영 기간</div><div class="sgi-v">2년 4개월</div></div>
+          <div class="sgi-card"><div class="sgi-l">월 고객</div><div class="sgi-v">~800명</div></div>
+        </div>
+        <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="6" r="3"/><path d="M7 9c0 0-5 3.5-5 0a5 5 0 0110 0c0 3.5-5 0-5 0z"/></svg></div><div><div class="si-lbl">서울 강남구 학동로 305-3</div><div class="si-sub">학동역 10번 출구에서 366m</div></div></div>
+        <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M7 4v3.5l2.5 1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-lbl"><span class="si-open">영업 중</span> · 21:10 라스트오더</div><div class="si-sub">월–금 10:00–22:00 · 주말 11:00–22:00</div></div></div>
+        <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><rect x="2" y="4" width="10" height="8" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1" stroke-linecap="round"/></svg></div><div><div class="si-lbl">카페 · 핸드드립 · 브런치</div><div class="si-sub">02-515-3469 · 주차 · 발렛파킹</div></div></div>
+        <div class="si-row"><div class="si-ico"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5"/><path d="M4 7h6M7 4c-1.5 1.5-1.5 4.5 0 6M7 4c1.5 1.5 1.5 4.5 0 6" stroke-linecap="round"/></svg></div><div><div class="si-lbl">CAFE 토큰 보유자 음료 10% 할인</div><div class="si-sub">결제 시 지갑 연결 후 자동 적용</div></div></div>
+      </div>
+
+      <!-- menu panel -->
+      <div class="chart-content cpanel" id="cp-menu">
+        <div style="font-size:11px;font-weight:500;color:var(--tt);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">대표 메뉴 (CAFE 보유 시 10% 할인 적용)</div>
+        <div class="menu-row"><span>핸드드립 아메리카노<span class="menu-badge">대표</span></span><span style="font-family:var(--font-mono);font-weight:500">7,000원</span></div>
+        <div class="menu-row"><span>스페셜티 라떼</span><span style="font-family:var(--font-mono);font-weight:500">8,500원</span></div>
+        <div class="menu-row"><span>에그 브런치 세트</span><span style="font-family:var(--font-mono);font-weight:500">15,000원</span></div>
+        <div class="menu-row"><span>과일 스무디</span><span style="font-family:var(--font-mono);font-weight:500">9,000원</span></div>
+        <div class="menu-row"><span>크로플</span><span style="font-family:var(--font-mono);font-weight:500">6,500원</span></div>
+        <div class="menu-row"><span>티라미수</span><span style="font-family:var(--font-mono);font-weight:500">8,000원</span></div>
+        <div class="menu-row"><span>아이스 아메리카노</span><span style="font-family:var(--font-mono);font-weight:500">6,000원</span></div>
+        <div class="menu-row"><span>플랫화이트</span><span style="font-family:var(--font-mono);font-weight:500">7,500원</span></div>
+      </div>
+
+      <!-- disclosure panel -->
+      <div class="chart-content cpanel" id="cp-disc">
+        <div style="font-size:11px;font-weight:500;margin-bottom:8px">분기 매출 공시 <span style="font-size:10px;color:var(--tt);font-weight:400">— Optimistic Compliance</span></div>
+        <div class="disc-row"><span class="disc-q">2026 Q1</span><span class="disc-st ds-ok">정상</span><span class="disc-d">매출 $28,400 · 방문 2,380명 · 04-12 제출</span></div>
+        <div class="disc-row"><span class="disc-q">2025 Q4</span><span class="disc-st ds-ok">정상</span><span class="disc-d">매출 $31,200 · 방문 2,650명 · 01-11 제출</span></div>
+        <div class="disc-row"><span class="disc-q">2025 Q3</span><span class="disc-st ds-ok">정상</span><span class="disc-d">매출 $26,800 · 방문 2,210명 · 10-09 제출</span></div>
+        <div class="disc-row"><span class="disc-q">2025 Q2</span><span class="disc-st ds-warn">지연</span><span class="disc-d">매출 $22,100 · D+14 초과 제출</span></div>
+        <div style="height:10px"></div>
+        <div style="font-size:11px;font-weight:500;margin-bottom:8px">Store DAO 결의</div>
+        <div class="disc-row"><span class="disc-q" style="color:var(--bl)">진행중</span><span class="disc-st" style="background:var(--bbg);color:var(--bl)">투표중</span><span class="disc-d">500만개 소각 제안 · 찬성 68% · D-2</span></div>
+        <div class="disc-row"><span class="disc-q">2026-03</span><span class="disc-st ds-ok">가결</span><span class="disc-d">DUST 0.2% 지급으로 변경 · 찬성 82%</span></div>
+        <div class="disc-row"><span class="disc-q">2026-01</span><span class="disc-st" style="background:#FCEBEB;color:#A32D2D">부결</span><span class="disc-d">추가 발행 1억개 · 찬성 31%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONE 2: ORDERBOOK -->
+  <div class="grid-cell zone-ob">
+    <div style="padding:5px 8px;border-bottom:.5px solid var(--b);font-size:11px;font-weight:500;flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
+      <span>호가창</span>
+      <span style="font-size:9px;color:var(--tt);cursor:pointer">Market Trades</span>
+    </div>
+    <div class="ob-type-row">
+      <button class="ob-type-btn active" onclick="setOBType(this)">양방향</button>
+      <button class="ob-type-btn" onclick="setOBType(this)">매도</button>
+      <button class="ob-type-btn" onclick="setOBType(this)">매수</button>
+    </div>
+    <div class="ob-hd"><span>가격</span><span>수량</span></div>
+    <div class="ob-body">
+      <div class="ob-asks">
+        <div class="ob-row ob-ask"><span>0.00071</span><span style="text-align:right">14,200</span><div class="ob-bar ob-ask-bar" style="width:28%"></div></div>
+        <div class="ob-row ob-ask"><span>0.00070</span><span style="text-align:right">28,500</span><div class="ob-bar ob-ask-bar" style="width:42%"></div></div>
+        <div class="ob-row ob-ask"><span>0.00069</span><span style="text-align:right">52,100</span><div class="ob-bar ob-ask-bar" style="width:65%"></div></div>
+        <div class="ob-row ob-ask"><span>0.00069</span><span style="text-align:right">38,400</span><div class="ob-bar ob-ask-bar" style="width:50%"></div></div>
+        <div class="ob-row ob-ask"><span>0.00068</span><span style="text-align:right">21,700</span><div class="ob-bar ob-ask-bar" style="width:33%"></div></div>
+        <div class="ob-row ob-ask"><span>0.00068</span><span style="text-align:right">65,300</span><div class="ob-bar ob-ask-bar" style="width:80%"></div></div>
+        <div class="ob-row ob-ask"><span>0.00067</span><span style="text-align:right">42,800</span><div class="ob-bar ob-ask-bar" style="width:56%"></div></div>
+      </div>
+      <div class="ob-mid">
+        <div class="ob-mid-price up">$0.00067</div>
+        <div class="ob-mid-spread">스프레드 0.00001 · 1.49%</div>
+        <!-- 바이낸스식 bid/ask 비율 바 -->
+        <div style="display:flex;gap:2px;margin-top:5px;height:3px;border-radius:2px;overflow:hidden">
+          <div style="width:63%;background:var(--g);border-radius:2px 0 0 2px"></div>
+          <div style="width:37%;background:var(--r);border-radius:0 2px 2px 0"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px">
+          <span style="color:var(--g)">B 63.2%</span>
+          <span style="color:var(--r)">S 36.8%</span>
+        </div>
+      </div>
+      <div class="ob-bids">
+        <div class="ob-row ob-bid"><span>0.00066</span><span style="text-align:right">78,900</span><div class="ob-bar ob-bid-bar" style="width:90%"></div></div>
+        <div class="ob-row ob-bid"><span>0.00065</span><span style="text-align:right">45,200</span><div class="ob-bar ob-bid-bar" style="width:58%"></div></div>
+        <div class="ob-row ob-bid"><span>0.00065</span><span style="text-align:right">31,600</span><div class="ob-bar ob-bid-bar" style="width:44%"></div></div>
+        <div class="ob-row ob-bid"><span>0.00064</span><span style="text-align:right">19,400</span><div class="ob-bar ob-bid-bar" style="width:28%"></div></div>
+        <div class="ob-row ob-bid"><span>0.00063</span><span style="text-align:right">8,700</span><div class="ob-bar ob-bid-bar" style="width:15%"></div></div>
+        <div class="ob-row ob-bid"><span>0.00062</span><span style="text-align:right">24,100</span><div class="ob-bar ob-bid-bar" style="width:36%"></div></div>
+        <div class="ob-row ob-bid"><span>0.00061</span><span style="text-align:right">11,500</span><div class="ob-bar ob-bid-bar" style="width:20%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONE 3: ORDER FORM (spans 2 rows) -->
+  <div class="grid-cell zone-form">
+    <div class="form-tabs">
+      <div class="ftab buy active" id="ft-buy" onclick="setOrderSide('buy')">매수</div>
+      <div class="ftab sell" id="ft-sell" onclick="setOrderSide('sell')">매도</div>
+    </div>
+    <div class="form-body">
+      <!-- 런치패드 배너 -->
+      <div class="lp-banner">
+        <div class="lp-header"><span class="lp-title">런치패드 진행중</span><span class="lp-pct">68% · D-3</span></div>
+        <div class="lp-bar"><div class="lp-fill" style="width:68%"></div></div>
+        <div class="lp-foot"><span>$6,800 / $10,000</span><span>STAR 1.4x 부스트</span></div>
+      </div>
+
+      <!-- Limit / Market / Stop Limit -->
+      <div class="otype-row">
+        <button class="otype active" onclick="setOType(this)">지정가</button>
+        <button class="otype" onclick="setOType(this)">시장가</button>
+        <button class="otype" onclick="setOType(this)">GTC</button>
+      </div>
+
+      <div class="fg">
+        <div class="fg-lbl"><span>가격 (USDT)</span></div>
+        <div class="fi-wrap"><input class="fi" type="number" value="0.00067" id="p-in" oninput="calcSummary()"><span class="fi-suf">USDT</span></div>
+      </div>
+      <div class="fg">
+        <div class="fg-lbl"><span>수량 (CAFE)</span><span id="bal-lbl">잔액: $124.50</span></div>
+        <div class="fi-wrap"><input class="fi" type="number" value="50000" id="q-in" oninput="calcSummary()"><span class="fi-suf">CAFE</span></div>
+      </div>
+      <div class="pct-row">
+        <button class="pct" onclick="setPct(25)">25%</button>
+        <button class="pct" onclick="setPct(50)">50%</button>
+        <button class="pct" onclick="setPct(75)">75%</button>
+        <button class="pct" onclick="setPct(100)">MAX</button>
+      </div>
+
+      <div class="summary-box">
+        <div class="sum-row"><span class="sum-l">예상 체결금액</span><span class="sum-v" id="s-total">$33.50</span></div>
+        <div class="sum-row"><span class="sum-l">수수료 (0.39%)</span><span class="sum-v" id="s-fee">$0.1307</span></div>
+        <div class="sum-row" style="margin-top:2px;padding-top:4px;border-top:.5px solid var(--b)">
+          <span class="sum-l" style="font-size:9px">→ 브루밍 카페 3% + Starzip 97%</span>
+        </div>
+      </div>
+
+      <div class="dust-earn">
+        <span class="dl">이 거래 DUST 적립</span>
+        <span class="dv" id="dust-val">+33.50</span>
+      </div>
+
+      <button class="btn-buy-main" id="order-btn" onclick="toast('주문 접수됨 ✓')">매수 주문</button>
+
+      <div class="form-div"></div>
+
+      <!-- 자산 현황 (바이낸스 Assets 박스) -->
+      <div class="assets-box">
+        <div class="assets-title">내 자산</div>
+        <div class="asset-row"><span class="asset-l">USDT 잔액</span><span class="asset-v">124.50</span></div>
+        <div class="asset-row"><span class="asset-l">CAFE 잔액</span><span class="asset-v">50,000</span></div>
+        <div class="asset-row"><span class="asset-l">DUST</span><span class="asset-v" style="color:var(--am)">1,240</span></div>
+        <div class="asset-actions">
+          <button class="asset-btn" onclick="toast('입금 화면')">입금</button>
+          <button class="asset-btn" onclick="toast('출금 화면')">출금</button>
+          <button class="asset-btn" onclick="toast('전송 화면')">전송</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONE 4: BOTTOM (주문 내역) -->
+  <div class="grid-cell zone-bottom" style="border-bottom:none">
+    <div class="bottom-tabs">
+      <div class="btab active" onclick="setBTab(this,'open')">Open Orders (0)</div>
+      <div class="btab" onclick="setBTab(this,'history')">Order History</div>
+      <div class="btab" onclick="setBTab(this,'trades')">Trade History</div>
+    </div>
+    <div class="bottom-body">
+      <div class="bpanel active" id="bp-open">
+        <div class="empty-state">
+          <svg viewBox="0 0 28 28"><rect x="5" y="7" width="18" height="14" rx="2"/><line x1="9" y1="12" x2="19" y2="12"/><line x1="9" y1="16" x2="14" y2="16"/></svg>
+          <p>미체결 주문이 없습니다</p>
+        </div>
+      </div>
+      <div class="bpanel" id="bp-history">
+        <div class="table-hd order-cols"><span>날짜</span><span>페어</span><span>유형</span><span>가격</span><span>수량</span><span class="col-right">상태</span></div>
+        <div class="table-row order-cols">
+          <span style="color:var(--tt);font-family:var(--font-mono);font-size:10px">03/24 14:31</span>
+          <span>CAFE/USDT</span>
+          <span>지정가 매수</span>
+          <span style="font-family:var(--font-mono)">0.00065</span>
+          <span style="font-family:var(--font-mono)">50,000</span>
+          <span class="col-right" style="color:var(--g)">체결완료</span>
+        </div>
+      </div>
+      <div class="bpanel" id="bp-trades">
+        <div class="table-hd trade-cols"><span>시간</span><span>가격</span><span>수량</span><span>총액</span><span class="col-right">구분</span></div>
+        <div class="table-row trade-cols">
+          <span style="color:var(--tt);font-family:var(--font-mono)">14:32:08</span>
+          <span style="color:var(--g);font-family:var(--font-mono)">0.00067</span>
+          <span style="font-family:var(--font-mono)">42,000</span>
+          <span style="font-family:var(--font-mono)">$28.14</span>
+          <span class="col-right" style="color:var(--g)">매수</span>
+        </div>
+        <div class="table-row trade-cols">
+          <span style="color:var(--tt);font-family:var(--font-mono)">14:31:55</span>
+          <span style="color:var(--r);font-family:var(--font-mono)">0.00066</span>
+          <span style="font-family:var(--font-mono)">15,500</span>
+          <span style="font-family:var(--font-mono)">$10.23</span>
+          <span class="col-right" style="color:var(--r)">매도</span>
+        </div>
+        <div class="table-row trade-cols">
+          <span style="color:var(--tt);font-family:var(--font-mono)">14:31:42</span>
+          <span style="color:var(--g);font-family:var(--font-mono)">0.00067</span>
+          <span style="font-family:var(--font-mono)">88,200</span>
+          <span style="font-family:var(--font-mono)">$59.09</span>
+          <span class="col-right" style="color:var(--g)">매수</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SHARE MODAL -->
+<div class="overlay" id="share-overlay" onclick="closeShare(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3>공유 카드 생성</h3>
+      <button class="modal-close" onclick="closeShare()"><svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke-linecap="round"/><line x1="10" y1="2" x2="2" y2="10" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="share-card">
+      <div class="sc-thumb">
+        <div class="sc-wm">CAFE</div>
+        <div class="sc-content">
+          <div class="sc-top">📍 성수동 · 서울 · 🇰🇷</div>
+          <div class="sc-bottom"><span class="sc-price">$0.00067</span><span class="sc-chg">+12.4%</span></div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-sym-row"><span class="sc-sym">CAFE</span><span class="sc-name">브루밍 카페</span></div>
+        <div class="sc-stats">
+          <div class="sc-stat"><div class="ssl">24H 거래량</div><div class="ssv">$24.6K</div></div>
+          <div class="sc-stat"><div class="ssl">시총</div><div class="ssv">$335K</div></div>
+          <div class="sc-stat"><div class="ssl">월 고객</div><div class="ssv">~800명</div></div>
+        </div>
+      </div>
+      <div class="sc-foot"><span>2026.03.25 14:32</span><span class="brand">STARZIP</span></div>
+    </div>
+    <div class="share-btns">
+      <button class="sh-btn tw" onclick="toast('X(트위터) 공유!')">X</button>
+      <button class="sh-btn kk" onclick="toast('카카오톡 공유!')">카카오</button>
+      <button class="sh-btn" onclick="toast('이미지 저장!')"><svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 9l3-3 2 2 3-3 4 4" stroke-linejoin="round" stroke-linecap="round"/></svg>이미지</button>
+    </div>
+    <div class="sh-link">
+      <input class="sh-li" value="https://starzip.io/trade/CAFE" readonly id="share-link">
+      <button class="sh-cp" id="copy-btn" onclick="copyLink()">복사</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- BOTTOM BAR -->
+<div class="btm-bar">
+  <button class="bb"><svg viewBox="0 0 13 13"><path d="M7 1l1.5 3.5 3.5.5-2.5 2.5.5 3.5L7 9.5 4 11l.5-3.5L2 5l3.5-.5z"/></svg>Price Alert</button>
+  <button class="bb on"><svg viewBox="0 0 13 13"><line x1="1" y1="3" x2="12" y2="3" stroke-linecap="round"/><line x1="1" y1="6.5" x2="12" y2="6.5" stroke-linecap="round"/><line x1="1" y1="10" x2="7" y2="10" stroke-linecap="round"/></svg>Watchlist</button>
+  <div class="bb-div"></div>
+  <button class="bb on"><svg viewBox="0 0 13 13"><rect x="1" y="4" width="3.5" height="5" rx="1"/><rect x="4.75" y="2" width="3.5" height="9" rx="1"/><rect x="8.5" y="5" width="3.5" height="4" rx="1"/></svg>My Positions</button>
+  <button class="bb"><svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M4.5 6.5l1.5 1.5 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>Signal</button>
+  <button class="bb"><svg viewBox="0 0 13 13"><path d="M6.5 2a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"/><path d="M4.5 6.5c.5-1.5 1-2 2-2s1.5.5 2 2-1.5 2.5-2 2.5-2-1-2-2.5z"/></svg>AI Assistant</button>
+  <div class="bb-r">
+    <div class="stable-pill"><div class="stable-dot"></div>Stable</div>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <svg id="bb-sun" viewBox="0 0 14 14"><circle cx="7" cy="7" r="2.5"/><line x1="7" y1="1" x2="7" y2="2.5" stroke-linecap="round"/><line x1="7" y1="11.5" x2="7" y2="13" stroke-linecap="round"/><line x1="1" y1="7" x2="2.5" y2="7" stroke-linecap="round"/><line x1="11.5" y1="7" x2="13" y2="7" stroke-linecap="round"/></svg>
+      <svg id="bb-moon" style="display:none" viewBox="0 0 14 14"><path d="M11.5 8.5A5 5 0 015.5 2.5a5 5 0 100 9 5 5 0 006-3z" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ── CHART ──
+const canvas=document.getElementById('chart-canvas');
+const ctx=canvas.getContext('2d');
+function resizeChart(){
+  const area=document.getElementById('chart-area');
+  canvas.width=area.offsetWidth;
+  canvas.height=area.offsetHeight;
+  drawChart();
+}
+function drawChart(){
+  const W=canvas.width,H=canvas.height;
+  if(!W||!H)return;
+  const dark=document.documentElement.classList.contains('dark');
+  ctx.fillStyle=dark?'#16161A':'#fff';
+  ctx.fillRect(0,0,W,H);
+  const gc=dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)';
+  ctx.strokeStyle=gc;ctx.lineWidth=1;
+  for(let i=1;i<5;i++){const y=H/5*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  for(let i=1;i<7;i++){const x=W/7*i;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  const ps=[.596,.610,.580,.605,.625,.615,.640,.628,.650,.645,.660,.655,.670,.668,.672,.665,.680,.670];
+  const pmin=Math.min(...ps)*.995,pmax=Math.max(...ps)*1.005;
+  const cw=Math.floor(W/ps.length)*.72;
+  ps.forEach((p,i)=>{
+    const x=Math.floor((i+.5)*(W/ps.length));
+    const y=H-(p-pmin)/(pmax-pmin)*H*.8-H*.1;
+    const prev=ps[i-1]||p;const up=p>=prev;
+    const col=up?(dark?'#27C46A':'#1B7A4A'):(dark?'#E85050':'#C0392B');
+    const body=Math.abs(p-prev)/(pmax-pmin)*H*.8||3;
+    const by=up?y:y-body;
+    ctx.fillStyle=col;ctx.fillRect(x-cw/2,by,cw,Math.max(body,2));
+    ctx.strokeStyle=col;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,by-5);ctx.lineTo(x,by);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,by+Math.max(body,2));ctx.lineTo(x,by+Math.max(body,2)+5);ctx.stroke();
+  });
+  const ly=H-(ps[ps.length-1]-pmin)/(pmax-pmin)*H*.8-H*.1;
+  ctx.strokeStyle=dark?'#27C46A':'#1B7A4A';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(0,ly);ctx.lineTo(W,ly);ctx.stroke();ctx.setLineDash([]);
+  document.getElementById('price-tag').style.top=(ly-9)+'px';
+}
+window.addEventListener('resize',()=>setTimeout(resizeChart,100));
+setTimeout(resizeChart,100);
+
+// ── CHART TABS ──
+function setChartTab(el,id){
+  el.closest('.chart-tabs').querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('cp-'+id).classList.add('active');
+  const tf=document.getElementById('chart-tf');
+  tf.style.display=id==='chart'?'flex':'none';
+}
+function setTF(el){el.closest('.chart-tf').querySelectorAll('.tf').forEach(t=>t.classList.remove('active'));el.classList.add('active')}
+function setOBType(el){el.closest('.ob-type-row').querySelectorAll('.ob-type-btn').forEach(t=>t.classList.remove('active'));el.classList.add('active')}
+function setOType(el){el.closest('.otype-row').querySelectorAll('.otype').forEach(t=>t.classList.remove('active'));el.classList.add('active')}
+function setBTab(el,id){
+  el.closest('.bottom-tabs').querySelectorAll('.btab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.querySelectorAll('.bpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('bp-'+id).classList.add('active');
+}
+
+// ── ORDER SIDE ──
+function setOrderSide(s){
+  const buy=s==='buy';
+  document.getElementById('ft-buy').classList.toggle('active',buy);
+  document.getElementById('ft-sell').classList.toggle('active',!buy);
+  const btn=document.getElementById('order-btn');
+  btn.className='btn-buy-main'+(buy?'':' btn-sell-main');
+  btn.textContent=buy?'매수 주문':'매도 주문';
+}
+
+// ── CALC ──
+function calcSummary(){
+  const p=parseFloat(document.getElementById('p-in').value)||0;
+  const q=parseFloat(document.getElementById('q-in').value)||0;
+  const t=(p*q).toFixed(2);
+  document.getElementById('s-total').textContent='$'+t;
+  document.getElementById('s-fee').textContent='$'+(t*.0039).toFixed(4);
+  document.getElementById('dust-val').textContent='+'+t;
+}
+function setPct(pct){
+  const bal=124.50,p=parseFloat(document.getElementById('p-in').value)||.00067;
+  if(p>0){document.getElementById('q-in').value=Math.floor(bal*pct/100/p);calcSummary();}
+}
+calcSummary();
+
+// ── FAV ──
+function toggleFav(){
+  const b=document.getElementById('fav-btn');b.classList.toggle('on');
+  toast(b.classList.contains('on')?'즐겨찾기 추가 ★':'즐겨찾기 제거');
+}
+
+// ── SHARE ──
+function openShare(){document.getElementById('share-overlay').classList.add('open')}
+function closeShare(e){if(!e||e.target===document.getElementById('share-overlay'))document.getElementById('share-overlay').classList.remove('open')}
+function copyLink(){
+  const btn=document.getElementById('copy-btn');
+  navigator.clipboard.writeText(document.getElementById('share-link').value).catch(()=>{});
+  btn.textContent='복사됨!';btn.classList.add('copied');
+  setTimeout(()=>{btn.textContent='복사';btn.classList.remove('copied')},2000);
+}
+
+// ── TOAST ──
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)'},2000);
+}
+
+// ── THEME ──
+if(localStorage.getItem('sz-theme')==='dark')applyDark();
+function applyDark(){
+  document.documentElement.classList.add('dark');
+  ['ti-sun','bb-sun'].forEach(id=>document.getElementById(id).style.display='none');
+  ['ti-moon','bb-moon'].forEach(id=>document.getElementById(id).style.display='block');
+  drawChart();
+}
+function applyLight(){
+  document.documentElement.classList.remove('dark');
+  ['ti-sun','bb-sun'].forEach(id=>document.getElementById(id).style.display='block');
+  ['ti-moon','bb-moon'].forEach(id=>document.getElementById(id).style.display='none');
+  drawChart();
+}
+function toggleTheme(){
+  document.documentElement.classList.contains('dark')?
+    (applyLight(),localStorage.setItem('sz-theme','light')):
+    (applyDark(),localStorage.setItem('sz-theme','dark'));
+}
+</script>
+</body>
+</html>
