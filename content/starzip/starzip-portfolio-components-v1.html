@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 포트폴리오 구성요소 v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+.zp{display:none}.zp.on{display:block}
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover,.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-st{background:#FFF4E3;color:#633806}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-g{color:#1B7A4A}.src-bn{color:#C89A09}.src-hl{color:#008BAA}.src-dy{color:#6C3CE1}.src-on{color:#5B4FDB}
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+.insight{background:#EBF0FF;border-left:3px solid #1A4FDB;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#344054;line-height:1.5;margin-top:8px}
+.insight strong{color:#1A4FDB}
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+.foot{display:flex;gap:5px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip 포트폴리오 구성요소 v1</h1>
+  <p>Ondo(계정 구조) · Hyperliquid(수치/탭) · dYdX(사이드바/포지션) 참고 · A. 레이아웃 (3) · B. 상단 요약 (4) · C. 자산 현황 (4) · D. 히스토리 탭 (6) · E. 우측 패널 (4) · F. 사이드바 (3) · G. 유틸 (3) · 총 27개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on" onclick="sw('all',this)">전체 (27개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 레이아웃</button>
+  <button class="zt" onclick="sw('b',this)">B. 상단 요약</button>
+  <button class="zt" onclick="sw('c',this)">C. 자산 현황</button>
+  <button class="zt" onclick="sw('d',this)">D. 히스토리 탭</button>
+  <button class="zt" onclick="sw('e',this)">E. 우측 패널</button>
+  <button class="zt" onclick="sw('f',this)">F. 사이드바</button>
+  <button class="zt" onclick="sw('g',this)">G. 유틸</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- ══ A. 레이아웃 ══ -->
+<div class="sec">A. 레이아웃 구조 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">3열 레이아웃 컨테이너 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">좌측 사이드바 220px · 중앙 콘텐츠 flex:1 · 우측 패널 280px · 전체 높이 100vh</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>그리드 구조</h5><ul>
+      <li>grid-template-columns: 220px 1fr 280px</li>
+      <li>min-height: calc(100vh - 52px)</li>
+      <li>사이드바·우측 패널: overflow-y:auto</li>
+      <li>중앙: background var(--g25) 회색 배경</li>
+    </ul></div>
+    <div class="dc"><h5>반응형</h5><ul>
+      <li>≤1100px: 우측 패널 숨김</li>
+      <li>≤900px: 사이드바도 숨김, 단열</li>
+      <li>모바일: 하단 탭 바로 전환</li>
+    </ul></div>
+    <div class="dc"><h5>스크롤</h5><ul>
+      <li>중앙 콘텐츠만 스크롤</li>
+      <li>사이드바·우측 패널 독립 스크롤</li>
+      <li>NAV sticky top:0, z-index 200</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">알림 배너 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">네트워크 안내·공지 배너. X 버튼으로 닫기. localStorage로 닫힘 상태 저장</div>
+    <div class="pri high">높음</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>ℹ️ 아이콘 + 텍스트 + X 닫기</li>
+      <li>배경 var(--p50), 테두리 var(--p100)</li>
+      <li>중앙 콘텐츠 최상단 고정</li>
+      <li>타입별 컬러: 정보(파랑)·경고(주황)·에러(빨강)</li>
+    </ul></div>
+    <div class="dc"><h5>내용 예시</h5><ul>
+      <li>네트워크 안내 (opBNB Chain)</li>
+      <li>신규 기능 안내</li>
+      <li>보안 업데이트 공지</li>
+      <li>닫힘 상태 세션 유지</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">액션 버튼 바 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">입금·출금·전송·스왑 4개 주요 액션. 페이지 타이틀 우측 배치 (HL 스타일)</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>버튼 구성</h5><ul>
+      <li>↓ 입금 (기본 스타일)</li>
+      <li>↑ 출금 (경고 스타일, 주황 보더)</li>
+      <li>→ 전송 (기본 스타일)</li>
+      <li>⇄ 스왑 (기본 스타일)</li>
+    </ul></div>
+    <div class="dc"><h5>UX</h5><ul>
+      <li>각 버튼 클릭 → 전용 모달 오픈</li>
+      <li>지갑 미연결 시 → "지갑 연결" 단일 버튼</li>
+      <li>flex-wrap으로 모바일 자동 줄바꿈</li>
+    </ul></div>
+    <div class="dc"><h5>HL 비교</h5><ul>
+      <li>HL: Link Staking·Swap·Perps·EVM·Margin·Send·Withdraw·Deposit</li>
+      <li>Starzip: 거래소 특성에 맞게 4개로 단순화</li>
+      <li>Deposit 버튼은 NAV에도 상시 노출</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /A -->
+
+<!-- ══ B. 상단 요약 ══ -->
+<div class="sec">B. 상단 요약 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B1</div>
+    <div class="nm">총 포트폴리오 잔액 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">Total Portfolio Balance · 달러 환산 합계 · 7일 변동액·변동률 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>표시 구성</h5><ul>
+      <li>라벨: "Total Portfolio Balance ?"</li>
+      <li>금액: 32px 800 monospace</li>
+      <li>% 뱃지: 상승 초록 / 하락 빨강 pill</li>
+      <li>변동액 + 기준 기간 (7일·30일)</li>
+    </ul></div>
+    <div class="dc"><h5>자산 범위</h5><ul>
+      <li>USDT/USDC 보유 잔액</li>
+      <li>Store Token 평가금액 (현재가 기준)</li>
+      <li>런치패드 에스크로 금액</li>
+      <li>DUST 포인트 (참고용, TGE 후 반영)</li>
+    </ul></div>
+    <div class="dc"><h5>업데이트</h5><ul>
+      <li>DEX 가격 변동 시 실시간 갱신</li>
+      <li>30초마다 폴링 or WebSocket</li>
+      <li>가격 변동 시 미세 숫자 롤링 애니메이션</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B2</div>
+    <div class="nm">자산 분포 바 + 범례 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">USDT·Store Token·런치패드 에스크로·DUST 비율을 컬러 바 + 범례로 시각화</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>바 구성</h5><ul>
+      <li>height 8px · border-radius 4px</li>
+      <li>USDT: 파랑 (var(--p500))</li>
+      <li>Store Token: 베이지 (#C8B498)</li>
+      <li>런치패드 에스크로: 초록 (var(--s500))</li>
+      <li>DUST: 주황 (var(--w500))</li>
+    </ul></div>
+    <div class="dc"><h5>범례</h5><ul>
+      <li>dot + 이름 + 금액 인라인</li>
+      <li>flex-wrap 가로 배치</li>
+      <li>각 항목 클릭 → 해당 섹션으로 스크롤</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B3</div>
+    <div class="nm">Portfolio Value 차트 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">라인 차트 · 1D/7D/30D/ALL 기간 탭 · PNL 수치 + 변동률 + Canvas 렌더링</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>차트</h5><ul>
+      <li>Canvas 기반 라인 차트</li>
+      <li>초록 그라디언트 채우기 (수익 시)</li>
+      <li>빨강 그라디언트 채우기 (손실 시)</li>
+      <li>끝점 dot + 번짐 효과</li>
+      <li>X축 시간 레이블</li>
+    </ul></div>
+    <div class="dc"><h5>헤더 수치</h5><ul>
+      <li>차트 제목: "Portfolio Value"</li>
+      <li>현재 총액 (대형 monospace)</li>
+      <li>▲/▼ 변동액 + 변동률 pill</li>
+      <li>기간 선택 시 해당 기간 기준 재계산</li>
+    </ul></div>
+    <div class="dc"><h5>기간 탭</h5><ul>
+      <li>1D · 7D · 30D · ALL</li>
+      <li>on 상태: 검정 배경 흰 텍스트</li>
+      <li>기간 전환 시 차트 데이터 재렌더</li>
+      <li>HL: Account Value / PNL / Perps PNL 탭도 참고</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B4</div>
+    <div class="nm">수수료 티어 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">Taker 수수료 · STAR 할인율 · 상점 배분 3% · 볼륨 기반 티어 진행 바</div>
+    <div class="pri high">높음</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>수치 표시</h5><ul>
+      <li>Taker 수수료: 0.39%</li>
+      <li>STAR 할인: -10% (1,200 STAR 스테이킹 시)</li>
+      <li>실효 수수료: 0.351%</li>
+      <li>상점 배분: 거래 수수료의 3%</li>
+    </ul></div>
+    <div class="dc"><h5>티어 바</h5><ul>
+      <li>0 / 1,000 / 5,000 / 10,000 STAR 4단계</li>
+      <li>현재 내 위치 마커 (주황 강조)</li>
+      <li>"수수료 스케줄 보기" 링크</li>
+    </ul></div>
+    <div class="dc"><h5>HL 비교</h5><ul>
+      <li>HL: 14D 볼륨 기반 0.0450%/0.0150%</li>
+      <li>Starzip: STAR 스테이킹 기반 할인 구조</li>
+      <li>볼륨 기반 추가 할인은 Phase 2 고려</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /B -->
+
+<!-- ══ C. 자산 현황 ══ -->
+<div class="sec">C. 자산 현황 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C1</div>
+    <div class="nm">보유 토큰 섹션 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">USDT·Store Token 보유 현황. 수량·평가금액·평균 매입가·미실현 PNL 행 구성</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>카드 헤더</h5><ul>
+      <li>제목: "보유 토큰" + ? 툴팁</li>
+      <li>총 평가금액 (우측, 대형)</li>
+      <li>하단 border 구분선</li>
+    </ul></div>
+    <div class="dc"><h5>자산 행</h5><ul>
+      <li>아이콘(36px 원형) + 토큰명 + 네트워크</li>
+      <li>수량 (monospace)</li>
+      <li>평가금액 + 미실현 PNL 컬러</li>
+      <li>Store Token: 상점명 서브텍스트</li>
+    </ul></div>
+    <div class="dc"><h5>빈 상태</h5><ul>
+      <li>아이콘 + "보유 토큰이 없습니다"</li>
+      <li>"입금하기" CTA 버튼</li>
+      <li>Ondo: "Complete Onboarding" 버튼 참고</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C2</div>
+    <div class="nm">런치패드 참여 현황 섹션 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">에스크로 중인 금액·상점별 참여금·예상 배정 토큰·D-day 실시간 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>카드 헤더</h5><ul>
+      <li>제목: "🚀 런치패드 참여 현황"</li>
+      <li>총 에스크로 금액 (파란 컬러)</li>
+      <li>"에스크로 보관 중" 안내 툴팁</li>
+    </ul></div>
+    <div class="dc"><h5>참여 행</h5><ul>
+      <li>상점 아이콘 + 토큰명 + 상점명</li>
+      <li>내 참여금액 (USDT)</li>
+      <li>예상 수령 토큰 수 (비례 배정 기준)</li>
+      <li>달성률 바 + D-day 카운트다운</li>
+    </ul></div>
+    <div class="dc"><h5>종료 후</h5><ul>
+      <li>소프트캡 미달: "환불 완료" 초록 뱃지</li>
+      <li>달성: "배정 완료 · 클레임 대기" 뱃지</li>
+      <li>TGE 후: "클레임하기" CTA 버튼</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C3</div>
+    <div class="nm">4개 요약 통계 카드 그리드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">7일 실현 PNL · 14일 거래량 · 런치패드 참여 건수 · DAO 투표 건수</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>카드 구성 (4개)</h5><ul>
+      <li>7일 실현 PNL (+/- 컬러)</li>
+      <li>14일 거래량 (USDT, 거래 건수 서브)</li>
+      <li>런치패드 참여 (진행중 N건 · 에스크로 금액)</li>
+      <li>DAO 투표 (총 투표 건수 · STAR 스테이킹)</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>2열 그리드 (≤768px 1열)</li>
+      <li>흰 배경 카드 · g200 border</li>
+      <li>라벨: 10px uppercase · 값: 18px 700 mono</li>
+      <li>HL: 14D Volume·PNL·Max Drawdown 참고</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C4</div>
+    <div class="nm">Open Positions (포지션 요약) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">보유 중인 Store Token 포지션 요약. 미실현 PNL · 진입가 · 현재가 · 수익률</div>
+    <div class="pri must">필수</div>
+    <div class="src src-dy">dYdX 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>포지션 행</h5><ul>
+      <li>토큰 아이콘 + 심볼 + 상점명</li>
+      <li>방향: 롱(매수 보유) 뱃지</li>
+      <li>수량 + 평가금액</li>
+      <li>진입가 → 현재가 화살표</li>
+      <li>미실현 PNL (+/- 컬러)</li>
+    </ul></div>
+    <div class="dc"><h5>빈 상태</h5><ul>
+      <li>dYdX: 레이어 스택 아이콘</li>
+      <li>"보유 포지션이 없습니다"</li>
+      <li>"Trade 화면으로 이동" 링크</li>
+    </ul></div>
+    <div class="dc"><h5>액션</h5><ul>
+      <li>행 클릭 → Trade 상세 이동</li>
+      <li>매도 버튼 인라인 (행 우측)</li>
+      <li>Trade 화면과 데이터 동기화</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /C -->
+
+<!-- ══ D. 히스토리 탭 테이블 ══ -->
+<div class="sec">D. 히스토리 탭 테이블 (HL 스타일) <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D1</div>
+    <div class="nm">탭 바 + 필터 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">잔액·포지션·주문내역·체결내역·런치패드·DAO·입출금 7탭 + 우측 Filter 버튼</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>탭 목록</h5><ul>
+      <li>잔액 (Balances)</li>
+      <li>포지션 (Positions)</li>
+      <li>주문 내역 (Orders)</li>
+      <li>체결 내역 (Trades)</li>
+      <li>런치패드 (Launchpad)</li>
+      <li>DAO</li>
+      <li>입출금 (Deposits &amp; Withdrawals)</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>가로 스크롤 (모바일 대응)</li>
+      <li>on: 검정 언더라인 2px</li>
+      <li>Filter ▾ 버튼 우측 고정</li>
+    </ul></div>
+    <div class="dc"><h5>HL 비교</h5><ul>
+      <li>HL: Balances·Positions·Open Orders·TWAP·Trade History·Funding History·Order History·Interest·Deposits</li>
+      <li>Starzip: DEX 특성에 맞게 런치패드·DAO 탭 추가</li>
+      <li>TWAP·Funding·Interest는 Phase 2</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D2</div>
+    <div class="nm">잔액 탭 (Balances)</div>
+    <div class="desc">토큰·네트워크·수량·평가금액·평균매입가·손익·상태 7컬럼 테이블</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>컬럼</h5><ul>
+      <li>토큰 (아이콘 + 심볼)</li>
+      <li>네트워크 (opBNB)</li>
+      <li>수량 (monospace)</li>
+      <li>평가금액 ($)</li>
+      <li>평균 매입가</li>
+      <li>미실현 손익 (컬러)</li>
+      <li>상태 (뱃지)</li>
+    </ul></div>
+    <div class="dc"><h5>상태 뱃지</h5><ul>
+      <li>거래가능: 초록</li>
+      <li>전환 대기 (DUST → TGE 후): 주황</li>
+      <li>에스크로 중 (런치패드): 파랑</li>
+      <li>클레임 가능: 초록</li>
+    </ul></div>
+    <div class="dc"><h5>DUST 행 <span class="nb nb-st">고유</span></h5><ul>
+      <li>DUST는 TGE 전까지 "$" 환산 없음</li>
+      <li>"TGE 후 전환" 상태 표시</li>
+      <li>현재 시즌 예상 STAR 환산량 표시</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D3</div>
+    <div class="nm">주문·체결 내역 탭</div>
+    <div class="desc">시간·상점·유형·방향·수량·가격·상태 + 체결 탭에 DUST 적립 컬럼 추가</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>주문 내역 컬럼</h5><ul>
+      <li>시간 (N분 전 / 날짜)</li>
+      <li>상점 (심볼/USDT)</li>
+      <li>유형 (지정가·시장가·GTC)</li>
+      <li>방향 (매수 초록 / 매도 빨강 뱃지)</li>
+      <li>수량 · 가격 · 상태</li>
+    </ul></div>
+    <div class="dc"><h5>체결 내역 컬럼</h5><ul>
+      <li>시간 · 상점 · 방향</li>
+      <li>수량 · 체결가 · 총액</li>
+      <li>수수료 (0.39%)</li>
+      <li>DUST 적립 (주황, Starzip 고유) ✦</li>
+    </ul></div>
+    <div class="dc"><h5>상태 뱃지</h5><ul>
+      <li>체결: 초록</li>
+      <li>대기중: 주황</li>
+      <li>취소: 회색</li>
+      <li>부분 체결: 파랑</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D4</div>
+    <div class="nm">런치패드 탭 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">참여 상점·참여금·배정 예상·STAR 부스트 배율·상태·마감 테이블</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>컬럼</h5><ul>
+      <li>상점 (아이콘 + 토큰명)</li>
+      <li>참여금 (USDT)</li>
+      <li>배정 예상 (토큰 수량)</li>
+      <li>STAR 부스트 배율 (주황)</li>
+      <li>상태 (진행중·배정중·클레임)</li>
+      <li>마감 (D-day 카운트)</li>
+    </ul></div>
+    <div class="dc"><h5>상태별 행동</h5><ul>
+      <li>진행중 → 취소 링크 표시</li>
+      <li>종료·배정 중 → 해시 링크</li>
+      <li>클레임 가능 → 인라인 "클레임" 버튼</li>
+      <li>환불 완료 → "환불됨 ✓" 표시</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D5</div>
+    <div class="nm">DAO 투표 탭 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">투표 날짜·안건·내 투표 방향·결과·온체인 해시 테이블</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>컬럼</h5><ul>
+      <li>날짜 (KST)</li>
+      <li>DAO 구분 (DEX DAO / Store DAO)</li>
+      <li>안건 내용 (텍스트, 말줄임)</li>
+      <li>내 투표 (찬성·반대·기권)</li>
+      <li>최종 결과 (가결·부결·진행중)</li>
+      <li>온체인 해시 (단축 + 링크)</li>
+    </ul></div>
+    <div class="dc"><h5>진행중 안건</h5><ul>
+      <li>파랑 배경 행 강조</li>
+      <li>"지금 투표하기 →" 인라인 버튼</li>
+      <li>마감까지 카운트다운</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D6</div>
+    <div class="nm">입출금 탭</div>
+    <div class="desc">시간·유형·토큰·금액·네트워크·트랜잭션 해시·상태 테이블</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>컬럼</h5><ul>
+      <li>시간 (날짜+시각)</li>
+      <li>유형 (입금 파랑 / 출금 빨강 뱃지)</li>
+      <li>토큰 (USDT/USDC/CAFE)</li>
+      <li>금액 (monospace)</li>
+      <li>네트워크 (opBNB)</li>
+      <li>해시 (단축 0x... + 익스플로러 링크)</li>
+      <li>상태 (완료·처리중·실패)</li>
+    </ul></div>
+    <div class="dc"><h5>필터</h5><ul>
+      <li>유형별 필터 (입금·출금·전송)</li>
+      <li>토큰별 필터</li>
+      <li>날짜 범위 선택</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /D -->
+
+<!-- ══ E. 우측 패널 ══ -->
+<div class="sec">E. 우측 패널 (Ondo Recent Activity) <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E1</div>
+    <div class="nm">프로필 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">지갑 주소·네트워크 상태·STAR 부스트 배율·총 거래 건수·DAO 투표 수</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>아바타 (주소 기반 그라디언트 원)</li>
+      <li>지갑 주소 단축 + 복사 버튼</li>
+      <li>네트워크 dot (초록=연결 / 회색=미연결)</li>
+      <li>2×2 통계 그리드</li>
+    </ul></div>
+    <div class="dc"><h5>통계 4개</h5><ul>
+      <li>STAR 부스트 배율 (1.0x~2.0x, 초록)</li>
+      <li>STAR 스테이킹 수량</li>
+      <li>총 거래 건수</li>
+      <li>DAO 투표 건수 (파랑)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E2</div>
+    <div class="nm">DUST 포인트 카드 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">현재 DUST 잔액 · 시즌 진행률 바 · TGE 후 STAR 전환 버튼</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>주황 그라디언트 배경 카드</li>
+      <li>DUST 잔액 (대형, 주황 컬러)</li>
+      <li>"TGE 후 STAR 전환 가능" 서브텍스트</li>
+      <li>✦ 아이콘 (우측)</li>
+    </ul></div>
+    <div class="dc"><h5>시즌 진행률</h5><ul>
+      <li>"시즌 1 진행률" 라벨</li>
+      <li>현재 DUST / 시즌 목표치</li>
+      <li>주황 진행 바</li>
+      <li>적립 출처 분류 (거래·런치패드·추천)</li>
+    </ul></div>
+    <div class="dc"><h5>전환 버튼</h5><ul>
+      <li>TGE 전: disabled + 날짜 표시</li>
+      <li>TGE 후: "STAR로 전환하기" 활성</li>
+      <li>전환 비율 (TGE 시 확정) 안내</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E3</div>
+    <div class="nm">보유 자산 요약 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">USDT·Store Token·DUST 잔액을 compact 행으로 요약</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>행 구성</h5><ul>
+      <li>아이콘(28px) + 토큰명 + 잔액 + 환산액</li>
+      <li>USDT: 파랑 아이콘</li>
+      <li>Store Token: 상점별 컬러</li>
+      <li>DUST: 주황 + "TGE 대기" 서브</li>
+    </ul></div>
+    <div class="dc"><h5>하단 CTA</h5><ul>
+      <li>잔액 0일 때 "입금하기" 버튼</li>
+      <li>중앙 섹션 카드와 데이터 동기화</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E4</div>
+    <div class="nm">Recent Activity 피드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">최근 거래·입출금·런치패드·DAO 활동 피드. 타입 뱃지 + 설명 + 금액 + 해시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>활동 유형</h5><ul>
+      <li>매수: 초록 뱃지</li>
+      <li>매도: 빨강 뱃지</li>
+      <li>입금: 파랑 뱃지</li>
+      <li>출금: 빨강 뱃지</li>
+      <li>런치패드: 파랑 뱃지</li>
+      <li>DAO 투표: 회색 뱃지</li>
+    </ul></div>
+    <div class="dc"><h5>행 구성</h5><ul>
+      <li>유형 뱃지 + 날짜 (우측)</li>
+      <li>설명 텍스트 (상점명·수량)</li>
+      <li>금액 (monospace)</li>
+      <li>온체인 해시 (단축, 회색)</li>
+    </ul></div>
+    <div class="dc"><h5>UX</h5><ul>
+      <li>최근 10건 표시</li>
+      <li>"전체 보기 →" 링크 (거래 내역 탭)</li>
+      <li>실시간 업데이트 (WebSocket)</li>
+      <li>Ondo: "You don't have any activity" 빈 상태 참고</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /E -->
+
+<!-- ══ F. 사이드바 ══ -->
+<div class="sec">F. 사이드바 메뉴 (Ondo 스타일) <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">F1</div>
+    <div class="nm">계정 메뉴 그룹 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">Overview·거래내역·포지션·주문·런치패드 참여·DAO 투표 메뉴 항목</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>메뉴 항목</h5><ul>
+      <li>📊 Overview (기본 active)</li>
+      <li>🕐 거래 내역</li>
+      <li>📈 포지션 (파랑 카운트 뱃지)</li>
+      <li>📋 주문 내역</li>
+      <li>🚀 런치패드 참여 (주황 뱃지)</li>
+      <li>🗳 DAO 투표 내역</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>아이콘(18px) + 텍스트 + 우측 뱃지</li>
+      <li>active: bg var(--g100), font-weight 600</li>
+      <li>hover: bg var(--g50)</li>
+      <li>border-radius 8px</li>
+    </ul></div>
+    <div class="dc"><h5>Ondo 비교</h5><ul>
+      <li>Ondo: Overview·Account Activity·Access·Wallets·Bank Details·Documents·Settings·Contact Support·Log Out</li>
+      <li>Starzip: 거래소 맥락에 맞게 포지션·런치패드·DAO 추가</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">F2</div>
+    <div class="nm">설정 메뉴 그룹 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">입출금·알림 설정·보안·문서 메뉴 항목</div>
+    <div class="pri high">높음</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>메뉴 항목</h5><ul>
+      <li>💳 입출금 (입금·출금·전송 바로가기)</li>
+      <li>🔔 알림 설정 (가격 알림·런치패드)</li>
+      <li>🔒 보안 (Passkey 관리·세션)</li>
+      <li>📄 Documents (KYC 서류 등)</li>
+    </ul></div>
+    <div class="dc"><h5>하단 고정</h5><ul>
+      <li>로그아웃 (빨강 컬러)</li>
+      <li>섹션 구분선으로 계정/설정 그룹 분리</li>
+      <li>10px uppercase 섹션 라벨</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">F3</div>
+    <div class="nm">Hide 사이드바 토글 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">dYdX식 "Hide" 버튼으로 사이드바 접기·펼치기. 콘텐츠 영역 확장</div>
+    <div class="pri med">중간</div>
+    <div class="src src-dy">dYdX 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>동작</h5><ul>
+      <li>사이드바 상단 "Hide" 버튼</li>
+      <li>클릭 → width 0 collapse (transition)</li>
+      <li>중앙 콘텐츠 자동 확장</li>
+      <li>접힘 상태 localStorage 저장</li>
+    </ul></div>
+    <div class="dc"><h5>접힌 상태</h5><ul>
+      <li>좌측 가장자리에 ">" 아이콘만 노출</li>
+      <li>호버 시 툴팁으로 메뉴명 표시</li>
+      <li>dYdX "Account / Hide" 버튼 참고</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /F -->
+
+<!-- ══ G. 유틸 ══ -->
+<div class="sec">G. 유틸리티 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#5F5E5A">G1</div>
+    <div class="nm">입출금 모달 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">입금·출금·전송 각각 전용 모달. QR코드·주소 복사·금액 입력·수수료 요약</div>
+    <div class="pri must">필수</div>
+    <div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>입금 모달</h5><ul>
+      <li>내 지갑 주소 QR 코드</li>
+      <li>주소 텍스트 + 복사 버튼</li>
+      <li>네트워크 경고 (opBNB만 지원)</li>
+      <li>최소 입금액 안내</li>
+    </ul></div>
+    <div class="dc"><h5>출금 모달</h5><ul>
+      <li>수신 주소 입력</li>
+      <li>토큰·금액 선택 + 잔액·MAX</li>
+      <li>네트워크 수수료 표시</li>
+      <li>확인 → 지갑 서명 (Passkey)</li>
+    </ul></div>
+    <div class="dc"><h5>전송 모달</h5><ul>
+      <li>내부 전송 (DEX 내 지갑 간)</li>
+      <li>수신 주소·토큰·금액</li>
+      <li>가스비 대납 (Paymaster)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#5F5E5A">G2</div>
+    <div class="nm">빈 상태 / 온보딩 CTA <span class="nb nb-new">NEW</span></div>
+    <div class="desc">잔액·포지션·거래 내역 없을 때 아이콘 + 안내 텍스트 + CTA 버튼</div>
+    <div class="pri high">높음</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>빈 상태 케이스</h5><ul>
+      <li>포트폴리오 $0: "입금하기" CTA</li>
+      <li>포지션 없음: dYdX 레이어 스택 아이콘</li>
+      <li>거래 없음: "Trade 화면으로 이동"</li>
+      <li>런치패드 참여 없음: "런치패드 탐색"</li>
+      <li>DAO 투표 없음: "DAO 참여하기"</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>SVG 아이콘 (28px, opacity .4)</li>
+      <li>안내 텍스트 (13px, var(--g400))</li>
+      <li>CTA 버튼 (검정 배경)</li>
+      <li>Ondo: "Complete Onboarding" 버튼 참고</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#5F5E5A">G3</div>
+    <div class="nm">푸터 상태 바 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">Stable/Live 도트 · 블록 높이 · 다크/라이트 테마 전환 (HL·dYdX 참고)</div>
+    <div class="pri must">필수</div>
+    <div class="src src-hl">HL 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>좌측 상태</h5><ul>
+      <li>● Stable (초록 pulse dot)</li>
+      <li>opBNB · Block #N,NNN,NNN</li>
+      <li>30초마다 블록 번호 업데이트</li>
+    </ul></div>
+    <div class="dc"><h5>우측 유틸</h5><ul>
+      <li>Terms · Privacy 링크</li>
+      <li>다크/라이트 테마 전환 버튼</li>
+      <li>localStorage 저장</li>
+    </ul></div>
+    <div class="dc"><h5>참고</h5><ul>
+      <li>HL: Online · Docs · Support · Terms · Privacy</li>
+      <li>dYdX: Operational · Chat · Help &amp; Support</li>
+      <li>Ondo: Terms of Service · Privacy Policy</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /G -->
+
+<!-- foot -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 레이아웃<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1B7A4A"></div>B. 상단 요약<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#854F0B"></div>C. 자산 현황<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('d',document.querySelectorAll('.zt')[4])"><div class="fd" style="background:#A32D2D"></div>D. 히스토리 탭<span class="fc">6</span></div>
+  <div class="fp" onclick="sw('e',document.querySelectorAll('.zt')[5])"><div class="fd" style="background:#444441"></div>E. 우측 패널<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('f',document.querySelectorAll('.zt')[6])"><div class="fd" style="background:#0C447C"></div>F. 사이드바<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('g',document.querySelectorAll('.zt')[7])"><div class="fd" style="background:#5F5E5A"></div>G. 유틸<span class="fc">3</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">22</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">3</span></div>
+  <div class="fp" style="background:#EAF3DE;border-color:#B7DF8D"><span style="color:#27500A">중간</span><span class="fc" style="color:#27500A">2</span></div>
+  <div class="ft">총 <strong>27개</strong> · 7개 영역</div>
+</div>
+
+</div><!-- /z-all -->
+
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+<div class="zp" id="z-d"></div>
+<div class="zp" id="z-e"></div>
+<div class="zp" id="z-f"></div>
+<div class="zp" id="z-g"></div>
+
+</div><!-- /root -->
+
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return;}
+  const pref={a:'A',b:'B',c:'C',d:'D',e:'E',f:'F',g:'G'}[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — DAO 구성요소 v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+.zp{display:none}.zp.on{display:block}
+
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover,.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-st{background:#FFF4E3;color:#633806}
+.nb-pu{background:#F9F5FF;color:#6941C6}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-g{color:#1B7A4A}.src-dy{color:#6C3CE1}.src-on{color:#5B4FDB}.src-bn{color:#C89A09}
+
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+.insight{background:#EBF0FF;border-left:3px solid #1A4FDB;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#344054;line-height:1.5;margin-top:8px}
+.insight strong{color:#1A4FDB}
+.insight-pu{background:#F9F5FF;border-left-color:#7F56D9}
+.insight-pu strong{color:#6941C6}
+
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+
+.foot{display:flex;gap:5px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip DAO 구성요소 v1</h1>
+  <p>DEX DAO + Store DAO 이중 구조 · A. 레이아웃 (3) · B. 투표권 (3) · C. 안건 카드 (5) · D. 투표 인터랙션 (4) · E. 제안 (3) · F. 거버넌스 파라미터 (3) · G. 유틸 (3) · 총 24개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on" onclick="sw('all',this)">전체 (24개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 레이아웃</button>
+  <button class="zt" onclick="sw('b',this)">B. 투표권</button>
+  <button class="zt" onclick="sw('c',this)">C. 안건 카드</button>
+  <button class="zt" onclick="sw('d',this)">D. 투표 인터랙션</button>
+  <button class="zt" onclick="sw('e',this)">E. 제안</button>
+  <button class="zt" onclick="sw('f',this)">F. 파라미터</button>
+  <button class="zt" onclick="sw('g',this)">G. 유틸</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- ══ A. 레이아웃 ══ -->
+<div class="sec">A. 레이아웃 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">사이드바 메뉴 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">DEX DAO·Store DAO 섹션 분리 사이드바. 상점별 진행중 안건 뱃지</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>DEX DAO 섹션</h5><ul>
+      <li>전체 안건 (카운트 뱃지)</li>
+      <li>투표 진행중 (파랑 뱃지)</li>
+      <li>Timelock 대기 (주황 뱃지)</li>
+      <li>처리 완료</li>
+    </ul></div>
+    <div class="dc"><h5>Store DAO 섹션</h5><ul>
+      <li>보유 토큰별 상점 메뉴 자동 생성</li>
+      <li>상점명 + 진행중 안건 수 뱃지 (보라)</li>
+      <li>보유 토큰 없는 상점: 회색 표시</li>
+      <li>전체 Store DAO 목록</li>
+    </ul></div>
+    <div class="dc"><h5>내 활동 섹션</h5><ul>
+      <li>내 투표 내역</li>
+      <li>내 제안 내역</li>
+      <li>active: 회색 배경 + 볼드</li>
+      <li>모바일: 드롭다운 전환</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">DAO 유형 선택 탭 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">DEX DAO / Store DAO 2개 카드형 탭. 투표 기반 토큰·설명 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>DEX DAO 카드</h5><ul>
+      <li>🏛 아이콘</li>
+      <li>"플랫폼 전체 정책 결정"</li>
+      <li>"STAR 보유자 투표" 파랑 뱃지</li>
+      <li>active: 파란 테두리 2px</li>
+    </ul></div>
+    <div class="dc"><h5>Store DAO 카드</h5><ul>
+      <li>🏪 아이콘</li>
+      <li>"개별 상점 운영 정책 결정"</li>
+      <li>"Store Token 보유자 투표" 보라 뱃지</li>
+      <li>선택 시 해당 상점 목록 표시</li>
+    </ul></div>
+    <div class="insight"><strong>이중 DAO 구조:</strong> DEX DAO는 플랫폼 수수료율·업그레이드·Treasury 정책을 결정. Store DAO는 개별 상점의 토큰 소각·가격·혜택을 결정. 각각 독립적으로 운영.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">안건 필터 탭 바</div>
+    <div class="desc">전체·진행중·Timelock·가결·부결 상태 탭 + 카운트 뱃지</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>탭 목록</h5><ul>
+      <li>전체 (전체 안건 수)</li>
+      <li>진행중 (파랑 강조 뱃지)</li>
+      <li>Timelock 대기 (주황)</li>
+      <li>가결 (초록)</li>
+      <li>부결 (빨강)</li>
+    </ul></div>
+    <div class="dc"><h5>동작</h5><ul>
+      <li>탭 전환 시 안건 목록 필터링</li>
+      <li>active: 언더라인 2px</li>
+      <li>URL: /dao?filter=active</li>
+      <li>카운트 실시간 업데이트</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid A -->
+
+<!-- ══ B. 투표권 ══ -->
+<div class="sec">B. 투표권 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B1</div>
+    <div class="nm">내 투표권 요약 바 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">STAR 잔액·투표 가중치·참여 건수·진행중 건수 4개 카드 수평 배치</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>DEX DAO 카드</h5><ul>
+      <li>내 STAR 잔액 (스테이킹 포함)</li>
+      <li>투표 가중치 (1 STAR = 1표)</li>
+      <li>참여한 투표 수 / 전체 대비 %</li>
+      <li>진행중 투표 수 (파랑 강조)</li>
+    </ul></div>
+    <div class="dc"><h5>Store DAO 카드</h5><ul>
+      <li>보유 Store Token 수량</li>
+      <li>정족수 기준 (유통량 2%)</li>
+      <li>내 비율 (유통량 대비 %)</li>
+      <li>진행중 Store DAO 수 (보라 강조)</li>
+    </ul></div>
+    <div class="dc"><h5>업데이트</h5><ul>
+      <li>지갑 잔액 실시간 반영</li>
+      <li>스테이킹 변동 즉시 반영</li>
+      <li>지갑 미연결: "지갑 연결" CTA</li>
+    </ul></div>
+    <div class="insight"><strong>투표 가중치:</strong> DEX DAO = 보유 STAR 수량. Store DAO = 해당 Store Token 수량. 1토큰 = 1표 원칙. 스테이킹된 STAR도 투표권 포함.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B2</div>
+    <div class="nm">내 투표권 우측 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">우측 패널. DEX DAO + Store DAO 투표권 합산 + STAR 추가 스테이킹 CTA</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>DEX DAO 섹션</h5><ul>
+      <li>STAR 스테이킹 수량</li>
+      <li>STAR 자유 보유량</li>
+      <li>총 DEX DAO 투표권 (합산)</li>
+      <li>"STAR 추가 스테이킹" CTA</li>
+    </ul></div>
+    <div class="dc"><h5>Store DAO 섹션</h5><ul>
+      <li>보유 Store Token별 수량</li>
+      <li>각 Store DAO 투표권</li>
+      <li>파란 그라디언트 카드 배경</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B3</div>
+    <div class="nm">Store DAO 상점 목록 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">우측 패널. 내가 투표권을 가진 상점 목록 + 진행중 안건 수 + 보유 수량</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>항목 구성</h5><ul>
+      <li>상점 아이콘 (업종별 색상)</li>
+      <li>상점명 + 보유 수량</li>
+      <li>진행중 안건 수 뱃지</li>
+      <li>클릭 시 해당 Store DAO로 이동</li>
+    </ul></div>
+    <div class="dc"><h5>미보유 상점</h5><ul>
+      <li>회색 표시 + "미보유" 텍스트</li>
+      <li>토큰 매수하러 가기 링크</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid B -->
+
+<!-- ══ C. 안건 카드 ══ -->
+<div class="sec">C. 안건 카드 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C1</div>
+    <div class="nm">안건 카드 (진행중) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">상태 pill·SIP 번호·DAO 유형 뱃지·제목·설명·메타·투표 바·내 투표 영역</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>카드 헤더</h5><ul>
+      <li>상태 pill (진행중 파랑)</li>
+      <li>SIP-012 번호 (monospace)</li>
+      <li>DEX DAO / Store DAO 유형 뱃지</li>
+      <li>안건 제목 (bold, 14px)</li>
+      <li>설명 (2줄 clamp)</li>
+    </ul></div>
+    <div class="dc"><h5>메타 정보</h5><ul>
+      <li>🗳 참여자 수</li>
+      <li>📅 마감까지 남은 시간</li>
+      <li>⚡ 정족수 달성 여부</li>
+      <li>온체인 제안 해시 (가결 시)</li>
+    </ul></div>
+    <div class="dc"><h5>진행중 스타일</h5><ul>
+      <li>테두리: 파랑 (DEX) / 보라 (Store)</li>
+      <li>배경: 연한 파랑 tint</li>
+      <li>카드 클릭 → 상세 페이지 이동</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C2</div>
+    <div class="nm">안건 카드 (가결·부결·완료)</div>
+    <div class="desc">상태별 스타일 차이. 가결: 초록 / 부결: 빨강 / Timelock: 보라 / 완료: 회색</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>상태 pill 종류</h5><ul>
+      <li>진행중: 파랑 배경</li>
+      <li>Timelock: 보라 배경</li>
+      <li>가결·완료: 초록 배경</li>
+      <li>부결: 빨강 배경</li>
+      <li>취소: 회색 배경</li>
+    </ul></div>
+    <div class="dc"><h5>완료 카드 표시</h5><ul>
+      <li>opacity .8 (시각적 구분)</li>
+      <li>실행 완료 날짜·시간</li>
+      <li>온체인 트랜잭션 해시</li>
+      <li>투표 버튼 없음</li>
+    </ul></div>
+    <div class="dc"><h5>Timelock 카드</h5><ul>
+      <li>보라 테두리 강조</li>
+      <li>카운트다운 타이머 표시</li>
+      <li>"자동 실행 예정" 안내</li>
+      <li>긴급 취소 버튼 (멀티시그)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C3</div>
+    <div class="nm">투표 결과 바 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">찬성(초록)·반대(빨강)·기권(회색) 3색 진행 바 + 퍼센트 + STAR 수량</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>바 구성</h5><ul>
+      <li>가로 바 (찬성 + 반대 + 기권 = 100%)</li>
+      <li>찬성: 초록 (좌측)</li>
+      <li>반대: 빨강 (우측)</li>
+      <li>기권: 회색 (사이)</li>
+      <li>정족수 기준선 마커 (세로선)</li>
+    </ul></div>
+    <div class="dc"><h5>수치 표시</h5><ul>
+      <li>찬성 % + STAR 수량 (좌측)</li>
+      <li>기권 % (중앙)</li>
+      <li>반대 % + STAR 수량 (우측)</li>
+      <li>총 참여 투표수</li>
+    </ul></div>
+    <div class="dc"><h5>가결 판정</h5><ul>
+      <li>정족수 AND 과반수 동시 충족 시 가결</li>
+      <li>정족수 미달 시 점선 바 + 경고</li>
+      <li>투표 종료 후 최종 결과 확정</li>
+    </ul></div>
+    <div class="insight"><strong>가결 조건:</strong> DEX DAO — 전체 STAR의 5% 이상 참여(정족수) AND 찬성 과반수. Store DAO — 유통량 2% 이상 참여 AND 찬성 과반수. 5일 투표 후 확정.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C4</div>
+    <div class="nm">Timelock 대기 배너 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">가결 안건 48시간 Timelock 대기 알림 + 실시간 카운트다운 + 긴급 취소 안내</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>배너 구성</h5><ul>
+      <li>⏳ 아이콘</li>
+      <li>안건명 + "Timelock 대기 중"</li>
+      <li>실시간 카운트다운 (HH:MM:SS)</li>
+      <li>"자동 실행 예정" 설명</li>
+    </ul></div>
+    <div class="dc"><h5>안전 장치</h5><ul>
+      <li>문제 발견 시 48시간 내 취소 안내</li>
+      <li>취소: 멀티시그 서명 필요</li>
+      <li>보라 배경으로 주의 환기</li>
+    </ul></div>
+    <div class="insight"><strong>Timelock 목적:</strong> 가결 후 즉시 실행이 아닌 48시간(DEX) / 24시간(Store) 대기. 이 기간 내 버그·문제 발견 시 멀티시그로 취소 가능. 커뮤니티 안전 장치.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C5</div>
+    <div class="nm">안건 상세 페이지 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">개별 안건 전체 내용·투표 현황·토론·온체인 실행 데이터 상세 페이지</div>
+    <div class="pri must">필수</div>
+    <div class="src src-dy">dYdX 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>좌측: 안건 본문</h5><ul>
+      <li>전체 제목 + 상태</li>
+      <li>제안자 주소 + 제안일</li>
+      <li>전체 설명 (마크다운 렌더링)</li>
+      <li>실행 시 파라미터 코드 블록</li>
+      <li>타임라인 (제안→투표→Timelock→실행)</li>
+    </ul></div>
+    <div class="dc"><h5>중앙: 투표 현황</h5><ul>
+      <li>찬성/반대/기권 대형 투표 바</li>
+      <li>정족수 달성 여부 + 진행 바</li>
+      <li>투표자 목록 (주소 단축 + 수량)</li>
+      <li>내 투표 버튼 (찬성/반대/기권)</li>
+    </ul></div>
+    <div class="dc"><h5>우측: 요약 정보</h5><ul>
+      <li>안건 ID + 상태</li>
+      <li>투표 시작·마감 날짜</li>
+      <li>제안자 주소</li>
+      <li>온체인 해시 링크</li>
+      <li>관련 안건 링크</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid C -->
+
+<!-- ══ D. 투표 인터랙션 ══ -->
+<div class="sec">D. 투표 인터랙션 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D1</div>
+    <div class="nm">투표 버튼 (찬성·반대·기권) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">안건 카드 하단. 3개 버튼 + 내 투표권 표시 + 투표 완료 상태 전환</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>버튼 구성</h5><ul>
+      <li>👍 찬성 (초록 테두리)</li>
+      <li>👎 반대 (빨강 테두리)</li>
+      <li>— 기권 (회색 테두리)</li>
+      <li>hover: 배경색 채우기</li>
+    </ul></div>
+    <div class="dc"><h5>투표 전 상태</h5><ul>
+      <li>"내 투표권 1,200 STAR · 미투표"</li>
+      <li>3개 버튼 모두 활성</li>
+    </ul></div>
+    <div class="dc"><h5>투표 후 상태</h5><ul>
+      <li>버튼 → 완료 뱃지로 교체</li>
+      <li>"찬성 완료 ✓" 초록 뱃지</li>
+      <li>토스트: "찬성 투표 완료 ✓"</li>
+      <li>투표 바 실시간 업데이트</li>
+    </ul></div>
+    <div class="insight"><strong>온체인 서명:</strong> 투표 클릭 → Passkey 지문 인증 → UserOperation 생성 → Bundler 제출 → 온체인 기록. 가스비 = Paymaster 대납 (사업주와 동일). 사용자 투표 비용 = 0.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D2</div>
+    <div class="nm">투표 확인 모달 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">투표 버튼 클릭 후 확인 모달. 내 투표권·선택·온체인 기록 안내</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>모달 내용</h5><ul>
+      <li>안건 제목 요약</li>
+      <li>내 선택: 찬성 / 반대 / 기권</li>
+      <li>사용 투표권: N STAR</li>
+      <li>"온체인에 영구 기록됩니다" 안내</li>
+      <li>확인 / 취소 버튼</li>
+    </ul></div>
+    <div class="dc"><h5>진행 상태</h5><ul>
+      <li>확인 → "서명 중..." 스피너</li>
+      <li>완료 → "투표 완료 ✓" + 해시</li>
+      <li>실패 → 에러 메시지 + 재시도</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D3</div>
+    <div class="nm">항소 패널 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">Optimistic Compliance 챌린지 결과 불복 시 STAR 홀더 투표로 최종 결정하는 항소 플로우</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>항소 안건 생성</h5><ul>
+      <li>챌린지 결과 + 항소 사유 입력</li>
+      <li>보증금 예치 (STAR)</li>
+      <li>7일 내 항소 제출 가능</li>
+      <li>STAR 홀더 투표로 최종 결정</li>
+    </ul></div>
+    <div class="dc"><h5>항소 안건 카드</h5><ul>
+      <li>"공시 챌린지 항소" 유형 뱃지</li>
+      <li>원안건 + 챌린지 결과 요약</li>
+      <li>항소 사유 전문</li>
+      <li>결과: 인용(초록)/기각(빨강)</li>
+    </ul></div>
+    <div class="insight"><strong>Optimistic Compliance 항소:</strong> 공시 허위 의심 → 보증금 예치 후 챌린지 → 멀티시그 심사 → 불복 시 STAR 홀더 DAO 투표 → 최종 확정. 이 흐름이 Store DAO와 별개의 Special 안건으로 표시됨.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D4</div>
+    <div class="nm">내 투표 내역 탭 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">내가 참여한 모든 DAO 투표 목록. 안건·선택·결과·온체인 해시 테이블</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>컬럼</h5><ul>
+      <li>날짜</li>
+      <li>DAO 유형 (DEX/Store)</li>
+      <li>안건명</li>
+      <li>내 선택 (찬성/반대/기권)</li>
+      <li>최종 결과 (가결/부결)</li>
+      <li>온체인 해시</li>
+    </ul></div>
+    <div class="dc"><h5>필터</h5><ul>
+      <li>DEX DAO / Store DAO 구분</li>
+      <li>기간 필터 (7일·30일·전체)</li>
+      <li>결과 필터 (가결·부결·진행중)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid D -->
+
+<!-- ══ E. 제안 ══ -->
+<div class="sec">E. 안건 제안 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E1</div>
+    <div class="nm">안건 제안 버튼 + 요건 안내 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">목록 하단 점선 버튼. 최소 보유 요건 + 미충족 시 비활성 처리</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>요건 표시</h5><ul>
+      <li>DEX DAO: "최소 10,000 STAR 보유"</li>
+      <li>Store DAO: "유통량의 1% 이상 보유"</li>
+      <li>현재 내 보유량 병기</li>
+      <li>미충족: 회색 버튼 + 부족량 표시</li>
+    </ul></div>
+    <div class="dc"><h5>충족 시</h5><ul>
+      <li>활성 버튼 (+ 제안하기)</li>
+      <li>클릭 → 제안 모달 오픈</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E2</div>
+    <div class="nm">안건 제안 모달 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">DAO 유형 선택·제목·상세 설명·실행 데이터 입력 + 보유량 부족 경고</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>필드</h5><ul>
+      <li>안건 유형 드롭다운</li>
+      <li>안건 제목 (필수)</li>
+      <li>상세 설명 textarea</li>
+      <li>온체인 실행 데이터 (선택)</li>
+    </ul></div>
+    <div class="dc"><h5>보유량 경고</h5><ul>
+      <li>요건 미달 시 주황 경고 박스</li>
+      <li>"현재 N STAR · N개 부족"</li>
+      <li>제출 버튼 비활성</li>
+    </ul></div>
+    <div class="dc"><h5>제출 플로우</h5><ul>
+      <li>제출 → Passkey 서명</li>
+      <li>온체인 제안 등록</li>
+      <li>"검토 후 투표 시작" 안내</li>
+      <li>완료 → 안건 목록 업데이트</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E3</div>
+    <div class="nm">토큰 소각 제안 (Store DAO 전용) <span class="nb nb-new">Starzip 고유</span></div>
+    <div class="desc">Store DAO에서만 가능. 소각 수량 입력 → DAO 투표 → 스마트 컨트랙트 자동 실행</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>소각 제안 플로우</h5><ul>
+      <li>소각 수량 입력 (정족수: 2%)</li>
+      <li>소각 후 총 공급량 계산 표시</li>
+      <li>5일 투표 → 24시간 Timelock</li>
+      <li>가결 → 거버넌스 컨트랙트 자동 소각</li>
+    </ul></div>
+    <div class="dc"><h5>소각 결과 표시</h5><ul>
+      <li>소각 트랜잭션 해시</li>
+      <li>소각 전후 공급량 변화</li>
+      <li>소각 주소 (0x000...dead)</li>
+      <li>블록 탐색기 링크</li>
+    </ul></div>
+    <div class="insight"><strong>소각 정책:</strong> Store DAO 의결에 의한 소각은 정당한 절차에 따른 소각. 사업주가 임의로 소각 불가 — 반드시 토큰 보유자 DAO 투표(정족수 2%, 5일) → Timelock 24시간 → 자동 실행.</div>
+  </div></div>
+</div>
+
+</div><!-- /grid E -->
+
+<!-- ══ F. 거버넌스 파라미터 ══ -->
+<div class="sec">F. 거버넌스 파라미터 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F1</div>
+    <div class="nm">거버넌스 파라미터 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">투표 기간·정족수·가결 조건·Timelock·제안 요건. DEX/Store 구분 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>DEX DAO 파라미터</h5><ul>
+      <li>투표 기간: 7일</li>
+      <li>정족수: 전체 STAR의 5%</li>
+      <li>가결 조건: 찬성 과반수(50%+1)</li>
+      <li>Timelock: 48시간</li>
+      <li>제안 요건: 10,000 STAR 보유</li>
+    </ul></div>
+    <div class="dc"><h5>Store DAO 파라미터</h5><ul>
+      <li>투표 기간: 5일</li>
+      <li>정족수: 유통량의 2%</li>
+      <li>가결 조건: 찬성 과반수</li>
+      <li>Timelock: 24시간</li>
+      <li>제안 요건: 유통량의 1%</li>
+    </ul></div>
+    <div class="insight"><strong>파라미터 변경:</strong> 거버넌스 파라미터 자체도 DEX DAO 투표로만 변경 가능. "거버넌스로 거버넌스를 바꾼다" 원칙. Timelock 48시간 동일 적용.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F2</div>
+    <div class="nm">최근 처리 완료 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">우측 패널. 최근 가결·부결 안건 목록 + 상태 pill + 온체인 해시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>항목 구성</h5><ul>
+      <li>상태 pill (가결/부결, 소형)</li>
+      <li>안건명 (overflow ellipsis)</li>
+      <li>처리 날짜</li>
+      <li>온체인 해시 단축 표시</li>
+    </ul></div>
+    <div class="dc"><h5>동작</h5><ul>
+      <li>클릭 → 안건 상세 페이지</li>
+      <li>최근 5건 표시</li>
+      <li>"전체 보기" 링크</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F3</div>
+    <div class="nm">Treasury 현황 카드 <span class="nb nb-st">DEX DAO 전용</span></div>
+    <div class="desc">플랫폼 Treasury 잔액·수입원·지출 내역 요약. DEX DAO 페이지 우측 배치</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>표시 정보</h5><ul>
+      <li>Treasury 총 잔액 (USDT)</li>
+      <li>수입원: 런치패드 5% + 거래 수수료 97%</li>
+      <li>이번 달 수입</li>
+      <li>확정된 지출 예정 (가결 안건)</li>
+    </ul></div>
+    <div class="dc"><h5>지출 내역</h5><ul>
+      <li>법률 감사 $80,000</li>
+      <li>에코시스템 개발 지원</li>
+      <li>긴급 대응 예비금</li>
+      <li>온체인 기록 링크</li>
+    </ul></div>
+    <div class="insight"><strong>Treasury 용도:</strong> 법률·감사·긴급 대응 비용. DEX DAO 투표로만 지출 승인. 멀티시그 실행. 모든 지출 온체인 투명 공개.</div>
+  </div></div>
+</div>
+
+</div><!-- /grid F -->
+
+<!-- ══ G. 유틸 ══ -->
+<div class="sec">G. 유틸리티 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G1</div>
+    <div class="nm">투표 완료 토스트 알림</div>
+    <div class="desc">찬성·반대·기권 투표 완료 시 하단 슬라이드업 토스트 + 온체인 해시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>토스트 내용</h5><ul>
+      <li>"SIP-012 — 찬성 투표 완료 ✓"</li>
+      <li>온체인 해시 단축 표시</li>
+      <li>3초 후 자동 사라짐</li>
+      <li>검정 배경 + 흰 텍스트</li>
+    </ul></div>
+    <div class="dc"><h5>트리거</h5><ul>
+      <li>투표 완료</li>
+      <li>안건 제안 완료</li>
+      <li>Timelock 실행 완료</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G2</div>
+    <div class="nm">정족수 미달 경고 배너</div>
+    <div class="desc">투표 종료까지 정족수 미달 예상 시 노란 경고 + 커뮤니티 공유 유도</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>표시 조건</h5><ul>
+      <li>마감 48시간 이내 AND 정족수 미달</li>
+      <li>현재 참여율 / 정족수 기준 표시</li>
+      <li>X 버튼으로 닫기 가능</li>
+    </ul></div>
+    <div class="dc"><h5>유도 액션</h5><ul>
+      <li>"X(트위터) 공유" 버튼</li>
+      <li>"카카오톡 공유" 버튼</li>
+      <li>정족수 미달 시 자동 부결 안내</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G3</div>
+    <div class="nm">빈 상태 처리</div>
+    <div class="desc">진행중 안건 없음·내 투표권 없음·지갑 미연결 케이스별 빈 상태</div>
+    <div class="pri must">필수</div>
+    <div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>빈 상태 케이스</h5><ul>
+      <li>지갑 미연결 → "지갑 연결하기" CTA</li>
+      <li>STAR 미보유 → "STAR 구매하러 가기"</li>
+      <li>진행중 안건 없음 → 아이콘 + 안내</li>
+      <li>Store DAO 투표권 없음 → "토큰 매수하기"</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>중앙 아이콘 + 설명 텍스트</li>
+      <li>CTA 버튼 (파랑)</li>
+      <li>최소 높이 200px 유지</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid G -->
+
+<!-- 하단 요약 -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 레이아웃<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1B7A4A"></div>B. 투표권<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#854F0B"></div>C. 안건 카드<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('d',document.querySelectorAll('.zt')[4])"><div class="fd" style="background:#A32D2D"></div>D. 투표 인터랙션<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('e',document.querySelectorAll('.zt')[5])"><div class="fd" style="background:#444441"></div>E. 제안<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('f',document.querySelectorAll('.zt')[6])"><div class="fd" style="background:#5F5E5A"></div>F. 파라미터<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('g',document.querySelectorAll('.zt')[7])"><div class="fd" style="background:#9B99F5"></div>G. 유틸<span class="fc">3</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">20</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">2</span></div>
+  <div class="fp" style="background:#E6F1FB;border-color:#B0CCEF"><span style="color:#0C447C">Starzip 고유</span><span class="fc" style="color:#0C447C">10</span></div>
+  <div class="ft">총 <strong>24개</strong> · 7개 영역</div>
+</div>
+
+</div><!-- /z-all -->
+
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+<div class="zp" id="z-d"></div>
+<div class="zp" id="z-e"></div>
+<div class="zp" id="z-f"></div>
+<div class="zp" id="z-g"></div>
+
+</div>
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return;}
+  const pref={a:'A',b:'B',c:'C',d:'D',e:'E',f:'F',g:'G'}[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>

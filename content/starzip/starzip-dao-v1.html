@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — DAO 거버넌스</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g25:#FCFCFD;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p25:#F5F8FF;--p50:#EFF4FF;--p100:#D1E0FF;--p300:#84ADFF;
+  --p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s600:#039855;--s700:#027A48;
+  --e50:#FEF3F2;--e200:#FECDCA;--e500:#F04438;--e700:#B42318;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --v50:#F9F5FF;--v200:#E9D7FE;--v500:#9E77ED;--v600:#7F56D9;--v700:#6941C6;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--g25);color:var(--g900);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:200;background:var(--g0);border-bottom:1px solid var(--g200);height:52px;display:flex;align-items:center;padding:0 20px;gap:6px}
+.nav-logo{font-size:15px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:7px;margin-right:20px;flex-shrink:0}
+.nav-logo-mark{width:26px;height:26px;border-radius:6px;background:var(--p600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.nl{padding:6px 10px;border-radius:var(--r6);font-size:13px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;transition:all .12s}
+.nl:hover{color:var(--g700);background:var(--g50)}
+.nl.on{color:var(--p600);background:var(--p50)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px}
+.nav-dust{background:var(--w50);border:1px solid var(--w200);color:var(--w700)}
+.wdot{width:6px;height:6px;border-radius:50%;background:var(--w500)}
+.btn-ghost{padding:7px 13px;border-radius:var(--r8);border:1px solid var(--g300);background:var(--g0);font-size:13px;font-weight:500;color:var(--g700);cursor:pointer}
+
+/* ── 레이아웃 ── */
+.layout{display:grid;grid-template-columns:220px 1fr 300px;min-height:calc(100vh - 52px - 44px)}
+
+/* ── 사이드바 ── */
+.sidebar{background:var(--g0);border-right:1px solid var(--g200);padding:20px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sb-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);padding:8px 8px 4px;margin-top:8px}
+.sb-label:first-child{margin-top:0}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r8);font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--g50);color:var(--g800)}
+.sb-item.on{background:var(--g100);color:var(--g900);font-weight:600}
+.sb-ico{width:18px;height:18px;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-badge-blue{background:var(--p50);color:var(--p600)}
+.sb-badge-green{background:var(--s50);color:var(--s700)}
+.sb-badge-purple{background:var(--v50);color:var(--v600)}
+
+/* ── 중앙 ── */
+.main{padding:24px;overflow-y:auto;background:var(--g25)}
+.page-title{font-size:20px;font-weight:800;color:var(--g900);margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.page-sub{font-size:13px;color:var(--g500);margin-bottom:18px}
+
+/* DAO 유형 탭 */
+.dao-type-tabs{display:flex;gap:8px;margin-bottom:20px}
+.dao-type-tab{flex:1;padding:14px 16px;border-radius:var(--r12);border:2px solid var(--g200);background:var(--g0);cursor:pointer;transition:all .15s;text-align:left}
+.dao-type-tab:hover{border-color:var(--g300)}
+.dao-type-tab.on{border-color:var(--p500);background:var(--p25)}
+.dtt-icon{font-size:22px;margin-bottom:6px}
+.dtt-name{font-size:14px;font-weight:700;color:var(--g900);margin-bottom:2px}
+.dtt-desc{font-size:11px;color:var(--g500);line-height:1.4}
+.dtt-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:6px}
+.dtt-star{background:var(--p50);color:var(--p600)}
+.dtt-store{background:var(--v50);color:var(--v600)}
+
+/* 내 투표권 요약 */
+.voting-power-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.vp-card{flex:1;min-width:140px;background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:12px 14px}
+.vp-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:4px}
+.vp-value{font-size:18px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.vp-sub{font-size:11px;color:var(--g500);margin-top:2px}
+
+/* 안건 필터 탭 */
+.proposal-filter{display:flex;gap:0;border-bottom:1px solid var(--g200);margin-bottom:16px}
+.pf-tab{padding:9px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.pf-tab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.pf-tab:hover:not(.on){color:var(--g600)}
+.pf-count{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;background:var(--g100);color:var(--g500)}
+.pf-count.active{background:var(--p50);color:var(--p600)}
+
+/* 안건 카드 */
+.proposal-list{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.proposal-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;transition:all .15s;cursor:pointer}
+.proposal-card:hover{border-color:var(--g300);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.proposal-card.active{border-color:var(--p300);background:var(--p25)}
+
+.pc-header{padding:14px 16px 10px;display:flex;align-items:flex-start;gap:12px}
+.pc-status{flex-shrink:0;margin-top:2px}
+.status-pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
+.sp-active{background:var(--p50);color:var(--p600)}
+.sp-passed{background:var(--s50);color:var(--s700)}
+.sp-failed{background:var(--e50);color:var(--e700)}
+.sp-pending{background:var(--w50);color:var(--w700)}
+.sp-executed{background:var(--v50);color:var(--v600)}
+.pc-body{flex:1;min-width:0}
+.pc-id{font-size:10px;font-weight:600;color:var(--g400);margin-bottom:3px;font-family:var(--mono);display:flex;align-items:center;gap:6px}
+.pc-dao-type{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px}
+.pc-dao-dex{background:var(--p50);color:var(--p600)}
+.pc-dao-store{background:var(--v50);color:var(--v600)}
+.pc-title{font-size:14px;font-weight:700;color:var(--g900);margin-bottom:4px;line-height:1.3}
+.pc-desc{font-size:12px;color:var(--g600);line-height:1.5;margin-bottom:8px}
+.pc-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--g400)}
+.pc-meta span{display:flex;align-items:center;gap:3px}
+
+/* 투표 바 */
+.pc-vote-section{padding:0 16px 14px}
+.vote-bar-wrap{margin-bottom:8px}
+.vote-bar-bg{height:8px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:5px}
+.vb-for{background:var(--s500);border-radius:4px 0 0 4px}
+.vb-against{background:var(--e500);border-radius:0 4px 4px 0}
+.vb-abstain{background:var(--g300)}
+.vote-legend{display:flex;gap:14px;font-size:11px}
+.vl-item{display:flex;align-items:center;gap:4px}
+.vl-dot{width:6px;height:6px;border-radius:50%}
+.vote-pcts{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono)}
+.vp-for{color:var(--s600);font-weight:600}
+.vp-against{color:var(--e500);font-weight:600}
+.vp-abstain{color:var(--g400)}
+
+/* 내 투표 상태 */
+.my-vote-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;border-top:1px solid var(--g100);flex-wrap:wrap;gap:8px}
+.mv-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--g500)}
+.mv-status strong{color:var(--g800)}
+.vote-btns{display:flex;gap:6px}
+.vote-btn{padding:6px 14px;border-radius:var(--r6);font-size:12px;font-weight:700;border:1px solid;cursor:pointer;transition:all .12s}
+.vb-for-btn{background:var(--s50);color:var(--s700);border-color:var(--s200)}
+.vb-for-btn:hover{background:var(--s500);color:#fff;border-color:var(--s500)}
+.vb-against-btn{background:var(--e50);color:var(--e700);border-color:var(--e200)}
+.vb-against-btn:hover{background:var(--e500);color:#fff;border-color:var(--e500)}
+.vb-abstain-btn{background:var(--g50);color:var(--g600);border-color:var(--g200)}
+.vb-abstain-btn:hover{background:var(--g100)}
+.voted-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.voted-for{background:var(--s50);color:var(--s700)}
+.voted-against{background:var(--e50);color:var(--e700)}
+
+/* 제안 만들기 버튼 */
+.create-btn{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:var(--r12);border:2px dashed var(--g300);background:var(--g0);color:var(--g500);cursor:pointer;font-size:13px;font-weight:600;transition:all .12s;width:100%}
+.create-btn:hover{border-color:var(--p300);color:var(--p600);background:var(--p25)}
+
+/* Timelock 상태 카드 */
+.timelock-card{background:var(--v50);border:1px solid var(--v200);border-radius:var(--r12);padding:12px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px}
+.tlc-icon{font-size:20px;flex-shrink:0}
+.tlc-title{font-size:12px;font-weight:700;color:var(--v700);margin-bottom:2px}
+.tlc-desc{font-size:11px;color:var(--v600);line-height:1.5}
+.tlc-timer{font-size:13px;font-weight:700;color:var(--v600);font-family:var(--mono);margin-top:4px}
+
+/* ── 우측 패널 ── */
+.right-panel{background:var(--g0);border-left:1px solid var(--g200);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+
+/* 내 투표권 카드 */
+.my-power-card{background:linear-gradient(135deg,var(--p25),var(--p50));border:1px solid var(--p100);border-radius:var(--r12);padding:14px}
+.mpc-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--p700);margin-bottom:8px}
+.mpc-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:13px}
+.mpc-lbl{color:var(--p600)}
+.mpc-val{font-weight:700;color:var(--p700);font-family:var(--mono)}
+.mpc-div{height:1px;background:var(--p100);margin:6px 0}
+.mpc-total{display:flex;align-items:center;justify-content:space-between}
+.mpc-total-lbl{font-size:13px;font-weight:700;color:var(--p700)}
+.mpc-total-val{font-size:20px;font-weight:800;color:var(--p600);font-family:var(--mono)}
+.mpc-go-btn{width:100%;margin-top:10px;padding:8px 0;border-radius:var(--r6);background:var(--p500);color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:background .12s}
+.mpc-go-btn:hover{background:var(--p700)}
+
+/* 거버넌스 파라미터 */
+.params-card{background:var(--g25);border:1px solid var(--g200);border-radius:var(--r12);padding:14px}
+.params-title{font-size:12px;font-weight:700;color:var(--g600);margin-bottom:10px}
+.param-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--g100)}
+.param-row:last-child{border-bottom:none}
+.param-lbl{font-size:11px;color:var(--g500)}
+.param-val{font-size:11px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+
+/* Store DAO 상점 목록 */
+.store-dao-list{display:flex;flex-direction:column;gap:8px}
+.sdl-title{font-size:12px;font-weight:700;color:var(--g600);margin-bottom:6px}
+.sdl-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r8);border:1px solid var(--g200);background:var(--g0);cursor:pointer;transition:all .12s}
+.sdl-item:hover{border-color:var(--g300);background:var(--g50)}
+.sdl-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.sdl-name{font-size:12px;font-weight:600;color:var(--g800);flex:1}
+.sdl-count{font-size:10px;font-weight:600;padding:2px 6px;border-radius:20px;background:var(--p50);color:var(--p600)}
+.sdl-tokens{font-size:10px;color:var(--g400)}
+
+/* 최근 처리 */
+.recent-card{background:var(--g25);border:1px solid var(--g200);border-radius:var(--r12);padding:14px}
+.recent-title{font-size:12px;font-weight:700;color:var(--g600);margin-bottom:8px}
+.recent-item{padding:7px 0;border-bottom:1px solid var(--g100)}
+.recent-item:last-child{border-bottom:none}
+.ri-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ri-title{font-size:12px;font-weight:500;color:var(--g700);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ri-date{font-size:10px;color:var(--g400)}
+.ri-hash{font-size:10px;color:var(--g400);font-family:var(--mono)}
+
+/* ── FOOTER ── */
+.footer{position:fixed;bottom:0;left:0;right:0;height:44px;background:var(--g0);border-top:1px solid var(--g200);display:flex;align-items:center;padding:0 20px;gap:6px;z-index:100}
+.fl-live{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--s700)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--s500);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.footer-r{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--g400)}
+
+/* 모달 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.on{display:flex}
+.modal{background:var(--g0);border-radius:var(--r16);padding:24px;max-width:520px;width:calc(100% - 40px);max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal-title{font-size:18px;font-weight:800;color:var(--g900);margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--g500);margin-bottom:20px}
+.modal-field{margin-bottom:14px}
+.mf-label{font-size:12px;font-weight:600;color:var(--g700);margin-bottom:5px}
+.mf-input{width:100%;padding:10px 12px;border:1px solid var(--g300);border-radius:var(--r8);font-size:14px;font-family:var(--sans);color:var(--g900);outline:none;transition:border-color .15s}
+.mf-input:focus{border-color:var(--p500);box-shadow:0 0 0 3px rgba(41,112,255,.08)}
+.mf-textarea{min-height:80px;resize:vertical}
+.modal-actions{display:flex;gap:8px;margin-top:20px}
+.modal-cancel{flex:1;padding:10px;border-radius:var(--r8);border:1px solid var(--g200);background:var(--g0);color:var(--g700);font-size:14px;font-weight:600;cursor:pointer}
+.modal-submit{flex:2;padding:10px;border-radius:var(--r8);border:none;background:var(--p500);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:background .12s}
+.modal-submit:hover{background:var(--p700)}
+.modal-warning{background:var(--w50);border:1px solid var(--w200);border-radius:var(--r8);padding:10px 12px;font-size:12px;color:var(--w700);margin-bottom:14px;line-height:1.5}
+
+/* tab panel */
+.tp{display:none}.tp.on{display:block}
+
+/* 투표 확인 팝업 */
+.vote-confirm{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:var(--g900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:400;display:none;animation:slideup .2s ease}
+@keyframes slideup{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+@media(max-width:1100px){.layout{grid-template-columns:200px 1fr}.right-panel{display:none}}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-logo-mark">SZ</div>Starzip</div>
+  <button class="nl">Trade</button>
+  <button class="nl">Launchpad</button>
+  <button class="nl on">DAO</button>
+  <button class="nl">Portfolio</button>
+  <div class="nav-r">
+    <div class="nav-chip nav-dust"><div class="wdot"></div>2,480 DUST</div>
+    <button class="btn-ghost">0x7B4...E18</button>
+  </div>
+</nav>
+
+<!-- 레이아웃 -->
+<div class="layout">
+
+  <!-- ── 사이드바 ── -->
+  <aside class="sidebar">
+    <div class="sb-label">DEX DAO</div>
+    <button class="sb-item on" onclick="swSide(this,'dex-all')">
+      <div class="sb-ico">📋</div>전체 안건
+      <span class="sb-badge sb-badge-blue">12</span>
+    </button>
+    <button class="sb-item" onclick="swSide(this,'dex-active')">
+      <div class="sb-ico">🔵</div>투표 진행중
+      <span class="sb-badge sb-badge-blue">3</span>
+    </button>
+    <button class="sb-item" onclick="swSide(this,'dex-timelock')">
+      <div class="sb-ico">⏳</div>Timelock 대기
+      <span class="sb-badge sb-badge-blue">1</span>
+    </button>
+    <button class="sb-item" onclick="swSide(this,'dex-history')">
+      <div class="sb-ico">🕐</div>처리 완료
+    </button>
+
+    <div class="sb-label">Store DAO</div>
+    <button class="sb-item" onclick="swSide(this,'store-cafe')">
+      <div class="sb-ico" style="font-size:12px">☕</div>브루밍 카페
+      <span class="sb-badge sb-badge-purple">1</span>
+    </button>
+    <button class="sb-item" onclick="swSide(this,'store-hair')">
+      <div class="sb-ico" style="font-size:12px">💇</div>헤어살롱 아뜰리에
+    </button>
+    <button class="sb-item">
+      <div class="sb-ico">🏪</div>전체 Store DAO
+      <span class="sb-badge sb-badge-green">4</span>
+    </button>
+
+    <div class="sb-label">내 활동</div>
+    <button class="sb-item">
+      <div class="sb-ico">🗳</div>내 투표 내역
+    </button>
+    <button class="sb-item">
+      <div class="sb-ico">✍️</div>내 제안 내역
+    </button>
+  </aside>
+
+  <!-- ── 중앙 ── -->
+  <main class="main">
+
+    <div class="page-title">
+      🗳 DAO 거버넌스
+    </div>
+    <div class="page-sub">STAR 홀더는 DEX DAO에서, Store Token 홀더는 해당 상점의 Store DAO에서 투표합니다.</div>
+
+    <!-- DAO 유형 선택 탭 -->
+    <div class="dao-type-tabs">
+      <div class="dao-type-tab on" id="type-dex" onclick="swType('dex')">
+        <div class="dtt-icon">🏛</div>
+        <div class="dtt-name">DEX DAO</div>
+        <div class="dtt-desc">플랫폼 전체 정책 결정. 수수료율·업그레이드·Treasury 사용</div>
+        <span class="dtt-badge dtt-star">STAR 보유자 투표</span>
+      </div>
+      <div class="dao-type-tab" id="type-store" onclick="swType('store')">
+        <div class="dtt-icon">🏪</div>
+        <div class="dtt-name">Store DAO</div>
+        <div class="dtt-desc">개별 상점 운영 정책. 토큰 소각·가격·혜택 변경</div>
+        <span class="dtt-badge dtt-store">Store Token 보유자 투표</span>
+      </div>
+    </div>
+
+    <!-- 내 투표권 요약 바 -->
+    <div class="voting-power-bar" id="vp-bar-dex">
+      <div class="vp-card">
+        <div class="vp-label">내 STAR 잔액</div>
+        <div class="vp-value">1,200</div>
+        <div class="vp-sub">스테이킹 중</div>
+      </div>
+      <div class="vp-card">
+        <div class="vp-label">투표 가중치</div>
+        <div class="vp-value">1,200</div>
+        <div class="vp-sub">1 STAR = 1표</div>
+      </div>
+      <div class="vp-card">
+        <div class="vp-label">참여한 투표</div>
+        <div class="vp-value">8건</div>
+        <div class="vp-sub">전체 중 67%</div>
+      </div>
+      <div class="vp-card" style="background:var(--p25);border-color:var(--p100)">
+        <div class="vp-label" style="color:var(--p600)">진행중 투표</div>
+        <div class="vp-value" style="color:var(--p600)">3건</div>
+        <div class="vp-sub" style="color:var(--p500)">투표 참여 가능</div>
+      </div>
+    </div>
+
+    <div class="voting-power-bar" id="vp-bar-store" style="display:none">
+      <div class="vp-card">
+        <div class="vp-label">CAFE 보유량</div>
+        <div class="vp-value">128,000</div>
+        <div class="vp-sub">브루밍 카페</div>
+      </div>
+      <div class="vp-card">
+        <div class="vp-label">투표 가중치</div>
+        <div class="vp-value">128,000</div>
+        <div class="vp-sub">1 CAFE = 1표</div>
+      </div>
+      <div class="vp-card">
+        <div class="vp-label">정족수 기준</div>
+        <div class="vp-value">2%</div>
+        <div class="vp-sub">전체 유통량 대비</div>
+      </div>
+      <div class="vp-card" style="background:var(--v50);border-color:var(--v200)">
+        <div class="vp-label" style="color:var(--v600)">진행중 투표</div>
+        <div class="vp-value" style="color:var(--v600)">1건</div>
+        <div class="vp-sub" style="color:var(--v500)">브루밍 카페</div>
+      </div>
+    </div>
+
+    <!-- DEX DAO 패널 -->
+    <div class="tp on" id="panel-dex">
+
+      <!-- 안건 필터 탭 -->
+      <div class="proposal-filter">
+        <button class="pf-tab on" onclick="swFilter(this,'all')">전체 <span class="pf-count">12</span></button>
+        <button class="pf-tab" onclick="swFilter(this,'active')">진행중 <span class="pf-count active">3</span></button>
+        <button class="pf-tab" onclick="swFilter(this,'timelock')">Timelock <span class="pf-count">1</span></button>
+        <button class="pf-tab" onclick="swFilter(this,'passed')">가결 <span class="pf-count">6</span></button>
+        <button class="pf-tab" onclick="swFilter(this,'failed')">부결 <span class="pf-count">2</span></button>
+      </div>
+
+      <!-- Timelock 대기 배너 -->
+      <div class="timelock-card">
+        <div class="tlc-icon">⏳</div>
+        <div>
+          <div class="tlc-title">Timelock 대기 중인 안건</div>
+          <div class="tlc-desc">SIP-009 수수료율 0.35% 조정안이 가결되어 48시간 Timelock 대기 중입니다. 문제 발견 시 이 기간 내 취소할 수 있습니다.</div>
+          <div class="tlc-timer">⏱ 31:24:18 후 자동 실행</div>
+        </div>
+      </div>
+
+      <!-- 안건 목록 -->
+      <div class="proposal-list">
+
+        <!-- 진행중 안건 1 -->
+        <div class="proposal-card active">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-active">진행중</span></div>
+            <div class="pc-body">
+              <div class="pc-id">
+                <span>SIP-012</span>
+                <span class="pc-dao-type pc-dao-dex">DEX DAO</span>
+              </div>
+              <div class="pc-title">런치패드 신규 상점 수수료 감면 (HIP-3 방식)</div>
+              <div class="pc-desc">신규 상장 상점의 런치패드 기간 거래 수수료를 0.39%→0.10%로 90% 감면. 상장 후 30일간 적용하여 초기 유동성 부트스트랩.</div>
+              <div class="pc-meta">
+                <span>🗳 참여자 342명</span>
+                <span>📅 2일 14시간 후 마감</span>
+                <span>⚡ 정족수 5% 달성</span>
+              </div>
+            </div>
+          </div>
+          <div class="pc-vote-section">
+            <div class="vote-bar-wrap">
+              <div class="vote-bar-bg">
+                <div class="vb-for" style="width:72%"></div>
+                <div class="vb-against" style="width:18%"></div>
+                <div class="vb-abstain" style="width:10%"></div>
+              </div>
+              <div class="vote-pcts">
+                <span class="vp-for">찬성 72% (864,000 STAR)</span>
+                <span class="vp-abstain">기권 10%</span>
+                <span class="vp-against">반대 18%</span>
+              </div>
+            </div>
+          </div>
+          <div class="my-vote-row">
+            <div class="mv-status">내 투표권 <strong>1,200 STAR</strong> 보유 · 미투표</div>
+            <div class="vote-btns">
+              <button class="vote-btn vb-for-btn" onclick="castVote(this,'찬성','SIP-012')">👍 찬성</button>
+              <button class="vote-btn vb-against-btn" onclick="castVote(this,'반대','SIP-012')">👎 반대</button>
+              <button class="vote-btn vb-abstain-btn" onclick="castVote(this,'기권','SIP-012')">— 기권</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 진행중 안건 2 -->
+        <div class="proposal-card active">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-active">진행중</span></div>
+            <div class="pc-body">
+              <div class="pc-id"><span>SIP-011</span><span class="pc-dao-type pc-dao-dex">DEX DAO</span></div>
+              <div class="pc-title">Treasury 12개월 법률 감사 예산 집행 ($80,000 USDT)</div>
+              <div class="pc-desc">플랫폼 컴플라이언스 강화를 위한 외부 법률 감사 비용. Treasury에서 $80,000 집행 제안.</div>
+              <div class="pc-meta">
+                <span>🗳 참여자 218명</span>
+                <span>📅 5일 후 마감</span>
+                <span>⚡ 정족수 3.2% 달성</span>
+              </div>
+            </div>
+          </div>
+          <div class="pc-vote-section">
+            <div class="vote-bar-wrap">
+              <div class="vote-bar-bg">
+                <div class="vb-for" style="width:58%"></div>
+                <div class="vb-against" style="width:30%"></div>
+                <div class="vb-abstain" style="width:12%"></div>
+              </div>
+              <div class="vote-pcts">
+                <span class="vp-for">찬성 58%</span>
+                <span class="vp-abstain">기권 12%</span>
+                <span class="vp-against">반대 30%</span>
+              </div>
+            </div>
+          </div>
+          <div class="my-vote-row">
+            <div class="mv-status">내 투표: <strong style="color:var(--s600)">찬성 ✓</strong> (1,200 STAR)</div>
+            <span class="voted-badge voted-for">찬성 완료</span>
+          </div>
+        </div>
+
+        <!-- 진행중 안건 3 -->
+        <div class="proposal-card active">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-active">진행중</span></div>
+            <div class="pc-body">
+              <div class="pc-id"><span>SIP-010</span><span class="pc-dao-type pc-dao-dex">DEX DAO</span></div>
+              <div class="pc-title">STAR Buyback & Burn 프로그램 시작 (수수료의 20%)</div>
+              <div class="pc-desc">플랫폼 수수료 수익 중 20%로 STAR를 매수·소각하여 유통량을 줄이는 Buyback 프로그램 도입.</div>
+              <div class="pc-meta">
+                <span>🗳 참여자 487명</span>
+                <span>📅 1일 후 마감</span>
+                <span>⚡ 정족수 8.1% 달성</span>
+              </div>
+            </div>
+          </div>
+          <div class="pc-vote-section">
+            <div class="vote-bar-wrap">
+              <div class="vote-bar-bg">
+                <div class="vb-for" style="width:84%"></div>
+                <div class="vb-against" style="width:9%"></div>
+                <div class="vb-abstain" style="width:7%"></div>
+              </div>
+              <div class="vote-pcts">
+                <span class="vp-for">찬성 84%</span>
+                <span class="vp-abstain">기권 7%</span>
+                <span class="vp-against">반대 9%</span>
+              </div>
+            </div>
+          </div>
+          <div class="my-vote-row">
+            <div class="mv-status">내 투표: <strong style="color:var(--e500)">반대 ✗</strong> (1,200 STAR)</div>
+            <span class="voted-badge voted-against">반대 완료</span>
+          </div>
+        </div>
+
+        <!-- 가결·Timelock 안건 -->
+        <div class="proposal-card">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-executed">Timelock</span></div>
+            <div class="pc-body">
+              <div class="pc-id"><span>SIP-009</span><span class="pc-dao-type pc-dao-dex">DEX DAO</span></div>
+              <div class="pc-title">거래 수수료 0.35% 조정 (현행 0.39%)</div>
+              <div class="pc-desc">경쟁력 강화를 위한 수수료 인하. 가결 후 48시간 Timelock 대기 중.</div>
+              <div class="pc-meta">
+                <span>✅ 가결 (찬성 79%)</span>
+                <span>⏳ 31시간 후 자동 실행</span>
+                <span>🔗 0x3a7f...c1e2</span>
+              </div>
+            </div>
+          </div>
+          <div class="pc-vote-section">
+            <div class="vote-bar-wrap">
+              <div class="vote-bar-bg">
+                <div class="vb-for" style="width:79%"></div>
+                <div class="vb-against" style="width:15%"></div>
+                <div class="vb-abstain" style="width:6%"></div>
+              </div>
+              <div class="vote-pcts">
+                <span class="vp-for">찬성 79%</span>
+                <span class="vp-abstain">기권 6%</span>
+                <span class="vp-against">반대 15%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 가결·실행 완료 -->
+        <div class="proposal-card" style="opacity:.8">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-passed">가결·완료</span></div>
+            <div class="pc-body">
+              <div class="pc-id"><span>SIP-008</span><span class="pc-dao-type pc-dao-dex">DEX DAO</span></div>
+              <div class="pc-title">파트너 성과 수수료 상한 $1,000→$2,000 상향</div>
+              <div class="pc-meta">
+                <span>✅ 실행 완료</span><span>📅 2026-02-28</span><span>🔗 0x1c2e...9a4f</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /proposal-list -->
+
+      <!-- 새 안건 제안 버튼 -->
+      <button class="create-btn" onclick="openModal()">
+        + 새 안건 제안하기 &nbsp;<span style="font-size:11px;color:var(--g400)">(최소 10,000 STAR 보유 필요)</span>
+      </button>
+
+    </div><!-- /panel-dex -->
+
+    <!-- Store DAO 패널 -->
+    <div class="tp" id="panel-store">
+
+      <div class="proposal-filter">
+        <button class="pf-tab on">전체 <span class="pf-count">6</span></button>
+        <button class="pf-tab">진행중 <span class="pf-count active">1</span></button>
+        <button class="pf-tab">가결 <span class="pf-count">4</span></button>
+        <button class="pf-tab">부결 <span class="pf-count">1</span></button>
+      </div>
+
+      <div class="proposal-list">
+
+        <!-- Store DAO 진행중 -->
+        <div class="proposal-card active">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-active">진행중</span></div>
+            <div class="pc-body">
+              <div class="pc-id">
+                <span>CAFE-DAO-004</span>
+                <span class="pc-dao-type pc-dao-store">Store DAO · 브루밍 카페</span>
+              </div>
+              <div class="pc-title">봄 시즌 메뉴 가격 10% 인상 제안</div>
+              <div class="pc-desc">원자재 가격 상승으로 인한 메뉴 가격 조정. 아메리카노 4,500원→5,000원 등.</div>
+              <div class="pc-meta">
+                <span>🗳 참여자 48명</span>
+                <span>📅 3일 후 마감</span>
+                <span>⚡ 정족수 2% 기준 달성</span>
+              </div>
+            </div>
+          </div>
+          <div class="pc-vote-section">
+            <div class="vote-bar-wrap">
+              <div class="vote-bar-bg">
+                <div class="vb-for" style="width:63%"></div>
+                <div class="vb-against" style="width:28%"></div>
+                <div class="vb-abstain" style="width:9%"></div>
+              </div>
+              <div class="vote-pcts">
+                <span class="vp-for">찬성 63% (6,300만 CAFE)</span>
+                <span class="vp-abstain">기권 9%</span>
+                <span class="vp-against">반대 28%</span>
+              </div>
+            </div>
+          </div>
+          <div class="my-vote-row">
+            <div class="mv-status">내 CAFE <strong>128,000개</strong> 보유 · 미투표</div>
+            <div class="vote-btns">
+              <button class="vote-btn vb-for-btn" onclick="castVote(this,'찬성','CAFE-004')">👍 찬성</button>
+              <button class="vote-btn vb-against-btn" onclick="castVote(this,'반대','CAFE-004')">👎 반대</button>
+              <button class="vote-btn vb-abstain-btn" onclick="castVote(this,'기권','CAFE-004')">— 기권</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Store DAO 완료 -->
+        <div class="proposal-card" style="opacity:.8">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-passed">가결·완료</span></div>
+            <div class="pc-body">
+              <div class="pc-id"><span>CAFE-DAO-003</span><span class="pc-dao-type pc-dao-store">Store DAO · 브루밍 카페</span></div>
+              <div class="pc-title">500만 CAFE 토큰 소각 제안</div>
+              <div class="pc-meta"><span>✅ 소각 완료</span><span>📅 2026-02-14</span><span>🔗 0x5e1a...2b8d</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="proposal-card" style="opacity:.8">
+          <div class="pc-header">
+            <div class="pc-status"><span class="status-pill sp-failed">부결</span></div>
+            <div class="pc-body">
+              <div class="pc-id"><span>CAFE-DAO-002</span><span class="pc-dao-type pc-dao-store">Store DAO · 브루밍 카페</span></div>
+              <div class="pc-title">주말 할인 이벤트 종료 제안</div>
+              <div class="pc-meta"><span>❌ 부결 (반대 61%)</span><span>📅 2026-01-05</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="create-btn" onclick="openModal()">
+        + CAFE DAO 안건 제안하기 &nbsp;<span style="font-size:11px;color:var(--g400)">(최소 유통량의 1% CAFE 필요)</span>
+      </button>
+
+    </div><!-- /panel-store -->
+
+  </main>
+
+  <!-- ── 우측 패널 ── -->
+  <aside class="right-panel">
+
+    <!-- 내 투표권 -->
+    <div class="my-power-card">
+      <div class="mpc-title">⚡ 내 투표권</div>
+      <div class="mpc-row"><span class="mpc-lbl">STAR 스테이킹</span><span class="mpc-val">1,200</span></div>
+      <div class="mpc-row"><span class="mpc-lbl">STAR 자유 보유</span><span class="mpc-val">400</span></div>
+      <div class="mpc-div"></div>
+      <div class="mpc-total">
+        <span class="mpc-total-lbl">DEX DAO 총 투표권</span>
+        <span class="mpc-total-val">1,600</span>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--p100)">
+        <div class="mpc-row"><span class="mpc-lbl">CAFE 보유</span><span class="mpc-val">128,000</span></div>
+        <div class="mpc-row"><span class="mpc-lbl">Store DAO 투표권</span><span class="mpc-val">128,000</span></div>
+      </div>
+      <button class="mpc-go-btn">STAR 추가 스테이킹 →</button>
+    </div>
+
+    <!-- 거버넌스 파라미터 -->
+    <div class="params-card">
+      <div class="params-title">거버넌스 파라미터</div>
+      <div style="font-size:10px;font-weight:600;color:var(--p600);margin-bottom:6px">DEX DAO</div>
+      <div class="param-row"><span class="param-lbl">투표 기간</span><span class="param-val">7일</span></div>
+      <div class="param-row"><span class="param-lbl">정족수</span><span class="param-val">5% STAR</span></div>
+      <div class="param-row"><span class="param-lbl">가결 조건</span><span class="param-val">과반(50%+1)</span></div>
+      <div class="param-row"><span class="param-lbl">Timelock</span><span class="param-val">48시간</span></div>
+      <div class="param-row"><span class="param-lbl">제안 요건</span><span class="param-val">10,000 STAR</span></div>
+      <div style="font-size:10px;font-weight:600;color:var(--v600);margin:10px 0 6px">Store DAO</div>
+      <div class="param-row"><span class="param-lbl">투표 기간</span><span class="param-val">5일</span></div>
+      <div class="param-row"><span class="param-lbl">정족수</span><span class="param-val">유통량 2%</span></div>
+      <div class="param-row"><span class="param-lbl">Timelock</span><span class="param-val">24시간</span></div>
+      <div class="param-row"><span class="param-lbl">제안 요건</span><span class="param-val">유통량 1%</span></div>
+    </div>
+
+    <!-- Store DAO 상점 목록 -->
+    <div class="store-dao-list">
+      <div class="sdl-title">🏪 내 Store DAO 참여 가능</div>
+      <div class="sdl-item">
+        <div class="sdl-icon" style="background:linear-gradient(135deg,#C8B498,#9A7050)">C</div>
+        <div>
+          <div class="sdl-name">브루밍 카페</div>
+          <div class="sdl-tokens">CAFE 128,000개 보유</div>
+        </div>
+        <span class="sdl-count">1건</span>
+      </div>
+      <div class="sdl-item">
+        <div class="sdl-icon" style="background:linear-gradient(135deg,#8FA8C8,#5078A0)">H</div>
+        <div>
+          <div class="sdl-name">헤어살롱 아뜰리에</div>
+          <div class="sdl-tokens">HAIR 미보유</div>
+        </div>
+        <span style="font-size:10px;color:var(--g400)">없음</span>
+      </div>
+    </div>
+
+    <!-- 최근 처리 완료 -->
+    <div class="recent-card">
+      <div class="recent-title">최근 처리 완료</div>
+      <div class="recent-item">
+        <div class="ri-top">
+          <span class="status-pill sp-passed" style="font-size:9px;padding:1px 6px">가결</span>
+          <span class="ri-title">SIP-008 파트너 상한 상향</span>
+          <span class="ri-date">02-28</span>
+        </div>
+        <div class="ri-hash">0x1c2e...9a4f</div>
+      </div>
+      <div class="recent-item">
+        <div class="ri-top">
+          <span class="status-pill sp-failed" style="font-size:9px;padding:1px 6px">부결</span>
+          <span class="ri-title">SIP-007 Maker 수수료 도입</span>
+          <span class="ri-date">01-15</span>
+        </div>
+        <div class="ri-hash">0x9b4d...7e3c</div>
+      </div>
+      <div class="recent-item">
+        <div class="ri-top">
+          <span class="status-pill sp-passed" style="font-size:9px;padding:1px 6px">가결</span>
+          <span class="ri-title">CAFE-003 500만 CAFE 소각</span>
+          <span class="ri-date">02-14</span>
+        </div>
+        <div class="ri-hash">0x5e1a...2b8d</div>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- /layout -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fl-live"><div class="live-dot"></div>Stable</div>
+  <span style="width:1px;height:14px;background:var(--g200);margin:0 6px;display:inline-block"></span>
+  <span style="font-size:12px;color:var(--g400)">opBNB · Block #8,241,047</span>
+  <div class="footer-r">
+    <span>Terms · Privacy</span>
+  </div>
+</div>
+
+<!-- 안건 제안 모달 -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">새 안건 제안하기</div>
+    <div class="modal-sub">제안이 등록되면 커뮤니티의 투표로 결정됩니다.</div>
+    <div class="modal-warning">⚠️ 제안 등록에는 최소 <strong>10,000 STAR</strong>가 필요합니다. 현재 보유량: 1,600 STAR — 보유량 부족. Store DAO 제안은 해당 토큰 유통량의 1% 이상 보유 시 가능합니다.</div>
+    <div class="modal-field">
+      <div class="mf-label">안건 유형</div>
+      <select class="mf-input" style="cursor:pointer">
+        <option>DEX DAO — 플랫폼 정책</option>
+        <option>Store DAO — 브루밍 카페</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <div class="mf-label">안건 제목</div>
+      <input class="mf-input" type="text" placeholder="예: 거래 수수료 0.35% 조정">
+    </div>
+    <div class="modal-field">
+      <div class="mf-label">상세 설명</div>
+      <textarea class="mf-input mf-textarea" placeholder="안건의 목적, 기대 효과, 실행 방법 등을 설명해주세요."></textarea>
+    </div>
+    <div class="modal-field">
+      <div class="mf-label">실행 데이터 (선택)</div>
+      <input class="mf-input" type="text" placeholder="온체인 실행 파라미터 (선택사항)">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">취소</button>
+      <button class="modal-submit" onclick="submitProposal()">제안 등록하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 투표 확인 -->
+<div class="vote-confirm" id="vote-confirm"></div>
+
+<script>
+/* ── DAO 유형 전환 ── */
+function swType(t){
+  document.getElementById('type-dex').classList.toggle('on',t==='dex');
+  document.getElementById('type-store').classList.toggle('on',t==='store');
+  document.getElementById('panel-dex').classList.toggle('on',t==='dex');
+  document.getElementById('panel-store').classList.toggle('on',t==='store');
+  document.getElementById('vp-bar-dex').style.display=t==='dex'?'flex':'none';
+  document.getElementById('vp-bar-store').style.display=t==='store'?'flex':'none';
+}
+
+/* ── 사이드바 ── */
+function swSide(btn,id){
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(id.startsWith('dex')) swType('dex');
+  else if(id.startsWith('store')) swType('store');
+}
+
+/* ── 필터 탭 ── */
+function swFilter(btn,f){
+  document.querySelectorAll('.pf-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+/* ── 투표 ── */
+function castVote(btn,type,id){
+  const row=btn.closest('.my-vote-row');
+  const btns=row.querySelectorAll('.vote-btn');
+  btns.forEach(b=>b.disabled=true);
+  // 상태 업데이트
+  const statusEl=row.querySelector('.mv-status');
+  const colors={찬성:'var(--s600)',반대:'var(--e500)',기권:'var(--g500)'};
+  const labels={찬성:'찬성 ✓',반대:'반대 ✗',기권:'기권 —'};
+  statusEl.innerHTML=`내 투표: <strong style="color:${colors[type]}">${labels[type]}</strong> (1,200 STAR)`;
+  // 버튼 제거 + 뱃지 추가
+  const btnWrap=row.querySelector('.vote-btns');
+  const clsMap={찬성:'voted-for',반대:'voted-against',기권:''};
+  btnWrap.innerHTML=`<span class="voted-badge ${clsMap[type]||'voted-badge'}">${type} 완료</span>`;
+  // 토스트
+  showToast(`${id} — ${type} 투표가 완료되었습니다 ✓`);
+}
+
+function showToast(msg){
+  const el=document.getElementById('vote-confirm');
+  el.textContent=msg;
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',3000);
+}
+
+/* ── 모달 ── */
+function openModal(){
+  document.getElementById('modal-overlay').classList.add('on');
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('on');
+}
+function submitProposal(){
+  closeModal();
+  showToast('안건이 제출되었습니다. 검토 후 투표가 시작됩니다.');
+}
+
+/* ── Timelock 카운터 ── */
+let tlSecs=31*3600+24*60+18;
+function tickTl(){
+  tlSecs=Math.max(0,tlSecs-1);
+  const h=Math.floor(tlSecs/3600), m=Math.floor((tlSecs%3600)/60), s=tlSecs%60;
+  const pad=n=>String(n).padStart(2,'0');
+  const el=document.querySelector('.tlc-timer');
+  if(el) el.textContent=`⏱ ${pad(h)}:${pad(m)}:${pad(s)} 후 자동 실행`;
+}
+setInterval(tickTl,1000);
+</script>
+
+</body>
+</html>
