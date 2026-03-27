@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip Launchpad — 브루밍 카페 CAFE</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g25:#FCFCFD;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p25:#F5F8FF;--p50:#EFF4FF;--p100:#D1E0FF;--p300:#84ADFF;
+  --p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s700:#027A48;
+  --e50:#FEF3F2;--e200:#FECDCA;--e500:#F04438;--e700:#B42318;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--g0);color:var(--g900);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:200;background:var(--g0);border-bottom:1px solid var(--g200);height:48px;display:flex;align-items:center;padding:0 20px;gap:6px}
+.nav-logo{font-size:15px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:7px;margin-right:16px;text-decoration:none}
+.nav-logo-mark{width:26px;height:26px;border-radius:6px;background:var(--p600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.nl{padding:6px 10px;border-radius:var(--r6);font-size:13px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;transition:all .12s}
+.nl:hover{color:var(--g700);background:var(--g50)}
+.nl.on{color:var(--p600);background:var(--p50)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px}
+.nav-dust{background:var(--w50);border:1px solid var(--w200);color:var(--w700)}
+.wdot{width:6px;height:6px;border-radius:50%;background:var(--w500)}
+.btn-ghost{padding:7px 13px;border-radius:var(--r8);border:1px solid var(--g300);background:var(--g0);font-size:13px;font-weight:500;color:var(--g700);cursor:pointer;transition:all .12s}
+.btn-ghost:hover{background:var(--g50)}
+
+/* ── PAGE ── */
+.page{max-width:1140px;margin:0 auto;padding:0 20px 80px}
+
+/* ── 플로우 상태 탭 (A1) ── */
+.flow-tabs{display:flex;align-items:center;gap:0;padding:12px 0 0;border-bottom:1px solid var(--g200);margin-bottom:20px;overflow-x:auto}
+.ftab{padding:9px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;display:flex;align-items:center;gap:6px}
+.ftab:hover:not(.on){color:var(--g600)}
+.ftab.on{color:var(--p600);border-bottom-color:var(--p600)}
+.ftab-dot{width:7px;height:7px;border-radius:50%}
+.ftab-count{font-size:10px;padding:1px 5px;border-radius:20px;background:var(--g100);color:var(--g500);font-weight:500}
+.filter-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.fchip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.fchip:hover{border-color:var(--g400)}
+.fchip.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.sort-sel{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;margin-left:auto}
+
+/* ── 목록 카드 그리드 (A2·A3) ── */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+
+/* ── 상점 런치패드 카드 (A2) ── */
+.lp-card{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:var(--g0);transition:all .15s;cursor:pointer}
+.lp-card:hover{border-color:var(--g300);box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
+.lp-card-thumb{height:140px;position:relative;display:flex;align-items:center;justify-content:center}
+.lp-card-wm{font-size:48px;font-weight:900;color:rgba(255,255,255,.13);letter-spacing:-2px;user-select:none}
+.lp-status-badge{position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;backdrop-filter:blur(8px)}
+.lp-status-active{background:rgba(41,112,255,.9);color:#fff}
+.lp-status-soon{background:rgba(102,112,133,.85);color:#fff}
+.lp-status-done{background:rgba(18,183,106,.85);color:#fff}
+.lp-dday{position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(0,0,0,.6);color:#fff;font-family:var(--mono);backdrop-filter:blur(8px)}
+.lp-boost{position:absolute;bottom:10px;right:10px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(247,144,9,.9);color:#fff}
+.lp-card-body{padding:14px}
+.lp-card-name{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:4px}
+.lp-card-meta{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.lp-meta-chip{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g600)}
+.lp-meta-loc{font-size:11px;color:var(--g400);display:flex;align-items:center;gap:3px}
+.lp-progress-wrap{margin-bottom:8px}
+.lp-progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.lp-progress-pct{font-size:13px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.lp-progress-amt{font-size:11px;color:var(--g500);font-family:var(--mono)}
+.lp-bar-bg{height:6px;background:var(--g100);border-radius:4px;overflow:visible;position:relative}
+.lp-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.lp-bar-fill.active{background:var(--p500)}
+.lp-bar-fill.done{background:var(--s500)}
+.lp-softcap-marker{position:absolute;top:-3px;height:12px;width:2px;background:var(--g400);border-radius:1px}
+.lp-card-stats{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--g100)}
+.lp-stat-item{text-align:center}
+.lp-stat-val{font-size:12px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+.lp-stat-lbl{font-size:10px;color:var(--g400);margin-top:1px}
+.lp-cta-btn{width:100%;margin-top:10px;padding:9px 0;border-radius:var(--r8);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .12s}
+.lp-cta-active{background:var(--p500);color:#fff}
+.lp-cta-active:hover{background:var(--p700)}
+.lp-cta-soon{background:var(--g100);color:var(--g600)}
+.lp-cta-done{background:var(--s50);color:var(--s700);border:1px solid var(--s200)}
+
+/* ── 사전 등록 카드 (A3 변형) ── */
+.pre-card{border:2px dashed var(--g200);border-radius:var(--r16);padding:18px;background:var(--g25)}
+.pre-card-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pre-thumb{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.pre-name{font-size:14px;font-weight:700;color:var(--g900)}
+.pre-sub{font-size:11px;color:var(--g500);margin-top:2px}
+.pre-timer{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.pre-timer-item{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r8);padding:8px 4px;text-align:center}
+.pre-timer-num{font-size:20px;font-weight:800;color:var(--g900);font-family:var(--mono);line-height:1}
+.pre-timer-lbl{font-size:9px;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.pre-progress{margin-bottom:10px}
+.pre-prog-header{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.pre-prog-lbl{color:var(--g500)}
+.pre-prog-val{color:var(--g700);font-weight:600;font-family:var(--mono)}
+.pre-bar-bg{height:5px;background:var(--g200);border-radius:4px;position:relative;overflow:visible}
+.pre-bar-fill{height:100%;border-radius:4px;background:var(--w500);width:42%}
+.pre-softcap-line{position:absolute;top:-4px;height:13px;width:2px;background:var(--g400);left:50%;border-radius:1px}
+.pre-softcap-label{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--g400);white-space:nowrap}
+.pre-warn{display:flex;align-items:flex-start;gap:7px;background:var(--w50);border:1px solid var(--w200);border-radius:var(--r8);padding:8px 10px;margin-bottom:10px;font-size:11px;color:var(--w700)}
+.pre-btn{width:100%;padding:9px 0;border-radius:var(--r8);font-size:13px;font-weight:700;background:var(--p500);color:#fff;border:none;cursor:pointer;transition:all .12s}
+.pre-btn:hover{background:var(--p700)}
+.pre-btn.registered{background:var(--s50);color:var(--s700);border:1px solid var(--s200)}
+
+/* ── 상세 페이지 ── */
+.detail-page{display:none}
+.detail-page.on{display:block}
+.list-page{display:block}
+.list-page.off{display:none}
+
+/* ── 상세 헤더 (B1) ── */
+.detail-header{padding:14px 0 0}
+.dh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+.dh-left{display:flex;align-items:center;gap:12px}
+.dh-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;background:linear-gradient(135deg,#C8B498,#9A7050)}
+.dh-name{font-size:22px;font-weight:800;color:var(--g900);letter-spacing:-.02em}
+.dh-tags{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap;align-items:center}
+.dh-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{width:32px;height:32px;border-radius:var(--r8);border:1px solid var(--g200);background:var(--g0);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g500);font-size:13px;transition:all .12s}
+.icon-btn:hover{background:var(--g50);border-color:var(--g300)}
+.icon-btn.fav{color:var(--e500);background:var(--e50);border-color:var(--e200)}
+.verified-badge{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--s700);background:var(--s50);border:1px solid var(--s200);padding:3px 9px;border-radius:20px}
+
+/* 사진 그리드 (B2) */
+.photo-grid{display:grid;grid-template-columns:1fr 260px;grid-template-rows:160px 160px;gap:4px;border-radius:var(--r12);overflow:hidden;margin:12px 0}
+.photo-main{grid-row:1/3;background:linear-gradient(160deg,#C8B498,#9A7050);position:relative;display:flex;align-items:center;justify-content:center}
+.photo-sub{background:linear-gradient(160deg,#D4C4A8,#B09070);position:relative;display:flex;align-items:center;justify-content:center}
+.photo-sub:nth-child(3){background:linear-gradient(160deg,#BCA88A,#9A7050)}
+.photo-sub:nth-child(4){background:linear-gradient(160deg,#CAB498,#A88060)}
+.p-wm{font-size:52px;font-weight:900;color:rgba(255,255,255,.11);letter-spacing:-3px;user-select:none}
+.p-wm-sm{font-size:36px;font-weight:900;color:rgba(255,255,255,.12);user-select:none}
+.p-loc{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.45);color:#fff;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;backdrop-filter:blur(8px)}
+.p-cnt{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;backdrop-filter:blur(8px);cursor:pointer}
+.p-live{position:absolute;top:10px;right:10px;background:rgba(18,183,106,.9);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;backdrop-filter:blur(8px);display:flex;align-items:center;gap:4px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* 토큰 정보 바 (B3) */
+.token-info-bar{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--g200);border-radius:var(--r12);overflow:hidden;margin:12px 0}
+.tib-item{padding:10px 14px;border-right:1px solid var(--g200)}
+.tib-item:last-child{border-right:none}
+.tib-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:3px}
+.tib-val{font-size:14px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.tib-sub{font-size:10px;color:var(--g400);margin-top:1px}
+
+/* 상세 탭 (B4) */
+.detail-tabs{display:flex;border-bottom:1px solid var(--g200);margin-bottom:0;position:sticky;top:48px;background:var(--g0);z-index:100}
+.dtab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;white-space:nowrap}
+.dtab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.dtab:hover:not(.on){color:var(--g600)}
+
+/* ── 2컬럼 상세 레이아웃 ── */
+.detail-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;padding-top:20px}
+
+/* ── LEFT 상세 ── */
+
+/* 진행률 패널 (D1) */
+.progress-panel{border:1px solid var(--g200);border-radius:var(--r12);padding:16px;margin-bottom:14px}
+.pp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pp-title{font-size:13px;font-weight:700;color:var(--g700)}
+.pp-oversubscribed{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--w50);color:var(--w700);border:1px solid var(--w200)}
+.pp-bar-wrap{position:relative;margin-bottom:6px}
+.pp-bar-bg{height:10px;background:var(--g100);border-radius:6px;overflow:visible;position:relative}
+.pp-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--p500),var(--p300));width:68%}
+.pp-bar-fill.over{background:linear-gradient(90deg,var(--w500),#FDB022)}
+.pp-softcap-marker{position:absolute;top:-5px;height:20px;width:2px;background:var(--g500);border-radius:1px;left:30%}
+.pp-softcap-label{position:absolute;top:-17px;left:30%;transform:translateX(-50%);font-size:9px;color:var(--g500);white-space:nowrap;font-weight:600}
+.pp-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.pp-stat{background:var(--g50);border-radius:var(--r8);padding:10px}
+.pp-stat .v{font-size:16px;font-weight:700;color:var(--g900);font-family:var(--mono);margin-bottom:2px}
+.pp-stat .l{font-size:10px;color:var(--g400);text-transform:uppercase;letter-spacing:.05em}
+.pp-timer-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--g100)}
+.pp-timer-lbl{font-size:12px;color:var(--g500)}
+.pp-timer-val{font-size:14px;font-weight:700;color:var(--e500);font-family:var(--mono)}
+
+/* 탭 콘텐츠 */
+.tab-content{display:none}.tab-content.on{display:block;padding-top:4px}
+
+/* 상점 정보 (About) */
+.about-text{font-size:14px;color:var(--g600);line-height:1.7;margin-bottom:14px}
+.read-more{font-weight:600;color:var(--g900);cursor:pointer;text-decoration:underline}
+.addr-box{border:1px solid var(--g200);border-radius:var(--r12);padding:14px;margin-bottom:14px}
+.addr-title{font-size:12px;font-weight:700;color:var(--g700);margin-bottom:10px}
+.addr-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.addr-item{font-size:13px;color:var(--g600);display:flex;align-items:flex-start;gap:6px}
+.open-badge{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--s50);color:var(--s700);border:1px solid var(--s200);margin-left:5px}
+.info-3grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.info-card{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);padding:12px}
+.info-card .l{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:3px}
+.info-card .v{font-size:15px;font-weight:700;color:var(--g900)}
+.info-card .s{font-size:11px;color:var(--g500);margin-top:1px}
+
+/* 토큰 정보 탭 */
+.token-tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.token-info-card{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);padding:12px}
+.tic-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:4px}
+.tic-val{font-size:14px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.tic-sub{font-size:11px;color:var(--g500);margin-top:1px}
+
+/* 배분 바 */
+.alloc-bar-wrap{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r12);padding:14px;margin-bottom:14px}
+.alloc-title{font-size:12px;font-weight:700;color:var(--g700);margin-bottom:10px}
+.alloc-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:10px}
+.alloc-seg-blue{flex:.4;background:var(--p500)}
+.alloc-seg-gray{flex:.1;background:var(--g300)}
+.alloc-seg-green{flex:.5;background:var(--s500)}
+.alloc-legend{display:flex;gap:14px;flex-wrap:wrap}
+.alloc-leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--g600)}
+.alloc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* 베스팅 타임라인 (F3) */
+.vesting-timeline{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r12);padding:14px;margin-bottom:14px}
+.vt-title{font-size:12px;font-weight:700;color:var(--g700);margin-bottom:12px}
+.vt-bar-wrap{position:relative;margin-bottom:8px}
+.vt-bar-bg{height:12px;background:var(--g200);border-radius:6px;overflow:visible;position:relative;display:flex}
+.vt-cliff{width:33.3%;height:100%;background:var(--g300);border-radius:6px 0 0 6px;position:relative}
+.vt-vesting{flex:1;height:100%;background:var(--s200);border-radius:0 6px 6px 0}
+.vt-today{position:absolute;top:-5px;height:22px;width:2px;background:var(--p500);border-radius:1px;left:18%}
+.vt-today-label{position:absolute;top:-16px;left:18%;transform:translateX(-50%);font-size:9px;color:var(--p600);font-weight:700;white-space:nowrap}
+.vt-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--g400);margin-top:4px}
+.vt-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.vt-stat{text-align:center}
+.vt-stat .v{font-size:13px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.vt-stat .l{font-size:10px;color:var(--g400);margin-top:1px}
+
+/* 공시·DAO 탭 */
+.disc-table{width:100%;border-collapse:collapse;margin-bottom:14px}
+.disc-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);padding:8px;text-align:left;border-bottom:1px solid var(--g200)}
+.disc-table td{padding:10px 8px;border-bottom:1px solid var(--g100);font-size:13px}
+.disc-table tr:hover td{background:var(--g50)}
+.db-ok{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--s50);color:var(--s700)}
+.db-late{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--w50);color:var(--w700)}
+.hash{font-size:10px;color:var(--g400);font-family:var(--mono)}
+
+/* 참여자 피드 (D5) */
+.activity-feed{border:1px solid var(--g200);border-radius:var(--r12);overflow:hidden;margin-bottom:14px}
+.af-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--g200)}
+.af-title{font-size:12px;font-weight:700;color:var(--g700)}
+.af-live{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--s700);font-weight:500}
+.af-row{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--g100)}
+.af-row:last-child{border-bottom:none}
+.af-addr{font-size:12px;color:var(--g600);font-family:var(--mono)}
+.af-amt{font-size:12px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+.af-time{font-size:11px;color:var(--g400)}
+
+/* ── RIGHT 패널 ── */
+.right-panel{position:sticky;top:96px}
+
+/* 참여 카드 (D2·D3·D4) */
+.participate-card{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:var(--g0);margin-bottom:12px}
+
+/* 공모 진행 헤더 */
+.pc-progress-header{background:linear-gradient(135deg,var(--p25),var(--p50));border-bottom:1px solid var(--p100);padding:12px 14px}
+.pch-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pch-label{font-size:12px;font-weight:700;color:var(--p700)}
+.pch-timer{font-size:12px;font-family:var(--mono);font-weight:600;color:var(--p500)}
+.pch-bar-bg{height:5px;background:var(--p100);border-radius:4px;overflow:hidden;margin-bottom:5px}
+.pch-bar-fill{height:100%;width:68%;background:var(--p500);border-radius:4px}
+.pch-stats{display:flex;align-items:center;justify-content:space-between}
+.pch-pct{font-size:13px;font-weight:700;color:var(--p700);font-family:var(--mono)}
+.pch-boost{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--p100);color:var(--p700)}
+
+/* 입력 폼 */
+.pc-form{padding:12px 14px}
+.pf-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--g500);margin-bottom:5px}
+.pf-currency-tabs{display:flex;gap:4px;margin-bottom:10px}
+.pf-currency-tab{padding:5px 12px;border-radius:var(--r6);font-size:12px;font-weight:600;border:1px solid var(--g200);background:var(--g0);color:var(--g500);cursor:pointer;transition:all .12s}
+.pf-currency-tab.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.pf-input-wrap{border:1px solid var(--g300);border-radius:var(--r8);overflow:hidden;display:flex;align-items:center;transition:border-color .15s;margin-bottom:4px}
+.pf-input-wrap:focus-within{border-color:var(--p500);box-shadow:0 0 0 3px rgba(41,112,255,.08)}
+.pf-input{flex:1;padding:10px 12px;border:none;outline:none;font-size:18px;font-weight:700;font-family:var(--mono);color:var(--g900);background:transparent}
+.pf-unit{padding:10px 12px;font-size:13px;font-weight:600;color:var(--g400);border-left:1px solid var(--g200);background:var(--g50);white-space:nowrap}
+.pf-balance{font-size:11px;color:var(--g400);text-align:right;margin-bottom:10px}
+.pf-balance .max-btn{color:var(--p600);font-weight:600;cursor:pointer;margin-left:4px}
+.pf-quick-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px}
+.pf-quick-btn{padding:6px 0;text-align:center;border-radius:var(--r6);font-size:11px;font-weight:600;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.pf-quick-btn:hover{border-color:var(--g400);color:var(--g800)}
+.pf-quick-btn.on{border-color:var(--p500);background:var(--p50);color:var(--p600)}
+
+/* 예상 수령 */
+.expected-box{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);padding:10px 12px;margin-bottom:12px}
+.eb-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0}
+.eb-lbl{font-size:12px;color:var(--g500)}
+.eb-val{font-size:12px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+.eb-div{height:1px;background:var(--g200);margin:4px 0}
+.eb-dust{display:flex;align-items:center;justify-content:space-between;padding:3px 0}
+.eb-dust-lbl{font-size:12px;color:var(--g500);display:flex;align-items:center;gap:4px}
+.wdot2{width:5px;height:5px;border-radius:50%;background:var(--w500)}
+.eb-dust-val{font-size:12px;font-weight:700;color:var(--w700);font-family:var(--mono)}
+
+/* OCT 경고 */
+.oct-warn{background:var(--w50);border:1px solid var(--w200);border-radius:var(--r8);padding:10px 12px;margin-bottom:12px}
+.oct-warn-row{display:flex;align-items:flex-start;gap:7px}
+.oct-warn-text{font-size:11px;color:var(--w700);line-height:1.5}
+.oct-warn-text strong{font-weight:700}
+
+/* 실행 버튼 */
+.exec-btn-wrap{padding:0 0 12px}
+.exec-btn{width:100%;padding:12px 0;border-radius:var(--r8);font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .12s}
+.eb-primary{background:var(--p500);color:#fff}
+.eb-primary:hover{background:var(--p700)}
+.eb-disabled{background:var(--g100);color:var(--g400);cursor:not-allowed}
+
+/* 내 참여 현황 (D4) */
+.my-participation{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:var(--g0);margin-bottom:12px}
+.mp-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--g200)}
+.mp-title{font-size:13px;font-weight:700;color:var(--g700)}
+.mp-body{padding:12px 14px}
+.mp-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
+.mp-lbl{font-size:12px;color:var(--g500)}
+.mp-val{font-size:12px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+.mp-boost-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--w50);color:var(--w700)}
+.mp-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--g100)}
+.mp-action-btn{flex:1;padding:7px 0;text-align:center;border-radius:var(--r6);font-size:12px;font-weight:600;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.mp-action-btn:hover{background:var(--g50);border-color:var(--g300)}
+.mp-action-btn.cancel{color:var(--e600);border-color:var(--e200)}
+
+/* STAR 부스트 패널 (C3) */
+.boost-card{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:var(--g0);margin-bottom:12px}
+.boost-header{padding:10px 14px;border-bottom:1px solid var(--g200)}
+.boost-title{font-size:12px;font-weight:700;color:var(--g700)}
+.boost-table{width:100%;border-collapse:collapse}
+.boost-table td{padding:7px 14px;font-size:12px;border-bottom:1px solid var(--g100)}
+.boost-table tr:last-child td{border-bottom:none}
+.boost-table .tier{color:var(--g500)}
+.boost-table .mult{font-weight:700;font-family:var(--mono);color:var(--g900)}
+.boost-table tr.my-tier{background:var(--p50)}
+.boost-table tr.my-tier .tier{color:var(--p600);font-weight:600}
+.boost-table tr.my-tier .mult{color:var(--p600)}
+.boost-go-btn{width:calc(100% - 28px);margin:10px 14px;padding:7px 0;text-align:center;border-radius:var(--r6);font-size:12px;font-weight:600;border:1px solid var(--p200);background:var(--p50);color:var(--p600);cursor:pointer;transition:all .12s;display:block}
+.boost-go-btn:hover{background:var(--p100)}
+
+/* 배정 결과 (E2) */
+.result-card{border:1px solid var(--s200);border-radius:var(--r16);overflow:hidden;background:var(--g0);margin-bottom:12px}
+.rc-header-bar{background:var(--s50);padding:10px 14px;border-bottom:1px solid var(--s200)}
+.rc-header-title{font-size:13px;font-weight:700;color:var(--s700)}
+.rc-body{padding:12px 14px}
+.rc-main-stat{text-align:center;padding:10px 0;margin-bottom:10px}
+.rc-main-num{font-size:24px;font-weight:800;color:var(--g900);font-family:var(--mono)}
+.rc-main-lbl{font-size:11px;color:var(--g500);margin-top:2px}
+.rc-div{height:1px;background:var(--g100);margin:6px 0}
+.rc-claim-btn{width:100%;padding:10px 0;border-radius:var(--r8);font-size:13px;font-weight:700;border:none;cursor:pointer;background:var(--s500);color:#fff;margin-top:10px;transition:all .12s}
+.rc-claim-btn:hover{background:var(--s700)}
+
+/* ── FOOTER ── */
+.footer{position:fixed;bottom:0;left:0;right:0;height:44px;background:var(--g0);border-top:1px solid var(--g200);display:flex;align-items:center;padding:0 20px;gap:6px;z-index:100}
+.fb{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;transition:all .12s}
+.fb:hover{background:var(--g50)}
+.fl-live{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--s700)}
+.fl-sep{width:1px;height:14px;background:var(--g200);margin:0 4px}
+.footer-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+@media(max-width:900px){
+  .card-grid{grid-template-columns:1fr 1fr}
+  .detail-layout{grid-template-columns:1fr}
+  .right-panel{position:static}
+  .photo-grid{grid-template-columns:1fr;grid-template-rows:200px}
+  .photo-sub{display:none}
+  .token-info-bar{grid-template-columns:repeat(3,1fr)}
+  .tib-item:nth-child(n+4){border-top:1px solid var(--g200)}
+}
+@media(max-width:600px){
+  .card-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#"><div class="nav-logo-mark">SZ</div>Starzip</a>
+  <button class="nl">Explore</button>
+  <button class="nl">Trade</button>
+  <button class="nl on">Launchpad</button>
+  <button class="nl">DAO</button>
+  <div class="nav-r">
+    <div class="nav-chip nav-dust"><div class="wdot"></div>2,480 DUST</div>
+    <button class="btn-ghost">0x7B4...E18</button>
+  </div>
+</nav>
+
+<!-- ══ 목록 페이지 ══ -->
+<div class="list-page" id="list-page">
+<div class="page">
+
+  <div style="padding:16px 0 0">
+    <div style="font-size:22px;font-weight:800;color:var(--g900);margin-bottom:2px">Launchpad</div>
+    <div style="font-size:13px;color:var(--g500)">지역 상점 토큰 공모에 참여하고, 상점의 성장과 함께하세요.</div>
+  </div>
+
+  <!-- A1: 상태 탭 -->
+  <div class="flow-tabs">
+    <button class="ftab on" onclick="filterStatus('all',this)">
+      <div class="ftab-dot" style="background:#888"></div>전체<span class="ftab-count">12</span>
+    </button>
+    <button class="ftab" onclick="filterStatus('active',this)">
+      <div class="ftab-dot" style="background:var(--p500)"></div>진행중<span class="ftab-count">4</span>
+    </button>
+    <button class="ftab" onclick="filterStatus('soon',this)">
+      <div class="ftab-dot" style="background:var(--g400)"></div>예정<span class="ftab-count">5</span>
+    </button>
+    <button class="ftab" onclick="filterStatus('done',this)">
+      <div class="ftab-dot" style="background:var(--s500)"></div>종료<span class="ftab-count">3</span>
+    </button>
+  </div>
+
+  <!-- 필터 + 정렬 -->
+  <div class="filter-row">
+    <button class="fchip on">전체 업종</button>
+    <button class="fchip">☕ 카페</button>
+    <button class="fchip">🍜 음식점</button>
+    <button class="fchip">💇 뷰티</button>
+    <button class="fchip">💪 피트니스</button>
+    <button class="fchip" style="background:var(--w50);border-color:var(--w200);color:var(--w700)">⚡ STAR 부스트</button>
+    <select class="sort-sel" style="cursor:pointer"><option>마감임박순</option><option>달성률 높은 순</option><option>참여금액 많은 순</option><option>신규 등록순</option></select>
+  </div>
+
+  <!-- A2·A3: 카드 그리드 -->
+  <div class="card-grid">
+
+    <!-- 진행중 카드 1 -->
+    <div class="lp-card" onclick="goDetail()">
+      <div class="lp-card-thumb" style="background:linear-gradient(160deg,#C8B498,#9A7050)">
+        <div class="lp-card-wm">CAFE</div>
+        <span class="lp-status-badge lp-status-active">🔵 진행중</span>
+        <span class="lp-dday">D-3</span>
+        <span class="lp-boost">STAR 1.4×</span>
+      </div>
+      <div class="lp-card-body">
+        <div class="lp-card-name">브루밍 카페</div>
+        <div class="lp-card-meta">
+          <span class="lp-meta-chip">☕ 카페</span>
+          <span class="lp-meta-loc">📍 성수동, 서울</span>
+        </div>
+        <div class="lp-progress-wrap">
+          <div class="lp-progress-row">
+            <span class="lp-progress-pct">68%</span>
+            <span class="lp-progress-amt">$6,800 / $10,000</span>
+          </div>
+          <div class="lp-bar-bg">
+            <div class="lp-bar-fill active" style="width:68%"></div>
+            <div class="lp-softcap-marker" style="left:30%"></div>
+          </div>
+        </div>
+        <div class="lp-card-stats">
+          <div class="lp-stat-item"><div class="lp-stat-val">247</div><div class="lp-stat-lbl">참여자</div></div>
+          <div class="lp-stat-item"><div class="lp-stat-val">$0.00010</div><div class="lp-stat-lbl">공모가</div></div>
+          <div class="lp-stat-item"><div class="lp-stat-val">$33.3K</div><div class="lp-stat-lbl">FDV</div></div>
+        </div>
+        <button class="lp-cta-btn lp-cta-active">참여하기 →</button>
+      </div>
+    </div>
+
+    <!-- 진행중 카드 2 -->
+    <div class="lp-card">
+      <div class="lp-card-thumb" style="background:linear-gradient(160deg,#8FA8C8,#5078A0)">
+        <div class="lp-card-wm">HAIR</div>
+        <span class="lp-status-badge lp-status-active">🔵 진행중</span>
+        <span class="lp-dday">D-7</span>
+        <span class="lp-boost">STAR 1.2×</span>
+      </div>
+      <div class="lp-card-body">
+        <div class="lp-card-name">헤어살롱 아뜰리에</div>
+        <div class="lp-card-meta">
+          <span class="lp-meta-chip">💇 뷰티</span>
+          <span class="lp-meta-loc">📍 홍대, 서울</span>
+        </div>
+        <div class="lp-progress-wrap">
+          <div class="lp-progress-row">
+            <span class="lp-progress-pct">34%</span>
+            <span class="lp-progress-amt">$3,400 / $10,000</span>
+          </div>
+          <div class="lp-bar-bg">
+            <div class="lp-bar-fill active" style="width:34%"></div>
+            <div class="lp-softcap-marker" style="left:30%"></div>
+          </div>
+        </div>
+        <div class="lp-card-stats">
+          <div class="lp-stat-item"><div class="lp-stat-val">118</div><div class="lp-stat-lbl">참여자</div></div>
+          <div class="lp-stat-item"><div class="lp-stat-val">$0.00020</div><div class="lp-stat-lbl">공모가</div></div>
+          <div class="lp-stat-item"><div class="lp-stat-val">$50K</div><div class="lp-stat-lbl">FDV</div></div>
+        </div>
+        <button class="lp-cta-btn lp-cta-active">참여하기 →</button>
+      </div>
+    </div>
+
+    <!-- A3: 사전 등록 카드 -->
+    <div class="pre-card">
+      <div class="pre-card-top">
+        <div class="pre-thumb" style="background:linear-gradient(135deg,#A8C8A0,#608060)">🍜</div>
+        <div>
+          <div class="pre-name">성수 쌀국수 하우스</div>
+          <div class="pre-sub">📍 성수동 · 음식점 · 사전 등록 중</div>
+        </div>
+      </div>
+      <!-- C2 카운트다운 -->
+      <div class="pre-timer" id="pre-timer">
+        <div class="pre-timer-item"><div class="pre-timer-num" id="t-d">2</div><div class="pre-timer-lbl">Days</div></div>
+        <div class="pre-timer-item"><div class="pre-timer-num" id="t-h">14</div><div class="pre-timer-lbl">Hours</div></div>
+        <div class="pre-timer-item"><div class="pre-timer-num" id="t-m">32</div><div class="pre-timer-lbl">Mins</div></div>
+        <div class="pre-timer-item"><div class="pre-timer-num" id="t-s">08</div><div class="pre-timer-lbl">Secs</div></div>
+      </div>
+      <!-- C1 진행률 -->
+      <div class="pre-progress">
+        <div class="pre-prog-header">
+          <span class="pre-prog-lbl">사전 등록 현황</span>
+          <span class="pre-prog-val">42% / 50% 기준</span>
+        </div>
+        <div class="pre-bar-bg">
+          <div class="pre-bar-fill"></div>
+          <div class="pre-softcap-line"></div>
+          <div class="pre-softcap-label">50% 기준선</div>
+        </div>
+      </div>
+      <div class="pre-warn">⚠️ <span>현재 페이스로는 소프트캡 달성이 어려울 수 있어요. 지인에게 공유해보세요!</span></div>
+      <button class="pre-btn" id="pre-reg-btn" onclick="togglePreReg()">참여 의향 등록하기</button>
+    </div>
+
+    <!-- 종료 카드 -->
+    <div class="lp-card" style="opacity:.75">
+      <div class="lp-card-thumb" style="background:linear-gradient(160deg,#A0C8A8,#609060)">
+        <div class="lp-card-wm">FIT</div>
+        <span class="lp-status-badge lp-status-done">✅ 종료</span>
+      </div>
+      <div class="lp-card-body">
+        <div class="lp-card-name">강남 피트 스튜디오</div>
+        <div class="lp-card-meta">
+          <span class="lp-meta-chip">💪 피트니스</span>
+          <span class="lp-meta-loc">📍 강남, 서울</span>
+        </div>
+        <div class="lp-progress-wrap">
+          <div class="lp-progress-row">
+            <span class="lp-progress-pct">143%</span>
+            <span class="lp-progress-amt">$14,300 / $10,000</span>
+          </div>
+          <div class="lp-bar-bg">
+            <div class="lp-bar-fill done" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="lp-card-stats">
+          <div class="lp-stat-item"><div class="lp-stat-val">512</div><div class="lp-stat-lbl">참여자</div></div>
+          <div class="lp-stat-item"><div class="lp-stat-val">$0.00015</div><div class="lp-stat-lbl">공모가</div></div>
+          <div class="lp-stat-item"><div class="lp-stat-val">$50K</div><div class="lp-stat-lbl">FDV</div></div>
+        </div>
+        <button class="lp-cta-btn lp-cta-done">DEX 거래하기 →</button>
+      </div>
+    </div>
+
+  </div><!-- /card-grid -->
+</div>
+</div><!-- /list-page -->
+
+<!-- ══ 상세 페이지 ══ -->
+<div class="detail-page" id="detail-page">
+<div class="page">
+
+  <!-- B1 상점 헤더 -->
+  <div class="detail-header">
+    <div class="dh-top">
+      <div class="dh-left">
+        <div class="dh-icon">CAFE</div>
+        <div>
+          <div class="dh-name">브루밍 카페</div>
+          <div class="dh-tags">
+            <span class="tag tag-token">TOKEN</span>
+            <span class="tag tag-chain">🟡 opBNB</span>
+            <span class="tag tag-new">NEW</span>
+            <div class="verified-badge">✓ 파트너 검증</div>
+            <span style="font-size:11px;color:var(--g400)">· 5일 전 등록</span>
+          </div>
+        </div>
+      </div>
+      <div class="dh-actions">
+        <button class="btn-ghost" onclick="goList()" style="font-size:12px">← 목록</button>
+        <div class="icon-btn">⤴</div>
+        <div class="icon-btn fav">♥</div>
+        <div class="icon-btn">⋯</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B2 사진 그리드 -->
+  <div class="photo-grid">
+    <div class="photo-main">
+      <div class="p-wm">CAFE</div>
+      <div class="p-loc">📍 성수동, 서울</div>
+      <div class="p-live"><div class="live-dot"></div>공모 진행중</div>
+    </div>
+    <div class="photo-sub"><div class="p-wm-sm">☕</div></div>
+    <div class="photo-sub"><div class="p-wm-sm">🥐</div></div>
+    <div class="photo-sub"><div class="p-wm-sm">🌿</div><div class="p-cnt">사진 8+</div></div>
+  </div>
+
+  <!-- B3 토큰 정보 바 -->
+  <div class="token-info-bar">
+    <div class="tib-item">
+      <div class="tib-lbl">목표 공모금액</div>
+      <div class="tib-val">$10,000</div>
+      <div class="tib-sub">USDT / USDC</div>
+    </div>
+    <div class="tib-item">
+      <div class="tib-lbl">공모가 (토큰당)</div>
+      <div class="tib-val">$0.00010</div>
+      <div class="tib-sub">30% 공모 물량</div>
+    </div>
+    <div class="tib-item">
+      <div class="tib-lbl">예상 FDV</div>
+      <div class="tib-val">$33,333</div>
+      <div class="tib-sub">목표금 ÷ 0.3</div>
+    </div>
+    <div class="tib-item">
+      <div class="tib-lbl">총 공급량</div>
+      <div class="tib-val">333M</div>
+      <div class="tib-sub">CAFE</div>
+    </div>
+    <div class="tib-item">
+      <div class="tib-lbl">DEX 상장 예정</div>
+      <div class="tib-val">Apr 2</div>
+      <div class="tib-sub">TGE 동시</div>
+    </div>
+  </div>
+
+  <!-- B4 상세 탭 -->
+  <div class="detail-tabs">
+    <button class="dtab on" onclick="swDetailTab(this,'participate')">공모 참여</button>
+    <button class="dtab" onclick="swDetailTab(this,'about')">상점 정보</button>
+    <button class="dtab" onclick="swDetailTab(this,'token')">토큰 정보</button>
+    <button class="dtab" onclick="swDetailTab(this,'disclosure')">공시·DAO</button>
+  </div>
+
+  <!-- 2컬럼 레이아웃 -->
+  <div class="detail-layout">
+
+    <!-- LEFT -->
+    <div>
+
+      <!-- 공모 참여 탭 (D1 + D5) -->
+      <div class="tab-content on" id="tc-participate">
+
+        <!-- D1 진행률 패널 -->
+        <div class="progress-panel">
+          <div class="pp-header">
+            <span class="pp-title">📊 공모 진행 현황</span>
+            <span class="pp-oversubscribed">초과 청약 중 🔥</span>
+          </div>
+          <div class="pp-bar-wrap">
+            <div class="pp-bar-bg">
+              <div class="pp-bar-fill over" style="width:100%"></div>
+              <div class="pp-softcap-marker"></div>
+              <div class="pp-softcap-label">소프트캡 30%</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--g500);margin-top:4px">
+            <span style="color:var(--w700);font-weight:600">$11,480 달성 (114.8%)</span>
+            <span>목표 $10,000</span>
+          </div>
+          <div class="pp-stats-grid">
+            <div class="pp-stat"><div class="v">$11,480</div><div class="l">총 참여금</div></div>
+            <div class="pp-stat"><div class="v">247</div><div class="l">참여자 수</div></div>
+            <div class="pp-stat"><div class="v">$46.5</div><div class="l">평균 참여금</div></div>
+            <div class="pp-stat"><div class="v">$850</div><div class="l">최대 단일</div></div>
+          </div>
+          <div class="pp-timer-row">
+            <span class="pp-timer-lbl">마감까지</span>
+            <span class="pp-timer-val" id="detail-timer">2d 14h 32m 08s</span>
+          </div>
+        </div>
+
+        <!-- D5 참여자 피드 -->
+        <div class="activity-feed">
+          <div class="af-header">
+            <span class="af-title">최근 참여</span>
+            <span class="af-live"><div class="live-dot" style="background:var(--s500);width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite"></div>실시간</span>
+          </div>
+          <div class="af-row"><span class="af-addr">0x7B4...E18</span><span class="af-amt">$250 USDT</span><span class="af-time">1분 전</span></div>
+          <div class="af-row"><span class="af-addr">0x3A2...C91</span><span class="af-amt">$100 USDT</span><span class="af-time">4분 전</span></div>
+          <div class="af-row"><span class="af-addr">0xF1D...8B4</span><span class="af-amt">$850 USDT</span><span class="af-time">8분 전</span></div>
+          <div class="af-row"><span class="af-addr">0x2E9...A47</span><span class="af-amt">$50 USDT</span><span class="af-time">12분 전</span></div>
+          <div class="af-row"><span class="af-addr">0x8C3...D60</span><span class="af-amt">$200 USDT</span><span class="af-time">21분 전</span></div>
+        </div>
+
+      </div>
+
+      <!-- 상점 정보 탭 -->
+      <div class="tab-content" id="tc-about">
+        <p class="about-text">성수동 핸드드립 스페셜티 카페. 2023년 오픈, 월 방문객 ~800명. 에티오피아·케냐·과테말라 원두를 매주 직접 큐핑하여 선정합니다. CAFE 토큰 보유자에게 음료 할인·신메뉴 사전 체험 혜택을 제공합니다. <span class="read-more">더 보기</span></p>
+        <div class="addr-box">
+          <div class="addr-title">상점 정보</div>
+          <div class="addr-grid">
+            <div class="addr-item">📍 서울시 성동구 성수동 2가</div>
+            <div class="addr-item">🌐 www.bloomingcafe.kr</div>
+            <div class="addr-item">🕐 09:00–21:00 <span class="open-badge">Open</span></div>
+            <div class="addr-item">📞 +82 2-123-4567</div>
+          </div>
+        </div>
+        <div class="info-3grid">
+          <div class="info-card"><div class="l">월 방문객</div><div class="v">~800명</div><div class="s">+12% 전월 대비</div></div>
+          <div class="info-card"><div class="l">운영 기간</div><div class="v">2년</div><div class="s">2023년 3월 오픈</div></div>
+          <div class="info-card"><div class="l">별점</div><div class="v">★ 4.3</div><div class="s">186개 리뷰</div></div>
+        </div>
+      </div>
+
+      <!-- 토큰 정보 탭 -->
+      <div class="tab-content" id="tc-token">
+        <div class="token-tab-grid">
+          <div class="token-info-card"><div class="tic-lbl">총 공급량</div><div class="tic-val">333,333,333</div><div class="tic-sub">CAFE (ERC-20)</div></div>
+          <div class="token-info-card"><div class="tic-lbl">공모 물량 (30%)</div><div class="tic-val">100,000,000</div><div class="tic-sub">= $10,000 목표</div></div>
+          <div class="token-info-card"><div class="tic-lbl">OCT (운영 기여)</div><div class="tic-val">10,000,000</div><div class="tic-sub">공모량의 10% · ~9.1% 희석</div></div>
+          <div class="token-info-card"><div class="tic-lbl">네트워크</div><div class="tic-val">opBNB</div><div class="tic-sub">가스비 ~$0.001</div></div>
+        </div>
+        <!-- 배분 시각화 -->
+        <div class="alloc-bar-wrap">
+          <div class="alloc-title">공모금 40 / 10 / 50 배분</div>
+          <div class="alloc-bar"><div class="alloc-seg-blue"></div><div class="alloc-seg-gray"></div><div class="alloc-seg-green"></div></div>
+          <div class="alloc-legend">
+            <div class="alloc-leg-item"><div class="alloc-dot" style="background:var(--p500)"></div>즉시 지급 40% ($4,000)</div>
+            <div class="alloc-leg-item"><div class="alloc-dot" style="background:var(--g300)"></div>마켓메이킹 10% ($1,000 · 12개월 락업)</div>
+            <div class="alloc-leg-item"><div class="alloc-dot" style="background:var(--s500)"></div>베스팅 50% ($5,000 · 12개월)</div>
+          </div>
+        </div>
+        <!-- F3 베스팅 타임라인 -->
+        <div class="vesting-timeline">
+          <div class="vt-title">OCT 베스팅 스케줄 (총 18개월)</div>
+          <div class="vt-bar-wrap">
+            <div class="vt-bar-bg">
+              <div class="vt-cliff"></div>
+              <div class="vt-vesting"></div>
+              <div class="vt-today"></div>
+              <div class="vt-today-label">오늘</div>
+            </div>
+            <div class="vt-labels">
+              <span>TGE</span><span>6개월 (클리프)</span><span>12개월</span><span>18개월</span>
+            </div>
+          </div>
+          <div class="vt-stats">
+            <div class="vt-stat"><div class="v">10,000,000</div><div class="l">OCT 총량</div></div>
+            <div class="vt-stat"><div class="v">833,333</div><div class="l">월 해제량</div></div>
+            <div class="vt-stat"><div class="v">2026.10</div><div class="l">첫 해제일</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공시·DAO 탭 -->
+      <div class="tab-content" id="tc-disclosure">
+        <table class="disc-table">
+          <tr><th>분기</th><th>상태</th><th>매출</th><th>방문객</th><th>온체인 해시</th></tr>
+          <tr><td style="font-weight:600">2026 Q1</td><td><span class="db-ok">정상</span></td><td>₩12.4M</td><td>2,400</td><td class="hash">0x3a7f...c1e2</td></tr>
+          <tr><td style="font-weight:600">2025 Q4</td><td><span class="db-ok">정상</span></td><td>₩11.8M</td><td>2,280</td><td class="hash">0x1c2e...9a4f</td></tr>
+          <tr><td style="font-weight:600">2025 Q3</td><td><span class="db-late">지연</span></td><td>₩10.2M</td><td>2,040</td><td class="hash">0x9b4d...7e3c</td></tr>
+        </table>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+
+      <!-- D2·D3 참여 카드 -->
+      <div class="participate-card">
+        <div class="pc-progress-header">
+          <div class="pch-row"><span class="pch-label">🚀 공모 진행중 · 초과 청약</span><span class="pch-timer">D-3 남음</span></div>
+          <div class="pch-bar-bg"><div class="pch-bar-fill" style="width:100%"></div></div>
+          <div class="pch-stats"><span class="pch-pct">114.8% 달성</span><span class="pch-boost">STAR 1.4× 부스트</span></div>
+        </div>
+        <div class="pc-form">
+          <div class="pf-label">결제 통화</div>
+          <div class="pf-currency-tabs">
+            <button class="pf-currency-tab on">USDT</button>
+            <button class="pf-currency-tab">USDC</button>
+          </div>
+          <div class="pf-label">참여 금액</div>
+          <div class="pf-input-wrap">
+            <input class="pf-input" type="number" id="lp-amount" value="" placeholder="0" oninput="calcLp()">
+            <div class="pf-unit">USDT</div>
+          </div>
+          <div class="pf-balance">잔액: 24,521.40 USDT <span class="max-btn" onclick="setMax()">MAX</span></div>
+          <div class="pf-quick-btns">
+            <button class="pf-quick-btn" onclick="setAmt(50,this)">$50</button>
+            <button class="pf-quick-btn" onclick="setAmt(100,this)">$100</button>
+            <button class="pf-quick-btn" onclick="setAmt(500,this)">$500</button>
+            <button class="pf-quick-btn" onclick="setAmt(1000,this)">$1K</button>
+          </div>
+        </div>
+
+        <!-- 예상 수령 (D2) -->
+        <div class="expected-box" style="margin:0 14px 12px">
+          <div class="eb-row"><span class="eb-lbl">예상 토큰 수령</span><span class="eb-val" id="lp-tokens">—</span></div>
+          <div class="eb-row"><span class="eb-lbl">STAR 부스트 배율</span><span class="eb-val">1.4×</span></div>
+          <div class="eb-row"><span class="eb-lbl">비례 배정 후 최소~최대</span><span class="eb-val" id="lp-range">—</span></div>
+          <div class="eb-div"></div>
+          <div class="eb-row"><span class="eb-lbl">미배정금 자동 환불</span><span class="eb-val" id="lp-refund">—</span></div>
+          <div class="eb-div"></div>
+          <div class="eb-dust">
+            <span class="eb-dust-lbl"><div class="wdot2"></div>DUST 적립 예상</span>
+            <span class="eb-dust-val" id="lp-dust">—</span>
+          </div>
+        </div>
+
+        <!-- OCT 경고 (D2) -->
+        <div class="oct-warn" style="margin:0 14px 12px">
+          <div class="oct-warn-row">⚠️ <span class="oct-warn-text"><strong>OCT 희석 공시:</strong> 상장 시 공모량의 10%(1,000만 CAFE)가 사업주에게 추가 발행됩니다. 참여자 희석률 약 9.1%. 18개월 잠금.</span></div>
+        </div>
+
+        <!-- D3 실행 버튼 -->
+        <div class="exec-btn-wrap" style="padding:0 14px 14px">
+          <button class="exec-btn eb-primary" id="lp-exec-btn" onclick="placeLp()">참여하기</button>
+        </div>
+      </div>
+
+      <!-- D4 내 참여 현황 -->
+      <div class="my-participation">
+        <div class="mp-header">
+          <span class="mp-title">내 참여 현황</span>
+          <span style="font-size:11px;color:var(--g400)">지갑 연결됨</span>
+        </div>
+        <div class="mp-body">
+          <div class="mp-row"><span class="mp-lbl">내 참여금액</span><span class="mp-val">$200 USDT</span></div>
+          <div class="mp-row"><span class="mp-lbl">STAR 부스트 배율</span><span class="mp-boost-badge">1.4× 적용</span></div>
+          <div class="mp-row"><span class="mp-lbl">가중 참여금</span><span class="mp-val">$280</span></div>
+          <div class="mp-row"><span class="mp-lbl">현재 예상 배정</span><span class="mp-val" style="color:var(--s700)">1,743,902 CAFE</span></div>
+          <div class="mp-actions">
+            <button class="mp-action-btn">알림 설정</button>
+            <button class="mp-action-btn">추가 참여</button>
+            <button class="mp-action-btn cancel">취소</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- C3 STAR 부스트 -->
+      <div class="boost-card">
+        <div class="boost-header"><div class="boost-title">⚡ STAR 스테이킹 부스트</div></div>
+        <table class="boost-table">
+          <tr><td class="tier">0 STAR</td><td class="mult">1.0× 기본</td></tr>
+          <tr><td class="tier">1,000 STAR</td><td class="mult">1.2×</td></tr>
+          <tr class="my-tier"><td class="tier">5,000 STAR ← 내 현황</td><td class="mult">1.4×</td></tr>
+          <tr><td class="tier">10,000 STAR</td><td class="mult">2.0×</td></tr>
+        </table>
+        <a class="boost-go-btn">STAR 스테이킹 하러 가기 →</a>
+      </div>
+
+    </div><!-- /right-panel -->
+
+  </div><!-- /detail-layout -->
+</div>
+</div><!-- /detail-page -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fl-live"><div class="live-dot" style="background:var(--s500)"></div>Live</div>
+  <div class="fl-sep"></div>
+  <span style="font-size:12px;color:var(--g500);cursor:pointer">⚡ Aggregating</span>
+  <div class="fl-sep"></div>
+  <span style="font-size:12px;color:var(--g500);cursor:pointer">Terms of Service</span>
+  <span style="font-size:12px;color:var(--g500);cursor:pointer">Privacy Policy</span>
+  <div class="footer-r">
+    <div style="font-size:12px;font-weight:600;color:var(--g700);font-family:var(--mono)">💳 $2,114.92</div>
+    <button class="btn-ghost" style="font-size:11px;padding:4px 10px">🌙 Dark</button>
+  </div>
+</div>
+
+<script>
+/* ── 목록 ↔ 상세 전환 ── */
+function goDetail(){
+  document.getElementById('list-page').classList.add('off');
+  document.getElementById('detail-page').classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goList(){
+  document.getElementById('detail-page').classList.remove('on');
+  document.getElementById('list-page').classList.remove('off');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── 목록 필터 탭 ── */
+function filterStatus(s,btn){
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+document.querySelectorAll('.fchip').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.fchip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+}));
+
+/* ── 상세 탭 ── */
+const dtabs=['participate','about','token','disclosure'];
+function swDetailTab(btn,id){
+  document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  dtabs.forEach(t=>{ document.getElementById('tc-'+t).classList.toggle('on',t===id); });
+}
+
+/* ── 통화 탭 ── */
+document.querySelectorAll('.pf-currency-tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.pf-currency-tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+}));
+
+/* ── 사전 등록 토글 ── */
+let preReg=false;
+function togglePreReg(){
+  preReg=!preReg;
+  const btn=document.getElementById('pre-reg-btn');
+  btn.className='pre-btn'+(preReg?' registered':'');
+  btn.textContent=preReg?'✓ 등록 완료 · 알림 수신 중':'참여 의향 등록하기';
+}
+
+/* ── 빠른 금액 ── */
+function setAmt(v,btn){
+  document.querySelectorAll('.pf-quick-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('lp-amount').value=v;
+  calcLp();
+}
+function setMax(){
+  document.getElementById('lp-amount').value=24521;
+  calcLp();
+}
+
+/* ── 계산 ── */
+function calcLp(){
+  const v=parseFloat(document.getElementById('lp-amount').value)||0;
+  if(v>0){
+    const price=0.00010;
+    const tokens=Math.floor(v/price);
+    const min=Math.floor(tokens*.7);
+    const max=Math.floor(tokens*1.3);
+    const refund=(v*0.15).toFixed(2);
+    const dust=(v*0.005).toFixed(2);
+    document.getElementById('lp-tokens').textContent=tokens.toLocaleString()+' CAFE';
+    document.getElementById('lp-range').textContent=min.toLocaleString()+'~'+max.toLocaleString();
+    document.getElementById('lp-refund').textContent='~$'+refund;
+    document.getElementById('lp-dust').textContent=dust+' DUST';
+  } else {
+    ['lp-tokens','lp-range','lp-refund','lp-dust'].forEach(id=>document.getElementById(id).textContent='—');
+  }
+}
+
+/* ── 참여 버튼 ── */
+function placeLp(){
+  const btn=document.getElementById('lp-exec-btn');
+  const v=parseFloat(document.getElementById('lp-amount').value)||0;
+  if(!v){btn.textContent='금액을 입력해주세요';setTimeout(()=>{btn.textContent='참여하기';},1500);return;}
+  btn.textContent='⏳ 에스크로 전송 중...';btn.style.opacity='.7';
+  setTimeout(()=>{btn.textContent='✓ 참여 완료';btn.style.background='var(--s500)';
+    setTimeout(()=>{btn.textContent='참여하기';btn.style.background='';btn.style.opacity='1';},2000);
+  },1200);
+}
+
+/* ── 카운트다운 ── */
+let secs=262728;
+function tick(){
+  secs--;
+  if(secs<=0)secs=262728;
+  const d=Math.floor(secs/86400);
+  const h=Math.floor((secs%86400)/3600);
+  const m=Math.floor((secs%3600)/60);
+  const s=secs%60;
+  const pad=n=>String(n).padStart(2,'0');
+  const el=id=>document.getElementById(id);
+  if(el('t-d')){el('t-d').textContent=d;el('t-h').textContent=pad(h);el('t-m').textContent=pad(m);el('t-s').textContent=pad(s);}
+  if(el('detail-timer'))el('detail-timer').textContent=`${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+}
+setInterval(tick,1000);
+
+/* ── 피드 실시간 ── */
+const addrs=['0x4F2...A91','0x8E1...B34','0xD7C...F15','0x1A4...E72','0x9B3...C58'];
+const amts=['$50','$100','$200','$300','$500','$150','$75','$400'];
+setInterval(()=>{
+  const feed=document.querySelector('.activity-feed');
+  if(!feed)return;
+  const rows=feed.querySelectorAll('.af-row');
+  if(rows.length>=5)rows[rows.length-1].remove();
+  const row=document.createElement('div');
+  row.className='af-row';
+  const addr=addrs[Math.floor(Math.random()*addrs.length)];
+  const amt=amts[Math.floor(Math.random()*amts.length)];
+  row.innerHTML=`<span class="af-addr">${addr}</span><span class="af-amt">${amt} USDT</span><span class="af-time">방금</span>`;
+  feed.insertBefore(row,feed.querySelectorAll('.af-row')[0]);
+  setTimeout(()=>row.querySelector('.af-time').textContent='1분 전',60000);
+},8000);
+</script>
+</body>
+</html>

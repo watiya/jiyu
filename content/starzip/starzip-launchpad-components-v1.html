@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 런치패드 구성요소 v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+.zp{display:none}.zp.on{display:block}
+
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover,.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-st{background:#FFF4E3;color:#633806}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-g{color:#1B7A4A}.src-bn{color:#C89A09}.src-hl{color:#008BAA}.src-on{color:#5B4FDB}
+
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc1{display:grid;grid-template-columns:1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+.insight{background:#EBF0FF;border-left:3px solid #1A4FDB;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#344054;line-height:1.5;margin-top:8px}
+.insight strong{color:#1A4FDB}
+
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+
+.foot{display:flex;gap:5px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip 런치패드 구성요소 v1</h1>
+  <p>런치패드 전체 플로우 기준 · A. 목록 (4) · B. 상세 헤더 (4) · C. 사전 수요 예측 (3) · D. 공모 진행 (5) · E. 배정·정산 (4) · F. DEX 상장 전환 (3) · G. 유틸 (3) · 총 26개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on" onclick="sw('all',this)">전체 (26개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 목록</button>
+  <button class="zt" onclick="sw('b',this)">B. 상세 헤더</button>
+  <button class="zt" onclick="sw('c',this)">C. 사전 예측</button>
+  <button class="zt" onclick="sw('d',this)">D. 공모 진행</button>
+  <button class="zt" onclick="sw('e',this)">E. 배정·정산</button>
+  <button class="zt" onclick="sw('f',this)">F. DEX 전환</button>
+  <button class="zt" onclick="sw('g',this)">G. 유틸</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- ══ A. 런치패드 목록 ══ -->
+<div class="sec">A. 런치패드 목록 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">런치패드 홈 탭 바 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">전체·진행중·예정·종료 상태 탭 + STAR 부스트 활성 필터 칩</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>탭 구성</h5><ul>
+      <li>전체 (기본 active)</li>
+      <li>진행중 · 예정 · 종료</li>
+      <li>active 언더라인 2px</li>
+    </ul></div>
+    <div class="dc"><h5>필터 칩</h5><ul>
+      <li>STAR 부스트 활성 필터</li>
+      <li>업종별 필터 (카페·음식점·뷰티…)</li>
+      <li>정렬: 마감임박·참여금액·신규</li>
+    </ul></div>
+    <div class="dc"><h5>URL 연동</h5><ul>
+      <li>/launchpad?status=active</li>
+      <li>탭/필터 상태 URL 보존</li>
+      <li>뒤로 가기 시 상태 복원</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">상점 런치패드 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">썸네일 + 상점명·업종·위치 + 진행률 바 + D-day + STAR 부스트 배율</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>카드 상단</h5><ul>
+      <li>상점 썸네일 (3레이어: 워터마크·위치 배지·상태 뱃지)</li>
+      <li>상태 뱃지: 진행중(파랑)·예정(회색)·종료(녹색)</li>
+      <li>D-day 카운트다운 우상단</li>
+    </ul></div>
+    <div class="dc"><h5>카드 본문</h5><ul>
+      <li>상점명 + 업종 칩 + 위치</li>
+      <li>진행률 바 (소프트캡 30% 마커 포함)</li>
+      <li>목표금액 / 현재 달성액 / 달성률 %</li>
+      <li>참여자 수 · 시작일~마감일</li>
+    </ul></div>
+    <div class="dc"><h5>카드 하단</h5><ul>
+      <li>STAR 부스트 배율 pill (1.0x~2.0x)</li>
+      <li>최소 참여금액 표시</li>
+      <li>"참여하기" CTA 버튼</li>
+      <li>즐겨찾기 하트 토글</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">사전 수요 예측 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">런치 D-3 이전 상태. "참여 의향" 등록 + 소프트캡 달성 전망 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>표시 정보</h5><ul>
+      <li>사전 등록자 수 (누적)</li>
+      <li>예상 참여금액 (사전 등록 기준)</li>
+      <li>소프트캡 달성 전망 % (15% 기준선 표시)</li>
+      <li>런치 오픈까지 카운트다운</li>
+    </ul></div>
+    <div class="dc"><h5>인터랙션</h5><ul>
+      <li>"참여 의향 등록" 원클릭 버튼</li>
+      <li>등록 후 → "등록 완료 · 알림 수신 중" 상태</li>
+      <li>미달성 예상 시 경고 배너 (취소 가능)</li>
+    </ul></div>
+    <div class="insight"><strong>소프트캡 로직:</strong> 사전 등록이 소프트캡(30%)의 50%(= 전체 공급의 15%) 미달 시 런치 D-3에 자동 취소. 사전 카드에서 이 기준선을 시각화.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A4</div>
+    <div class="nm">목록 뷰 전환 + 정렬 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">카드형·리스트형 뷰 전환 + 마감임박·달성률·참여금액·신규 정렬</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>뷰 전환</h5><ul>
+      <li>카드형 (기본, 2~3열 그리드)</li>
+      <li>리스트형 (테이블 행)</li>
+      <li>전환 시 애니메이션 없음 (즉시)</li>
+    </ul></div>
+    <div class="dc"><h5>정렬</h5><ul>
+      <li>마감임박 (기본)</li>
+      <li>달성률 높은 순</li>
+      <li>참여금액 많은 순</li>
+      <li>신규 등록순</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid A -->
+
+<!-- ══ B. 런치패드 상세 헤더 ══ -->
+<div class="sec">B. 런치패드 상세 헤더 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B1</div>
+    <div class="nm">상점 정보 헤더 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">상점명·업종·위치·운영기간 + 별점·리뷰 + 파트너 검증 뱃지</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>좌측: 상점 정보</h5><ul>
+      <li>썸네일 40px (업종별 단색 + 워터마크)</li>
+      <li>상점명 (대형 타이포)</li>
+      <li>업종 칩 + 위치 + 운영기간</li>
+      <li>파트너 검증 뱃지 (심사 완료 ✓)</li>
+    </ul></div>
+    <div class="dc"><h5>중앙: 핵심 지표</h5><ul>
+      <li>목표 공모금액</li>
+      <li>토큰 총공급량 / 공모 물량</li>
+      <li>예상 FDV (공모가 기준)</li>
+      <li>TGE 예정일</li>
+    </ul></div>
+    <div class="dc"><h5>우측: 액션</h5><ul>
+      <li>공유 버튼</li>
+      <li>즐겨찾기 토글</li>
+      <li>백서 링크 (외부)</li>
+      <li>KYC 확인 상태</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B2</div>
+    <div class="nm">사진 그리드 (Ondo/호텔식) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">좌측 메인 사진 + 우측 2×2 서브 사진. 스크롤 시 심볼 바로 전환</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>사진 구성</h5><ul>
+      <li>2열 2행 grid (메인: 좌측 전체 높이)</li>
+      <li>서브 3장 + "8+" 카운트 pill</li>
+      <li>메인 사진 위: 상태 뱃지 + 위치 pill</li>
+      <li>Phase 2: 실제 상점 사진 API 연동</li>
+    </ul></div>
+    <div class="dc"><h5>스크롤 전환</h5><ul>
+      <li>스크롤 다운 시 사진 그리드 사라짐</li>
+      <li>Sticky 심볼 바로 전환 (상점명 + 공모 진행률)</li>
+      <li>스크롤 업 시 원복</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B3</div>
+    <div class="nm">토큰 정보 요약 바 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">공모가·FDV·총공급량·유통량·수수료 배분·TGE 날짜를 수평 그리드로</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>토큰 수치</h5><ul>
+      <li>공모가 (USDT)</li>
+      <li>FDV (목표 공모금 ÷ 0.3)</li>
+      <li>총 공급량 / 공모 물량 (30%)</li>
+    </ul></div>
+    <div class="dc"><h5>수수료 구조</h5><ul>
+      <li>런치패드 수수료: 공모금의 5%</li>
+      <li>거래 수수료: 0.39%</li>
+      <li>발행사 배분: 거래 수수료의 3%</li>
+    </ul></div>
+    <div class="dc"><h5>일정</h5><ul>
+      <li>TGE 예정일</li>
+      <li>DEX 상장 예정일</li>
+      <li>OCT 클리프 6개월 + 베스팅 12개월</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B4</div>
+    <div class="nm">상세 탭 네비게이션 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">공모 참여 · 상점 정보 · 토큰 정보 · 공시·DAO · 리뷰 탭</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>탭 목록</h5><ul>
+      <li>공모 참여 (기본 active)</li>
+      <li>상점 정보 (About·Amenity·리뷰·위치)</li>
+      <li>토큰 정보 (공급량·베스팅·OCT)</li>
+      <li>공시·DAO (온체인 기록 연동)</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>언더라인 active 2px</li>
+      <li>sticky top (헤더 아래 고정)</li>
+      <li>URL /launchpad/{id}?tab=participate</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid B -->
+
+<!-- ══ C. 사전 수요 예측 (런치 D-3 이전) ══ -->
+<div class="sec">C. 사전 수요 예측 (런치 D-3 이전) <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C1</div>
+    <div class="nm">사전 등록 패널 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">등록자 수 + 예상 달성률 + 15% 기준선 + 원클릭 등록 버튼</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>수치 표시</h5><ul>
+      <li>사전 등록자 수 (실시간)</li>
+      <li>예상 참여금액 합산</li>
+      <li>소프트캡 달성 전망 %</li>
+      <li>15% 기준선 (소프트캡 50%) 마커</li>
+    </ul></div>
+    <div class="dc"><h5>CTA</h5><ul>
+      <li>"참여 의향 등록" 파란 버튼</li>
+      <li>등록 후 → 체크 + "알림 수신 중"</li>
+      <li>지갑 미연결 시 → "지갑 연결하기"</li>
+      <li>등록 취소 링크 (회색 텍스트)</li>
+    </ul></div>
+    <div class="dc"><h5>경고 배너</h5><ul>
+      <li>15% 미달 예상 시 노란 경고 배너</li>
+      <li>"현재 페이스로는 런치가 취소될 수 있어요"</li>
+      <li>취소 가능 (X 버튼)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C2</div>
+    <div class="nm">카운트다운 타이머 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">런치 오픈까지 D-day·시·분·초 실시간 카운트다운</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>표시 형식</h5><ul>
+      <li>D-3 / 02:45:30 형식</li>
+      <li>일·시·분·초 4칸 그리드</li>
+      <li>초 단위 실시간 갱신 (setInterval)</li>
+      <li>0이 되면 → 공모 패널로 자동 전환</li>
+    </ul></div>
+    <div class="dc"><h5>부가 정보</h5><ul>
+      <li>공모 오픈 예정 날짜·시간 (KST)</li>
+      <li>STAR 스테이킹 부스트 안내 링크</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C3</div>
+    <div class="nm">STAR 부스트 안내 패널 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">STAR 스테이킹 수량별 배정 배율 테이블 + 스테이킹 바로가기</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>배율 테이블</h5><ul>
+      <li>0 STAR → 1.0x (기본)</li>
+      <li>1,000 STAR → 1.2x</li>
+      <li>5,000 STAR → 1.5x</li>
+      <li>10,000 STAR → 2.0x</li>
+    </ul></div>
+    <div class="dc"><h5>내 현황</h5><ul>
+      <li>현재 스테이킹 수량 (지갑 연결 시)</li>
+      <li>내 배율 강조 (파란 행)</li>
+      <li>"STAR 스테이킹 하러 가기" 버튼</li>
+      <li>배율은 비례 배정에 곱해짐 안내</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid C -->
+
+<!-- ══ D. 공모 진행 (런치패드 오픈 후) ══ -->
+<div class="sec">D. 공모 진행 (런치패드 오픈 후) <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D1</div>
+    <div class="nm">공모 진행률 패널 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">달성액·달성률·소프트캡 마커·참여자 수·마감 카운트다운</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>진행률 바</h5><ul>
+      <li>현재 달성액 / 목표금액</li>
+      <li>달성률 % (실시간)</li>
+      <li>소프트캡 30% 기준선 마커 (세로선)</li>
+      <li>하드캡 100% 도달 시 색상 전환</li>
+    </ul></div>
+    <div class="dc"><h5>수치 그리드</h5><ul>
+      <li>총 참여금액 (USDT)</li>
+      <li>참여자 수 (고유 지갑 수)</li>
+      <li>1인당 평균 참여금액</li>
+      <li>공모 마감까지 남은 시간</li>
+    </ul></div>
+    <div class="dc"><h5>초과 청약 표시</h5><ul>
+      <li>100% 초과 시 "초과 청약 중" 뱃지</li>
+      <li>비례 배정 안내 토글</li>
+      <li>내 예상 배정 비율 실시간 계산</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D2</div>
+    <div class="nm">참여 입력 폼 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">USDT/USDC 입력 + 잔액 표시 + STAR 부스트 배율 + 예상 토큰 수량</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>입력 필드</h5><ul>
+      <li>USDT / USDC 선택 탭</li>
+      <li>금액 입력 (숫자, monospace)</li>
+      <li>잔액 표시 + MAX 버튼</li>
+      <li>최소 참여금액 경고 (미달 시)</li>
+    </ul></div>
+    <div class="dc"><h5>예상 수령량</h5><ul>
+      <li>내 참여금 / 공모가 = 예상 토큰 수</li>
+      <li>STAR 부스트 배율 적용 후 가중치</li>
+      <li>비례 배정 후 최소~최대 범위 표시</li>
+      <li>미배정 금액 자동 환불 안내</li>
+    </ul></div>
+    <div class="dc"><h5>OCT 희석 공시</h5><ul>
+      <li>OCT 발행량 (공모량의 10%)</li>
+      <li>예상 희석률 ~9.1%</li>
+      <li>경고 박스 (필수 사전 공시)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D3</div>
+    <div class="nm">참여 확인·실행 버튼 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">참여 버튼 → 확인 모달 → AA 서명 → 에스크로 입금 → 완료</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>버튼 상태</h5><ul>
+      <li>기본: "참여하기" (파란 버튼)</li>
+      <li>지갑 미연결: "지갑 연결하기"</li>
+      <li>금액 미입력: disabled</li>
+      <li>최소금액 미달: "최소 $10 이상 입력" 경고</li>
+      <li>공모 마감: "참여 마감" (회색)</li>
+    </ul></div>
+    <div class="dc"><h5>확인 모달</h5><ul>
+      <li>참여금액 · 예상 토큰 · 수수료 요약</li>
+      <li>OCT 희석 재확인 체크박스</li>
+      <li>"에스크로에 안전하게 보관됩니다" 안내</li>
+      <li>확인 → 에스크로 컨트랙트 전송</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D4</div>
+    <div class="nm">내 참여 현황 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">내 참여금액·예상 배정·부스트 배율·취소 가능 여부 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>현황 카드</h5><ul>
+      <li>내 참여금액 (USDT)</li>
+      <li>적용 STAR 부스트 배율</li>
+      <li>가중 참여금 (참여금 × 배율)</li>
+      <li>현재 예상 배정 비율 (실시간)</li>
+      <li>예상 수령 토큰 수 (최솟값)</li>
+    </ul></div>
+    <div class="dc"><h5>액션</h5><ul>
+      <li>참여 취소 (공모 기간 중만 가능)</li>
+      <li>추가 참여 (폼으로 스크롤)</li>
+      <li>알림 설정 (마감 임박 알림)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D5</div>
+    <div class="nm">참여자 현황 리스트 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">최근 참여자 (익명화 지갑 주소) + 금액 + 시간 실시간 피드</div>
+    <div class="pri high">높음</div>
+    <div class="src src-bn">BN 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>표시 정보</h5><ul>
+      <li>지갑 단축 주소 (0x...1234)</li>
+      <li>참여금액 (USDT)</li>
+      <li>참여 시각 (N분 전)</li>
+      <li>최근 20건 표시, 실시간 업데이트</li>
+    </ul></div>
+    <div class="dc"><h5>집계 수치</h5><ul>
+      <li>고유 참여자 수</li>
+      <li>평균 참여금액</li>
+      <li>최대 단일 참여금액</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid D -->
+
+<!-- ══ E. 배정·정산 (공모 종료 후) ══ -->
+<div class="sec">E. 배정·정산 (공모 종료 후) <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">E1</div>
+    <div class="nm">소프트캡 판정 결과 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">달성 → 진행 / 미달 → 전액 자동 환불 배너. 스마트 컨트랙트 자동 처리</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>달성 시</h5><ul>
+      <li>초록 배너: "소프트캡 달성! 공모 진행"</li>
+      <li>최종 달성액 · 참여자 수 표시</li>
+      <li>배정 결과 확인 안내</li>
+      <li>DEX 상장 일정 공지</li>
+    </ul></div>
+    <div class="dc"><h5>미달 시</h5><ul>
+      <li>빨강 배너: "소프트캡 미달 · 전액 환불"</li>
+      <li>에스크로 자동 환불 진행 중 표시</li>
+      <li>예상 환불 완료 시각 (블록 확인 기준)</li>
+      <li>온체인 해시 링크</li>
+    </ul></div>
+    <div class="insight"><strong>자동 처리:</strong> 소프트캡 미달 시 에스크로 컨트랙트가 참여자 전원에게 원래 통화(USDT/USDC)로 자동 환불. CS 개입 없음.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">E2</div>
+    <div class="nm">비례 배정 결과 카드 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">내 배정 토큰 수 + 환불금액 + STAR 부스트 최종 반영 결과</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>배정 결과</h5><ul>
+      <li>최종 배정 토큰 수 (CAFE)</li>
+      <li>배정 기준 금액 (USDT)</li>
+      <li>미배정 환불금 (USDT)</li>
+      <li>적용 STAR 부스트 배율</li>
+    </ul></div>
+    <div class="dc"><h5>계산 내역</h5><ul>
+      <li>내 가중 참여금 / 전체 가중 참여금 = 배정 비율</li>
+      <li>배정 비율 × 공모 물량 = 배정 토큰</li>
+      <li>온체인 기록 해시 링크</li>
+    </ul></div>
+    <div class="dc"><h5>액션</h5><ul>
+      <li>"클레임하기" 버튼 (TGE 후 활성)</li>
+      <li>클레임 전: 잠금 아이콘 + TGE 날짜</li>
+      <li>환불금 자동 지갑 전송 완료 확인</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">E3</div>
+    <div class="nm">공모금 배분 공시 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">40% 즉시·10% 마켓메이킹·50% 베스팅 배분 시각화 + 온체인 해시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>배분 시각화</h5><ul>
+      <li>가로 바 차트 (40/10/50)</li>
+      <li>즉시 지급 40% (파랑)</li>
+      <li>마켓메이킹 10% (회색, 12개월 락업)</li>
+      <li>베스팅 50% (녹색, 12개월)</li>
+    </ul></div>
+    <div class="dc"><h5>금액 표시</h5><ul>
+      <li>각 항목별 실제 USDT 금액</li>
+      <li>즉시 지급: 사업주 수령 완료 표시</li>
+      <li>베스팅: 월 해제액 계산 (~4.2%/월)</li>
+    </ul></div>
+    <div class="dc"><h5>온체인 증거</h5><ul>
+      <li>배분 트랜잭션 해시 3개</li>
+      <li>블록 익스플로러 링크</li>
+      <li>"투명하게 기록됩니다" 안내</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">E4</div>
+    <div class="nm">미판매 토큰 소각 공시 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">공모 미판매 물량 소각 트랜잭션 표시. 총 공급량 감소 확인</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>소각 정보</h5><ul>
+      <li>소각 수량 (공모 미판매분)</li>
+      <li>소각 후 총 공급량</li>
+      <li>소각 트랜잭션 해시</li>
+      <li>소각 주소 (0x000…dead)</li>
+    </ul></div>
+    <div class="dc"><h5>표시 시점</h5><ul>
+      <li>공모 종료 즉시 자동 소각</li>
+      <li>소각 완료 시 배지 표시</li>
+      <li>블록 탐색기 링크 제공</li>
+    </ul></div>
+    <div class="insight"><strong>Starzip 정책:</strong> 공모 미판매 토큰은 즉시 소각. 별도 Reserve 없음. 총 공급량이 실제 유통 가능량과 일치하도록 설계.</div>
+  </div></div>
+</div>
+
+</div><!-- /grid E -->
+
+<!-- ══ F. DEX 상장 전환 ══ -->
+<div class="sec">F. DEX 상장 전환 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F1</div>
+    <div class="nm">상장 카운트다운 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">DEX 상장 예정 시각까지 카운트다운 + 오더북 준비 상태 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>카운트다운</h5><ul>
+      <li>상장 예정 날짜·시간 (KST 기준)</li>
+      <li>일·시·분·초 4칸 실시간</li>
+      <li>0이 되면 → "Trade 화면으로 이동" CTA</li>
+    </ul></div>
+    <div class="dc"><h5>부가 정보</h5><ul>
+      <li>초기 오더북 마켓메이킹 재원 금액</li>
+      <li>첫 거래 가능 예상 스프레드 범위</li>
+      <li>알림 신청 (상장 시 푸시)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F2</div>
+    <div class="nm">Trade 화면 전환 CTA <span class="nb nb-new">NEW</span></div>
+    <div class="desc">상장 완료 후 런치패드 페이지 → Trade 상세 페이지 연결 배너</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>전환 배너</h5><ul>
+      <li>초록 배너: "DEX 상장 완료!"</li>
+      <li>"지금 거래하기 →" 버튼</li>
+      <li>현재 거래가 + 24H 변동률</li>
+    </ul></div>
+    <div class="dc"><h5>클레임 연동</h5><ul>
+      <li>TGE 도달 시 "클레임하기" 버튼 활성</li>
+      <li>배정 토큰 지갑 전송 확인</li>
+      <li>클레임 완료 → 잔액 업데이트</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F3</div>
+    <div class="nm">OCT 베스팅 스케줄 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">사업주 OCT: 6개월 클리프 + 12개월 베스팅 타임라인 시각화</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>베스팅 타임라인</h5><ul>
+      <li>수평 타임라인 바 (총 18개월)</li>
+      <li>클리프 구간 (0~6개월) 회색 잠금</li>
+      <li>베스팅 구간 (7~18개월) 월별 해제</li>
+      <li>현재 시점 마커 (오늘)</li>
+    </ul></div>
+    <div class="dc"><h5>OCT 수치</h5><ul>
+      <li>OCT 총량 (공모 판매량의 10%)</li>
+      <li>월 해제량 (÷12)</li>
+      <li>누적 해제 / 잔여 잠금량</li>
+      <li>다음 해제 날짜·수량</li>
+    </ul></div>
+    <div class="insight"><strong>OCT란:</strong> 상장 시 사업주에게 추가 발행되는 운영 기여 토큰. 참여자 입장에서 ~9.1% 희석 발생 → 런치패드 상세 페이지에 반드시 사전 공시.</div>
+  </div></div>
+</div>
+
+</div><!-- /grid F -->
+
+<!-- ══ G. 유틸리티 ══ -->
+<div class="sec">G. 유틸리티 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G1</div>
+    <div class="nm">공유 카드 모달 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">런치패드 공유 카드: 상점 썸네일 + 달성률 + D-day + STARZIP 브랜드</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>카드 구성</h5><ul>
+      <li>상점 썸네일 + 위치 배지</li>
+      <li>공모 달성률 진행 바</li>
+      <li>D-day 카운트다운</li>
+      <li>STARZIP 브랜드 + 타임스탬프</li>
+    </ul></div>
+    <div class="dc"><h5>공유 채널</h5><ul>
+      <li>X(트위터) · 카카오톡</li>
+      <li>이미지 저장 (PNG)</li>
+      <li>URL 복사 (2초 피드백)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G2</div>
+    <div class="nm">DUST 적립 안내 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">런치패드 참여 시 참여금의 0.5% DUST 적립 예상량 실시간 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>표시 위치</h5><ul>
+      <li>참여 입력 폼 하단 (주황 강조)</li>
+      <li>입력 금액 변경 시 실시간 갱신</li>
+      <li>누적 DUST 잔액도 함께 표시</li>
+    </ul></div>
+    <div class="dc"><h5>DUST 정책</h5><ul>
+      <li>참여금의 0.5% DUST 적립</li>
+      <li>TGE 이후 STAR 전환 가능</li>
+      <li>시빌 체크 통과 후 전환 대상</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">G3</div>
+    <div class="nm">빈 상태 / 에러 처리</div>
+    <div class="desc">진행중 없음·지갑 미연결·에스크로 실패·네트워크 오류 처리</div>
+    <div class="pri high">높음</div>
+    <div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>빈 상태</h5><ul>
+      <li>진행중 런치패드 없음 (예정 탭 안내)</li>
+      <li>즐겨찾기 없음 (추천 카드 3개)</li>
+      <li>참여 내역 없음 (참여하기 CTA)</li>
+    </ul></div>
+    <div class="dc"><h5>에러 처리</h5><ul>
+      <li>에스크로 전송 실패 → 재시도 버튼</li>
+      <li>지갑 잔액 부족 → 입금 안내</li>
+      <li>네트워크 오류 → 토스트 + 새로고침</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid G -->
+
+<!-- foot -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 목록<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1B7A4A"></div>B. 상세 헤더<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#854F0B"></div>C. 사전 예측<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('d',document.querySelectorAll('.zt')[4])"><div class="fd" style="background:#A32D2D"></div>D. 공모 진행<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('e',document.querySelectorAll('.zt')[5])"><div class="fd" style="background:#27500A"></div>E. 배정·정산<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('f',document.querySelectorAll('.zt')[6])"><div class="fd" style="background:#444441"></div>F. DEX 전환<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('g',document.querySelectorAll('.zt')[7])"><div class="fd" style="background:#5F5E5A"></div>G. 유틸<span class="fc">3</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">22</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">2</span></div>
+  <div class="ft">총 <strong>26개</strong> · 7개 영역</div>
+</div>
+
+</div><!-- /z-all -->
+
+<!-- 필터 패널들 -->
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+<div class="zp" id="z-d"></div>
+<div class="zp" id="z-e"></div>
+<div class="zp" id="z-f"></div>
+<div class="zp" id="z-g"></div>
+
+</div><!-- /root -->
+
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return;}
+  const pref={a:'A',b:'B',c:'C',d:'D',e:'E',f:'F',g:'G'}[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>
