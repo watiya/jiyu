@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 포트폴리오</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g25:#FCFCFD;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p25:#F5F8FF;--p50:#EFF4FF;--p100:#D1E0FF;--p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s600:#039855;--s700:#027A48;
+  --e50:#FEF3F2;--e200:#FECDCA;--e500:#F04438;--e700:#B42318;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--g25);color:var(--g900);font-size:14px;line-height:1.5;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:var(--g0);border-bottom:1px solid var(--g200);
+  height:52px;display:flex;align-items:center;padding:0 20px;gap:6px;
+}
+.nav-logo{font-size:15px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:7px;margin-right:20px;text-decoration:none;flex-shrink:0}
+.nav-logo-mark{width:26px;height:26px;border-radius:6px;background:var(--p600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.nl{padding:6px 10px;border-radius:var(--r6);font-size:13px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;transition:all .12s;white-space:nowrap}
+.nl:hover{color:var(--g700);background:var(--g50)}
+.nl.on{color:var(--p600);background:var(--p50)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px}
+.nav-dust{background:var(--w50);border:1px solid var(--w200);color:var(--w700)}
+.wdot{width:6px;height:6px;border-radius:50%;background:var(--w500)}
+.btn-ghost{padding:7px 13px;border-radius:var(--r8);border:1px solid var(--g300);background:var(--g0);font-size:13px;font-weight:500;color:var(--g700);cursor:pointer;transition:all .12s}
+.btn-ghost:hover{background:var(--g50)}
+.btn-primary{padding:7px 13px;border-radius:var(--r8);background:var(--p600);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:background .12s}
+.btn-primary:hover{background:var(--p700)}
+
+/* ── 레이아웃 ── */
+.layout{display:grid;grid-template-columns:220px 1fr 280px;min-height:calc(100vh - 52px)}
+
+/* ── 사이드바 ── */
+.sidebar{background:var(--g0);border-right:1px solid var(--g200);padding:20px 12px;display:flex;flex-direction:column;gap:2px}
+.sb-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);padding:8px 8px 4px;margin-top:6px}
+.sb-section-label:first-child{margin-top:0}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r8);font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;transition:all .12s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--g50);color:var(--g800)}
+.sb-item.on{background:var(--g100);color:var(--g900);font-weight:600}
+.sb-item-ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;background:var(--w50);color:var(--w700)}
+.sb-badge-blue{background:var(--p50);color:var(--p600)}
+.sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--g200)}
+.sb-logout{color:var(--e500)!important}
+.sb-logout:hover{background:var(--e50)!important}
+
+/* ── 중앙 콘텐츠 ── */
+.main{padding:24px;overflow-y:auto;background:var(--g25)}
+
+/* 페이지 타이틀 */
+.page-title{font-size:20px;font-weight:800;color:var(--g900);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* 액션 버튼 바 (HL 스타일) */
+.action-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.action-btn{padding:7px 14px;border-radius:var(--r8);font-size:13px;font-weight:600;border:1px solid var(--g200);background:var(--g0);color:var(--g700);cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:5px}
+.action-btn:hover{background:var(--g50);border-color:var(--g300)}
+.action-btn.primary{background:var(--p500);color:#fff;border-color:var(--p500)}
+.action-btn.primary:hover{background:var(--p700)}
+.action-btn.warn{background:var(--g0);color:var(--w700);border-color:var(--w200)}
+.action-btn.warn:hover{background:var(--w50)}
+
+/* 알림 배너 */
+.notice-banner{display:flex;align-items:center;gap:10px;background:var(--p50);border:1px solid var(--p100);border-radius:var(--r8);padding:10px 14px;margin-bottom:20px;font-size:13px;color:var(--p700)}
+.notice-banner .nb-x{margin-left:auto;cursor:pointer;color:var(--p400);font-size:14px}
+
+/* 총 잔액 영역 */
+.total-balance-section{margin-bottom:20px}
+.tb-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.tb-amount{font-size:32px;font-weight:800;color:var(--g900);font-family:var(--mono);letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.tb-sub{font-size:13px;color:var(--g500);margin-top:3px;display:flex;align-items:center;gap:8px;font-family:var(--mono)}
+.tb-change-pos{color:var(--s600);font-weight:600}
+.tb-change-neg{color:var(--e500);font-weight:600}
+
+/* 수치 범례 바 (HL 스타일) */
+.legend-bar{display:flex;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--g600)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.legend-val{font-family:var(--mono);font-weight:500;color:var(--g800);margin-left:2px}
+
+/* 자산 분포 바 */
+.asset-dist-bar{height:8px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:20px}
+.adb-seg{height:100%;transition:width .4s}
+
+/* 3열 통계 그리드 (HL 스타일) */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:14px 16px}
+.stat-card .sc-label{font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.stat-card .sc-val{font-size:18px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.stat-card .sc-sub{font-size:11px;color:var(--g500);margin-top:2px}
+
+/* 섹션 카드 (Ondo 스타일) */
+.section-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;margin-bottom:14px}
+.sc-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g100)}
+.sc-header-left{display:flex;align-items:center;gap:8px}
+.sc-title{font-size:13px;font-weight:700;color:var(--g700)}
+.sc-amount-lg{font-size:22px;font-weight:800;color:var(--g900);font-family:var(--mono);margin-top:2px}
+.sc-body{padding:14px 16px}
+.sc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 0;color:var(--g400);gap:8px}
+.sc-empty-ico{font-size:28px;opacity:.5}
+.sc-empty-text{font-size:13px;text-align:center;line-height:1.5}
+.sc-cta-btn{padding:8px 18px;border-radius:var(--r8);background:var(--g900);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;margin-top:4px;transition:background .12s}
+.sc-cta-btn:hover{background:var(--g700)}
+
+/* 자산 행 */
+.asset-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--g100)}
+.asset-row:last-child{border-bottom:none}
+.ar-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.ar-info{flex:1;min-width:0}
+.ar-name{font-size:13px;font-weight:600;color:var(--g900)}
+.ar-sub{font-size:11px;color:var(--g400);margin-top:1px}
+.ar-right{text-align:right;flex-shrink:0}
+.ar-amount{font-size:13px;font-weight:600;color:var(--g900);font-family:var(--mono)}
+.ar-change{font-size:11px;margin-top:1px;font-family:var(--mono)}
+.ar-change.pos{color:var(--s600)}
+.ar-change.neg{color:var(--e500)}
+
+/* PNL 차트 */
+.pnl-chart-wrap{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r16);padding:16px;margin-bottom:14px}
+.pnl-chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.pnl-chart-left{}
+.pnl-chart-title{font-size:12px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.pnl-chart-val{font-size:24px;font-weight:800;color:var(--g900);font-family:var(--mono)}
+.pnl-chart-change{font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-top:4px}
+.pcc-pos{background:var(--s50);color:var(--s700)}
+.pcc-neg{background:var(--e50);color:var(--e700)}
+.pnl-chart-right{display:flex;gap:4px}
+.period-btn{padding:4px 9px;border-radius:var(--r6);font-size:11px;font-weight:600;border:1px solid var(--g200);background:var(--g0);color:var(--g500);cursor:pointer;font-family:var(--mono);transition:all .12s}
+.period-btn.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.chart-canvas-wrap{height:140px;position:relative;border-radius:var(--r8);overflow:hidden}
+canvas#pnl-cv{position:absolute;inset:0;width:100%;height:100%}
+
+/* 수수료 티어 */
+.fee-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:14px 16px;margin-bottom:14px}
+.fee-title{font-size:12px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.fee-vals{display:flex;gap:20px}
+.fee-item{flex:1}
+.fee-label{font-size:10px;color:var(--g400);margin-bottom:2px}
+.fee-value{font-size:18px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.fee-sub{font-size:10px;color:var(--g400);margin-top:1px}
+.tier-bar{margin-top:12px}
+.tier-track{display:flex;gap:2px;height:4px;border-radius:4px;overflow:hidden;margin-bottom:6px}
+.tier-seg{flex:1;border-radius:2px}
+.tier-label{display:flex;justify-content:space-between;font-size:10px;color:var(--g400)}
+
+/* 하단 탭 테이블 (HL 스타일) */
+.table-section{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;margin-bottom:14px}
+.ts-tabs{display:flex;border-bottom:1px solid var(--g200);overflow-x:auto}
+.ts-tab{padding:10px 14px;font-size:12px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;flex-shrink:0}
+.ts-tab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.ts-tab:hover:not(.on){color:var(--g600)}
+.ts-filter{margin-left:auto;padding:8px 14px;font-size:12px;color:var(--g500);display:flex;align-items:center;gap:4px;cursor:pointer}
+.ts-body{min-height:120px}
+.ts-table{width:100%;border-collapse:collapse}
+.ts-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);padding:9px 14px;text-align:left;border-bottom:1px solid var(--g100);background:var(--g0);white-space:nowrap}
+.ts-table td{padding:10px 14px;border-bottom:1px solid var(--g100);font-size:12px;color:var(--g700);white-space:nowrap}
+.ts-table tr:last-child td{border-bottom:none}
+.ts-table tr:hover td{background:var(--g50)}
+.ts-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 0;color:var(--g400);gap:8px}
+.ts-empty-ico{font-size:28px;opacity:.4}
+.ts-empty-text{font-size:13px}
+.mono{font-family:var(--mono)}
+.pos{color:var(--s600)}.neg{color:var(--e500)}
+.status-pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+.sp-done{background:var(--s50);color:var(--s700)}
+.sp-pending{background:var(--w50);color:var(--w700)}
+.sp-canceled{background:var(--g100);color:var(--g500)}
+
+/* ── 우측 패널 (Ondo Recent Activity) ── */
+.right-panel{background:var(--g0);border-left:1px solid var(--g200);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.rp-title{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.rp-title-link{font-size:11px;font-weight:500;color:var(--p600);cursor:pointer}
+
+/* DUST 카드 */
+.dust-card{background:linear-gradient(135deg,var(--w50),#FFFDF5);border:1px solid var(--w200);border-radius:var(--r12);padding:14px}
+.dc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.dc-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--w700);margin-bottom:3px}
+.dc-amount{font-size:22px;font-weight:800;color:var(--w700);font-family:var(--mono)}
+.dc-sub{font-size:11px;color:var(--w500)}
+.dc-icon{font-size:22px}
+.dc-progress-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--w700);margin-bottom:4px}
+.dc-bar-bg{height:4px;background:rgba(247,144,9,.2);border-radius:4px;overflow:hidden}
+.dc-bar-fill{height:100%;background:var(--w500);border-radius:4px;width:62%}
+.dc-convert-btn{width:100%;margin-top:10px;padding:7px 0;border-radius:var(--r6);background:var(--w500);color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:background .12s}
+.dc-convert-btn:hover{background:var(--w700)}
+
+/* 토큰 보유 카드 */
+.holdings-card{background:var(--g25);border:1px solid var(--g200);border-radius:var(--r12);padding:14px}
+.hc-title{font-size:12px;font-weight:700;color:var(--g600);margin-bottom:10px}
+.hc-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--g100)}
+.hc-row:last-child{border-bottom:none}
+.hc-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.hc-name{font-size:12px;font-weight:500;color:var(--g800);flex:1}
+.hc-balance{font-size:12px;font-weight:600;color:var(--g900);font-family:var(--mono)}
+.hc-usd{font-size:10px;color:var(--g400);font-family:var(--mono)}
+
+/* 최근 활동 */
+.activity-item{padding:10px 0;border-bottom:1px solid var(--g100)}
+.activity-item:last-child{border-bottom:none}
+.ai-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ai-type-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+.ai-buy{background:var(--s50);color:var(--s700)}
+.ai-sell{background:var(--e50);color:var(--e700)}
+.ai-deposit{background:var(--p50);color:var(--p600)}
+.ai-transfer{background:var(--g100);color:var(--g600)}
+.ai-date{font-size:10px;color:var(--g400);margin-left:auto}
+.ai-desc{font-size:12px;color:var(--g700);margin-bottom:2px}
+.ai-amount{font-size:12px;font-weight:600;font-family:var(--mono);color:var(--g900)}
+.ai-hash{font-size:10px;color:var(--g400);font-family:var(--mono)}
+
+/* ── 프로필 섹션 ── */
+.profile-card{background:var(--g25);border:1px solid var(--g200);border-radius:var(--r12);padding:14px}
+.pc-addr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pc-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--p100),var(--p300));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--p600);flex-shrink:0}
+.pc-wallet{font-size:12px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+.pc-copy{font-size:11px;color:var(--p600);cursor:pointer;margin-left:4px}
+.pc-network{font-size:10px;color:var(--g400);display:flex;align-items:center;gap:4px}
+.pc-net-dot{width:6px;height:6px;border-radius:50%}
+.pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pc-stat{text-align:center}
+.pc-stat-val{font-size:14px;font-weight:700;color:var(--g900);font-family:var(--mono)}
+.pc-stat-lbl{font-size:10px;color:var(--g400);margin-top:1px}
+
+/* ── FOOTER ── */
+.footer{position:fixed;bottom:0;left:0;right:0;height:44px;background:var(--g0);border-top:1px solid var(--g200);display:flex;align-items:center;padding:0 20px;gap:6px;z-index:100}
+.fl-live{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--s700)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--s500);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.footer-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+/* tab panel */
+.tp{display:none}.tp.on{display:block}
+
+@media(max-width:1100px){.layout{grid-template-columns:200px 1fr}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar,.right-panel{display:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#"><div class="nav-logo-mark">SZ</div>Starzip</a>
+  <button class="nl">Explore</button>
+  <button class="nl">Trade</button>
+  <button class="nl">Launchpad</button>
+  <button class="nl">DAO</button>
+  <button class="nl on">Portfolio</button>
+  <div class="nav-r">
+    <div class="nav-chip nav-dust"><div class="wdot"></div>2,480 DUST</div>
+    <button class="btn-ghost">0x7B4...E18</button>
+    <button class="btn-primary">입금</button>
+  </div>
+</nav>
+
+<!-- 3열 레이아웃 -->
+<div class="layout">
+
+  <!-- ── 사이드바 (Ondo 스타일) ── -->
+  <aside class="sidebar">
+    <div class="sb-section-label">계정</div>
+    <button class="sb-item on" onclick="swMain('overview')">
+      <div class="sb-item-ico">📊</div>Overview
+    </button>
+    <button class="sb-item" onclick="swMain('activity')">
+      <div class="sb-item-ico">🕐</div>거래 내역
+    </button>
+    <button class="sb-item" onclick="swMain('positions')">
+      <div class="sb-item-ico">📈</div>포지션
+      <span class="sb-badge sb-badge-blue">3</span>
+    </button>
+    <button class="sb-item" onclick="swMain('orders')">
+      <div class="sb-item-ico">📋</div>주문 내역
+    </button>
+    <button class="sb-item" onclick="swMain('launchpad')">
+      <div class="sb-item-ico">🚀</div>런치패드 참여
+      <span class="sb-badge">2</span>
+    </button>
+    <button class="sb-item" onclick="swMain('dao')">
+      <div class="sb-item-ico">🗳</div>DAO 투표 내역
+    </button>
+
+    <div class="sb-section-label">설정</div>
+    <button class="sb-item">
+      <div class="sb-item-ico">💳</div>입출금
+    </button>
+    <button class="sb-item">
+      <div class="sb-item-ico">🔔</div>알림 설정
+    </button>
+    <button class="sb-item">
+      <div class="sb-item-ico">🔒</div>보안
+    </button>
+    <button class="sb-item">
+      <div class="sb-item-ico">📄</div>Documents
+    </button>
+
+    <div class="sidebar-footer">
+      <button class="sb-item sb-logout">
+        <div class="sb-item-ico">↩</div>로그아웃
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── 중앙 콘텐츠 ── -->
+  <main class="main">
+
+    <!-- 알림 배너 -->
+    <div class="notice-banner" id="notice-banner">
+      ℹ️ USDT·USDC·CAFE 토큰은 opBNB Chain에서 관리됩니다. 입금 시 네트워크를 확인하세요.
+      <span class="nb-x" onclick="document.getElementById('notice-banner').style.display='none'">✕</span>
+    </div>
+
+    <!-- ── Overview 패널 ── -->
+    <div class="tp on" id="main-overview">
+
+      <div class="page-title">
+        My Portfolio
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="action-btn">↓ 입금</button>
+          <button class="action-btn warn">↑ 출금</button>
+          <button class="action-btn">→ 전송</button>
+          <button class="action-btn">⇄ 스왑</button>
+        </div>
+      </div>
+
+      <!-- 총 잔액 -->
+      <div class="total-balance-section">
+        <div class="tb-label">Total Portfolio Balance <span style="cursor:pointer;color:var(--g300)">?</span></div>
+        <div class="tb-amount">
+          $26,847.32
+          <span style="font-size:14px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--s50);color:var(--s700)">+8.14%</span>
+        </div>
+        <div class="tb-sub">
+          <span class="tb-change-pos">+$2,022.18</span>
+          <span style="color:var(--g300)">|</span>
+          <span>7일 기준</span>
+        </div>
+      </div>
+
+      <!-- 자산 범례 바 (HL 스타일) -->
+      <div class="asset-dist-bar">
+        <div class="adb-seg" style="width:91.3%;background:var(--p500)"></div>
+        <div class="adb-seg" style="width:4.7%;background:#C8B498"></div>
+        <div class="adb-seg" style="width:3.5%;background:var(--s500)"></div>
+        <div class="adb-seg" style="width:.5%;background:var(--w500)"></div>
+      </div>
+      <div class="legend-bar">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--p500)"></div>USDT<span class="legend-val">$24,521</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C8B498"></div>CAFE<span class="legend-val">$1,260</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--s500)"></div>런치패드 에스크로<span class="legend-val">$940</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--w500)"></div>DUST<span class="legend-val">$126</span></div>
+      </div>
+
+      <!-- PNL 차트 -->
+      <div class="pnl-chart-wrap">
+        <div class="pnl-chart-header">
+          <div class="pnl-chart-left">
+            <div class="pnl-chart-title">Portfolio Value</div>
+            <div class="pnl-chart-val">$26,847.32</div>
+            <span class="pnl-chart-change pcc-pos">▲ +$2,022 +8.14%</span>
+          </div>
+          <div class="pnl-chart-right">
+            <button class="period-btn" onclick="swPeriod('1d',this)">1D</button>
+            <button class="period-btn on" onclick="swPeriod('7d',this)">7D</button>
+            <button class="period-btn" onclick="swPeriod('30d',this)">30D</button>
+            <button class="period-btn" onclick="swPeriod('all',this)">ALL</button>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="pnl-cv"></canvas>
+        </div>
+      </div>
+
+      <!-- 2열 통계 카드 -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="sc-label">7일 실현 PNL</div>
+          <div class="sc-val pos">+$412.80</div>
+          <div class="sc-sub">CAFE 거래 기준</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">14일 거래량</div>
+          <div class="sc-val">$18,240</div>
+          <div class="sc-sub">47건 거래</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">런치패드 참여</div>
+          <div class="sc-val" style="color:var(--p600)">2건 진행중</div>
+          <div class="sc-sub">$940 에스크로 중</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">DAO 투표</div>
+          <div class="sc-val">8건</div>
+          <div class="sc-sub">STAR 1,200 스테이킹</div>
+        </div>
+      </div>
+
+      <!-- 수수료 티어 카드 (HL 스타일) -->
+      <div class="fee-card">
+        <div class="fee-title">수수료 티어</div>
+        <div class="fee-vals">
+          <div class="fee-item">
+            <div class="fee-label">Taker</div>
+            <div class="fee-value">0.39%</div>
+            <div class="fee-sub">STAR 할인 적용 시 0.351%</div>
+          </div>
+          <div class="fee-item">
+            <div class="fee-label">STAR 할인</div>
+            <div class="fee-value" style="color:var(--w700)">-10%</div>
+            <div class="fee-sub">1,200 STAR 스테이킹</div>
+          </div>
+          <div class="fee-item">
+            <div class="fee-label">상점 배분</div>
+            <div class="fee-value" style="color:var(--p600)">3%</div>
+            <div class="fee-sub">거래 수수료의 3%</div>
+          </div>
+        </div>
+        <div class="tier-bar">
+          <div class="tier-track">
+            <div class="tier-seg" style="background:var(--g200)"></div>
+            <div class="tier-seg" style="background:var(--g200)"></div>
+            <div class="tier-seg" style="background:var(--w500)"></div>
+            <div class="tier-seg" style="background:var(--g200)"></div>
+          </div>
+          <div class="tier-label">
+            <span>0 STAR</span><span>1,000</span><span style="color:var(--w700);font-weight:600">← 현재 1,200</span><span>5,000</span><span>10,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 자산 보유 섹션 (Ondo 스타일) -->
+      <div class="section-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-title">보유 토큰</div>
+          </div>
+          <div style="font-size:22px;font-weight:800;color:var(--g900);font-family:var(--mono)">$25,781</div>
+        </div>
+        <div class="sc-body">
+          <div class="asset-row">
+            <div class="ar-icon" style="background:var(--p500)">USDT</div>
+            <div class="ar-info"><div class="ar-name">USDT</div><div class="ar-sub">Tether USD · opBNB</div></div>
+            <div class="ar-right"><div class="ar-amount">24,521.40</div><div class="ar-change pos">$24,521.40</div></div>
+          </div>
+          <div class="asset-row">
+            <div class="ar-icon" style="background:linear-gradient(135deg,#C8B498,#9A7050)">CAFE</div>
+            <div class="ar-info"><div class="ar-name">CAFE</div><div class="ar-sub">브루밍 카페 · 128,000 CAFE</div></div>
+            <div class="ar-right"><div class="ar-amount">$1,259.60</div><div class="ar-change pos">+$124.10 (+10.9%)</div></div>
+          </div>
+          <div class="asset-row">
+            <div class="ar-icon" style="background:linear-gradient(135deg,#A8C8A0,#608060)">HAIR</div>
+            <div class="ar-info"><div class="ar-name">HAIR</div><div class="ar-sub">헤어살롱 아뜰리에 · 24,500 HAIR</div></div>
+            <div class="ar-right"><div class="ar-amount" style="color:var(--g400)">미상장</div><div class="ar-change" style="color:var(--g400)">런치패드 배정 중</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 런치패드 에스크로 섹션 -->
+      <div class="section-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-title">🚀 런치패드 참여 현황</div>
+          </div>
+          <div style="font-size:20px;font-weight:800;color:var(--p600);font-family:var(--mono)">$940</div>
+        </div>
+        <div class="sc-body">
+          <div class="asset-row">
+            <div class="ar-icon" style="background:linear-gradient(135deg,#C8B498,#9A7050)">CAFE</div>
+            <div class="ar-info">
+              <div class="ar-name">브루밍 카페 CAFE</div>
+              <div class="ar-sub">공모 진행중 · D-3 · 달성률 68%</div>
+            </div>
+            <div class="ar-right">
+              <div class="ar-amount">$200</div>
+              <div class="ar-change" style="color:var(--p600)">예상 1,743,902 CAFE</div>
+            </div>
+          </div>
+          <div class="asset-row">
+            <div class="ar-icon" style="background:linear-gradient(135deg,#8FA8C8,#5078A0)">HAIR</div>
+            <div class="ar-info">
+              <div class="ar-name">헤어살롱 아뜰리에 HAIR</div>
+              <div class="ar-sub">공모 진행중 · D-7 · 달성률 34%</div>
+            </div>
+            <div class="ar-right">
+              <div class="ar-amount">$740</div>
+              <div class="ar-change" style="color:var(--p600)">예상 3,700,000 HAIR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 탭 테이블 -->
+      <div class="table-section">
+        <div class="ts-tabs">
+          <button class="ts-tab on" onclick="swTab(this,'balances')">잔액</button>
+          <button class="ts-tab" onclick="swTab(this,'positions')">포지션</button>
+          <button class="ts-tab" onclick="swTab(this,'orders')">주문 내역</button>
+          <button class="ts-tab" onclick="swTab(this,'trades')">체결 내역</button>
+          <button class="ts-tab" onclick="swTab(this,'launchpad')">런치패드</button>
+          <button class="ts-tab" onclick="swTab(this,'dao')">DAO</button>
+          <button class="ts-tab" onclick="swTab(this,'deposits')">입출금</button>
+          <div class="ts-filter">Filter ▾</div>
+        </div>
+        <div class="ts-body">
+
+          <!-- 잔액 -->
+          <div class="tp on" id="t-balances">
+            <table class="ts-table">
+              <tr><th>토큰</th><th>네트워크</th><th>수량</th><th>평가금액</th><th>평균 매입가</th><th>손익</th><th>상태</th></tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:var(--p500);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">USDT</div>USDT</div></td>
+                <td class="mono" style="color:var(--g400)">opBNB</td>
+                <td class="mono">24,521.40</td>
+                <td class="mono">$24,521.40</td>
+                <td class="mono">$1.00</td>
+                <td class="mono pos">$0.00</td>
+                <td><span class="status-pill sp-done">정상</span></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#C8B498,#9A7050);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">CAFE</div>CAFE</div></td>
+                <td class="mono" style="color:var(--g400)">opBNB</td>
+                <td class="mono">128,000</td>
+                <td class="mono">$1,259.60</td>
+                <td class="mono">$0.0000862</td>
+                <td class="mono pos">+$124.10</td>
+                <td><span class="status-pill sp-done">거래가능</span></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:var(--w500);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">DUST</div>DUST</div></td>
+                <td class="mono" style="color:var(--g400)">Starzip</td>
+                <td class="mono">2,480</td>
+                <td class="mono" style="color:var(--g400)">TGE 후 전환</td>
+                <td class="mono" style="color:var(--g400)">—</td>
+                <td class="mono" style="color:var(--g400)">—</td>
+                <td><span class="status-pill sp-pending">전환 대기</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 포지션 -->
+          <div class="tp" id="t-positions">
+            <table class="ts-table">
+              <tr><th>상점</th><th>방향</th><th>수량</th><th>평가금액</th><th>진입가</th><th>현재가</th><th>미실현 PNL</th></tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#C8B498,#9A7050);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">C</div>CAFE/USDT</div></td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">롱</span></td>
+                <td class="mono">128,000</td>
+                <td class="mono">$1,259.60</td>
+                <td class="mono">$0.0000862</td>
+                <td class="mono">$0.00010</td>
+                <td class="mono pos">+$124.10 (+14.4%)</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 주문 내역 -->
+          <div class="tp" id="t-orders">
+            <table class="ts-table">
+              <tr><th>시간</th><th>상점</th><th>유형</th><th>방향</th><th>수량</th><th>가격</th><th>상태</th></tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">13:24:10</td>
+                <td>CAFE/USDT</td>
+                <td class="mono">지정가</td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">매수</span></td>
+                <td class="mono">50,000</td>
+                <td class="mono">$0.0000950</td>
+                <td><span class="status-pill sp-pending">대기중</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">어제 18:02</td>
+                <td>CAFE/USDT</td>
+                <td class="mono">시장가</td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">매수</span></td>
+                <td class="mono">28,000</td>
+                <td class="mono">$0.0000982</td>
+                <td><span class="status-pill sp-done">체결</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">3일 전</td>
+                <td>CAFE/USDT</td>
+                <td class="mono">지정가</td>
+                <td><span class="status-pill" style="background:var(--e50);color:var(--e700)">매도</span></td>
+                <td class="mono">10,000</td>
+                <td class="mono">$0.000120</td>
+                <td><span class="status-pill sp-canceled">취소</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 체결 내역 -->
+          <div class="tp" id="t-trades">
+            <table class="ts-table">
+              <tr><th>시간</th><th>상점</th><th>방향</th><th>수량</th><th>체결가</th><th>총액</th><th>수수료</th><th>DUST</th></tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">어제 18:02</td>
+                <td>CAFE/USDT</td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">매수</span></td>
+                <td class="mono">28,000</td>
+                <td class="mono">$0.0000982</td>
+                <td class="mono">$2.75</td>
+                <td class="mono" style="color:var(--g400)">$0.0107</td>
+                <td class="mono" style="color:var(--w700)">+0.28 ✦</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">3일 전</td>
+                <td>CAFE/USDT</td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">매수</span></td>
+                <td class="mono">100,000</td>
+                <td class="mono">$0.0000848</td>
+                <td class="mono">$8.48</td>
+                <td class="mono" style="color:var(--g400)">$0.0331</td>
+                <td class="mono" style="color:var(--w700)">+0.85 ✦</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 런치패드 -->
+          <div class="tp" id="t-launchpad">
+            <table class="ts-table">
+              <tr><th>상점</th><th>참여금</th><th>배정 예상</th><th>부스트</th><th>상태</th><th>마감</th></tr>
+              <tr>
+                <td>브루밍 카페 CAFE</td>
+                <td class="mono">$200</td>
+                <td class="mono">1,743,902 CAFE</td>
+                <td class="mono" style="color:var(--w700)">1.4×</td>
+                <td><span class="status-pill" style="background:var(--p50);color:var(--p600)">진행중</span></td>
+                <td class="mono" style="color:var(--e500)">D-3</td>
+              </tr>
+              <tr>
+                <td>헤어살롱 아뜰리에 HAIR</td>
+                <td class="mono">$740</td>
+                <td class="mono">3,700,000 HAIR</td>
+                <td class="mono" style="color:var(--w700)">1.2×</td>
+                <td><span class="status-pill" style="background:var(--p50);color:var(--p600)">진행중</span></td>
+                <td class="mono" style="color:var(--g600)">D-7</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- DAO -->
+          <div class="tp" id="t-dao">
+            <table class="ts-table">
+              <tr><th>날짜</th><th>안건</th><th>투표</th><th>결과</th><th>온체인</th></tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">2026-03-20</td>
+                <td>브루밍 카페 봄 메뉴 가격 인상</td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">찬성</span></td>
+                <td><span class="status-pill" style="background:var(--p50);color:var(--p600)">진행중</span></td>
+                <td class="mono" style="color:var(--g400)">0x3a7f...</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">2026-02-14</td>
+                <td>STAR 수수료율 변경 (0.39%→0.35%)</td>
+                <td><span class="status-pill" style="background:var(--s50);color:var(--s700)">찬성</span></td>
+                <td><span class="status-pill sp-canceled">부결</span></td>
+                <td class="mono" style="color:var(--g400)">0x1c2e...</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 입출금 -->
+          <div class="tp" id="t-deposits">
+            <table class="ts-table">
+              <tr><th>시간</th><th>유형</th><th>토큰</th><th>금액</th><th>네트워크</th><th>해시</th><th>상태</th></tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">2일 전</td>
+                <td><span class="status-pill" style="background:var(--p50);color:var(--p600)">입금</span></td>
+                <td>USDT</td>
+                <td class="mono">$5,000</td>
+                <td style="color:var(--g400)">opBNB</td>
+                <td class="mono" style="color:var(--g400)">0xF3c2...</td>
+                <td><span class="status-pill sp-done">완료</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--g400)">5일 전</td>
+                <td><span class="status-pill" style="background:var(--e50);color:var(--e700)">출금</span></td>
+                <td>USDT</td>
+                <td class="mono">$1,200</td>
+                <td style="color:var(--g400)">opBNB</td>
+                <td class="mono" style="color:var(--g400)">0xA8d1...</td>
+                <td><span class="status-pill sp-done">완료</span></td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /overview -->
+
+    <!-- 다른 사이드바 항목들은 여기에 추가 가능 -->
+    <div class="tp" id="main-activity"><div style="padding:40px;text-align:center;color:var(--g400)">거래 내역 화면 (구현 예정)</div></div>
+    <div class="tp" id="main-positions"><div style="padding:40px;text-align:center;color:var(--g400)">포지션 화면 (구현 예정)</div></div>
+    <div class="tp" id="main-orders"><div style="padding:40px;text-align:center;color:var(--g400)">주문 내역 화면 (구현 예정)</div></div>
+    <div class="tp" id="main-launchpad"><div style="padding:40px;text-align:center;color:var(--g400)">런치패드 참여 화면 (구현 예정)</div></div>
+    <div class="tp" id="main-dao"><div style="padding:40px;text-align:center;color:var(--g400)">DAO 투표 내역 화면 (구현 예정)</div></div>
+
+  </main>
+
+  <!-- ── 우측 패널 (Ondo 스타일) ── -->
+  <aside class="right-panel">
+
+    <!-- 프로필 카드 -->
+    <div class="profile-card">
+      <div class="pc-addr">
+        <div class="pc-avatar">J</div>
+        <div>
+          <div class="pc-wallet">0x7B4E...778B <span class="pc-copy">복사</span></div>
+          <div class="pc-network">
+            <div class="pc-net-dot" style="background:var(--s500)"></div>
+            opBNB 연결됨
+          </div>
+        </div>
+      </div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="pc-stat-val" style="color:var(--s600)">1.4×</div><div class="pc-stat-lbl">STAR 부스트</div></div>
+        <div class="pc-stat"><div class="pc-stat-val">1,200</div><div class="pc-stat-lbl">STAR 스테이킹</div></div>
+        <div class="pc-stat"><div class="pc-stat-val">47건</div><div class="pc-stat-lbl">총 거래</div></div>
+        <div class="pc-stat"><div class="pc-stat-val" style="color:var(--p600)">8건</div><div class="pc-stat-lbl">DAO 투표</div></div>
+      </div>
+    </div>
+
+    <!-- DUST 카드 -->
+    <div class="dust-card">
+      <div class="dc-top">
+        <div>
+          <div class="dc-label">DUST 포인트</div>
+          <div class="dc-amount">2,480</div>
+          <div class="dc-sub">TGE 후 STAR 전환 가능</div>
+        </div>
+        <div class="dc-icon">✦</div>
+      </div>
+      <div class="dc-progress-lbl">
+        <span>시즌 1 진행률</span>
+        <span>2,480 / 4,000</span>
+      </div>
+      <div class="dc-bar-bg"><div class="dc-bar-fill"></div></div>
+      <button class="dc-convert-btn">STAR로 전환하기 (TGE 후)</button>
+    </div>
+
+    <!-- 보유 토큰 요약 -->
+    <div class="holdings-card">
+      <div class="hc-title">보유 자산</div>
+      <div class="hc-row">
+        <div class="hc-icon" style="background:var(--p500)">U</div>
+        <div class="hc-name">USDT</div>
+        <div><div class="hc-balance">24,521.40</div><div class="hc-usd">$24,521</div></div>
+      </div>
+      <div class="hc-row">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#C8B498,#9A7050)">C</div>
+        <div class="hc-name">CAFE</div>
+        <div><div class="hc-balance">128,000</div><div class="hc-usd">$1,259</div></div>
+      </div>
+      <div class="hc-row">
+        <div class="hc-icon" style="background:var(--w500)">D</div>
+        <div class="hc-name">DUST</div>
+        <div><div class="hc-balance" style="color:var(--w700)">2,480</div><div class="hc-usd">TGE 대기</div></div>
+      </div>
+    </div>
+
+    <!-- 최근 활동 (Ondo 스타일) -->
+    <div>
+      <div class="rp-title">Recent Activity <span class="rp-title-link">전체 보기</span></div>
+      <div class="activity-item">
+        <div class="ai-top"><span class="ai-type-badge ai-buy">매수</span><span class="ai-date">어제 18:02</span></div>
+        <div class="ai-desc">CAFE 28,000개 매수</div>
+        <div class="ai-amount">$2.75 USDT</div>
+        <div class="ai-hash">0xF3c2...A891</div>
+      </div>
+      <div class="activity-item">
+        <div class="ai-top"><span class="ai-type-badge ai-deposit">입금</span><span class="ai-date">2일 전</span></div>
+        <div class="ai-desc">USDT 입금</div>
+        <div class="ai-amount">$5,000 USDT</div>
+        <div class="ai-hash">0xA8d1...C412</div>
+      </div>
+      <div class="activity-item">
+        <div class="ai-top"><span class="ai-type-badge ai-deposit" style="background:var(--p50);color:var(--p600)">런치패드</span><span class="ai-date">3일 전</span></div>
+        <div class="ai-desc">브루밍 카페 CAFE 공모 참여</div>
+        <div class="ai-amount">$200 USDT</div>
+        <div class="ai-hash">에스크로 보관 중</div>
+      </div>
+      <div class="activity-item">
+        <div class="ai-top"><span class="ai-type-badge ai-buy">매수</span><span class="ai-date">3일 전</span></div>
+        <div class="ai-desc">CAFE 100,000개 매수</div>
+        <div class="ai-amount">$8.48 USDT</div>
+        <div class="ai-hash">0x1c2e...9a4f</div>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- /layout -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fl-live"><div class="live-dot"></div>Stable</div>
+  <div style="width:1px;height:14px;background:var(--g200);margin:0 6px"></div>
+  <span style="font-size:12px;color:var(--g400)">opBNB · Block #8,241,047</span>
+  <div class="footer-r">
+    <span style="font-size:12px;color:var(--g500)">Terms · Privacy</span>
+    <button class="btn-ghost" style="font-size:11px;padding:4px 10px">🌙 Dark</button>
+  </div>
+</div>
+
+<script>
+/* ── 사이드바 전환 ── */
+const mains=['overview','activity','positions','orders','launchpad','dao'];
+function swMain(id){
+  document.querySelectorAll('.sb-item').forEach(b=>{
+    b.classList.toggle('on', b.onclick?.toString().includes("'"+id+"'"));
+  });
+  mains.forEach(m=>{ document.getElementById('main-'+m).classList.toggle('on',m===id); });
+}
+
+/* ── 하단 탭 ── */
+const tabs=['balances','positions','orders','trades','launchpad','dao','deposits'];
+function swTab(btn,id){
+  document.querySelectorAll('.ts-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  tabs.forEach(t=>{ document.getElementById('t-'+t).classList.toggle('on',t===id); });
+}
+
+/* ── 기간 버튼 ── */
+function swPeriod(p,btn){
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  drawChart(p);
+}
+
+/* ── PNL 차트 ── */
+function drawChart(period='7d'){
+  const cv=document.getElementById('pnl-cv');
+  const wrap=cv.parentElement;
+  const W=wrap.clientWidth, H=wrap.clientHeight;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const N=period==='1d'?48:period==='7d'?84:period==='30d'?120:180;
+  const pts=[];
+  let v=24000;
+  const trend=period==='all'?.0008:.0005;
+  for(let i=0;i<N;i++){
+    v=Math.max(22000,v*(1+(Math.random()-.47+trend)*.012));
+    pts.push(v);
+  }
+  pts[N-1]=26847;
+
+  const minV=Math.min(...pts)*.997, maxV=Math.max(...pts)*1.003;
+  const padL=0, padR=0, padT=8, padB=20;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  const toX=i=>padL+(i/(N-1))*cW;
+  const toY=v=>padT+cH-((v-minV)/(maxV-minV))*cH;
+
+  /* 그라디언트 */
+  const grad=ctx.createLinearGradient(0,padT,0,padT+cH);
+  grad.addColorStop(0,'rgba(18,183,106,.18)');
+  grad.addColorStop(.6,'rgba(18,183,106,.06)');
+  grad.addColorStop(1,'rgba(18,183,106,0)');
+  ctx.beginPath();
+  ctx.moveTo(toX(0),toY(pts[0]));
+  for(let i=1;i<N;i++) ctx.lineTo(toX(i),toY(pts[i]));
+  ctx.lineTo(toX(N-1),padT+cH);
+  ctx.lineTo(toX(0),padT+cH);
+  ctx.closePath();
+  ctx.fillStyle=grad;
+  ctx.fill();
+
+  /* 라인 */
+  ctx.beginPath();
+  ctx.moveTo(toX(0),toY(pts[0]));
+  for(let i=1;i<N;i++) ctx.lineTo(toX(i),toY(pts[i]));
+  ctx.strokeStyle='#12B76A';
+  ctx.lineWidth=2;
+  ctx.lineJoin='round';
+  ctx.stroke();
+
+  /* 끝점 */
+  const ex=toX(N-1), ey=toY(pts[N-1]);
+  ctx.beginPath(); ctx.arc(ex,ey,4,0,Math.PI*2);
+  ctx.fillStyle='#12B76A'; ctx.fill();
+  ctx.beginPath(); ctx.arc(ex,ey,8,0,Math.PI*2);
+  ctx.fillStyle='rgba(18,183,106,.2)'; ctx.fill();
+
+  /* X축 라벨 */
+  ctx.fillStyle='#98A2B3';
+  ctx.font='10px DM Mono,monospace';
+  ctx.textAlign='center';
+  const labels=period==='1d'?['00:00','06:00','12:00','18:00','지금']:
+                period==='7d'?['월','화','수','목','금','토','오늘']:
+                period==='30d'?['3/1','3/8','3/15','3/22','오늘']:
+                ['Jan','Apr','Jul','Oct','오늘'];
+  labels.forEach((l,i)=>{
+    const x=toX(Math.round(i*(N-1)/(labels.length-1)));
+    ctx.fillText(l,x,H-4);
+  });
+}
+window.addEventListener('load',()=>drawChart('7d'));
+window.addEventListener('resize',()=>drawChart('7d'));
+setTimeout(()=>drawChart('7d'),200);
+</script>
+</body>
+</html>
