@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — Trade v4 구성요소</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+.zp{display:none}.zp.on{display:block}
+
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover,.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-st{background:#FFF4E3;color:#633806}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-g{color:#1B7A4A}.src-hl{color:#008BAA}.src-bn{color:#C89A09}.src-on{color:#5B4FDB}
+
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+.insight{background:#EBF0FF;border-left:3px solid #1A4FDB;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#344054;line-height:1.5;margin-top:8px}
+.insight strong{color:#1A4FDB}
+
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+
+.foot{display:flex;gap:5px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip Trade v4 구성요소</h1>
+  <p>OpenSea × 호텔 상세 페이지 하이브리드 · A. 상단 (3) · B. 좌측 콘텐츠 (6) · C. 차트 (3) · D. 우측 주문 패널 (5) · E. 정보 요약 (3) · F. 푸터 (2) · 총 22개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on" onclick="sw('all',this)">전체 (22개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 상단</button>
+  <button class="zt" onclick="sw('b',this)">B. 좌측 콘텐츠</button>
+  <button class="zt" onclick="sw('c',this)">C. 차트</button>
+  <button class="zt" onclick="sw('d',this)">D. 주문 패널</button>
+  <button class="zt" onclick="sw('e',this)">E. 정보 요약</button>
+  <button class="zt" onclick="sw('f',this)">F. 푸터</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- ══ A. 상단 ══ -->
+<div class="sec">A. 상단 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">글로벌 내비게이션 바</div>
+    <div class="desc">검색창 + 별점·알림·지갑·잔액·국기 우측 배치. OpenSea 스타일 심플 네비</div>
+    <div class="pri must">필수</div>
+    <div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>좌측</h5><ul>
+      <li>🔍 Search 검색창 (bg gray-50)</li>
+      <li>border-radius 8px</li>
+      <li>min-width 180px</li>
+    </ul></div>
+    <div class="dc"><h5>우측</h5><ul>
+      <li>★☆☆ 0% 별점 chip</li>
+      <li>🔔 알림 아이콘 버튼</li>
+      <li>⚡ 에너지 아이콘 버튼</li>
+      <li>💳 $0.00 잔액 chip</li>
+      <li>🇰🇷 국기 (언어 변경)</li>
+    </ul></div>
+    <div class="dc"><h5>스펙</h5><ul>
+      <li>height 48px · sticky top:0</li>
+      <li>z-index 200</li>
+      <li>border-bottom 1px gray-200</li>
+      <li>background #fff</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">토큰 헤더 행 <span class="nb nb-st">Starzip 고유</span></div>
+    <div class="desc">토큰 아이콘 + 상점명 + 심볼 + 액션 버튼들 + 태그 행 (TOKEN·체인·NEW·경과일)</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>토큰 아이콘</h5><ul>
+      <li>36×36px · border-radius 8px</li>
+      <li>업종별 그라디언트 배경</li>
+      <li>심볼 텍스트 (CAFE 등)</li>
+    </ul></div>
+    <div class="dc"><h5>액션 버튼 행</h5><ul>
+      <li>☆ 즐겨찾기</li>
+      <li>⊕ 추가 (체인 연결 등)</li>
+      <li>☰ 메뉴</li>
+      <li>🌐 웹사이트 링크</li>
+      <li>✕ X(트위터) 공유</li>
+      <li>✈ 텔레그램 공유</li>
+      <li>⋯ 더보기</li>
+    </ul></div>
+    <div class="dc"><h5>태그 행</h5><ul>
+      <li>TOKEN 뱃지 (회색)</li>
+      <li>🟡 opBNB 체인 뱃지 (파랑)</li>
+      <li>NEW 뱃지 (초록 테두리)</li>
+      <li>· N DAYS AGO 텍스트</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">가격 블록 <span class="nb nb-st">Ondo 참고</span></div>
+    <div class="desc">현재가 대형 + 변동률 pill + FDV + 날짜·시각 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>가격 행</h5><ul>
+      <li>현재가 28px font-weight 800 (DM Mono)</li>
+      <li>변동률 pill (+51% 초록 / 빨강)</li>
+      <li>letter-spacing -.02em</li>
+    </ul></div>
+    <div class="dc"><h5>서브 행</h5><ul>
+      <li>FDV: $3.5M (bold)</li>
+      <li>날짜·시각 (gray-400)</li>
+      <li>font-size 12px</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid A -->
+
+<!-- ══ B. 좌측 콘텐츠 ══ -->
+<div class="sec">B. 좌측 콘텐츠 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B1</div>
+    <div class="nm">통계 바 (5컬럼) <span class="nb nb-st">OpenSea 참고</span></div>
+    <div class="desc">FDV · 1D VOLUME · 1D FDV · 7D VOLUME · 7D FDV 5개 수치 그리드</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>컬럼 구성</h5><ul>
+      <li>FDV</li>
+      <li>1D VOLUME</li>
+      <li>1D FDV (% 변동, 초록/빨강)</li>
+      <li>7D VOLUME</li>
+      <li>7D FDV (% 변동, 초록/빨강)</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>border 1px gray-200 · border-radius 12px</li>
+      <li>5열 균등 grid</li>
+      <li>border-right 구분선</li>
+      <li>마지막 열 border-right: none</li>
+    </ul></div>
+    <div class="dc"><h5>수치 스타일</h5><ul>
+      <li>라벨: 10px uppercase letter-spacing</li>
+      <li>값: 15px font-weight 700 (DM Mono)</li>
+      <li>양수 초록 .pos / 음수 빨강 .neg</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B2</div>
+    <div class="nm">콘텐츠 탭 (Overview·Amenities·Review·Location)</div>
+    <div class="desc">상점 상세 정보 탭 네비게이션. 언더라인 active 스타일</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>탭 목록</h5><ul>
+      <li>Overview (기본 active)</li>
+      <li>Amenities</li>
+      <li>Review</li>
+      <li>Location</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>border-bottom 1px gray-200</li>
+      <li>active: border-bottom-color gray-900 2px</li>
+      <li>padding 10px 16px · font-weight 500</li>
+      <li>탭 전환 시 콘텐츠 display 토글</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B3</div>
+    <div class="nm">Overview 탭 — 상점 소개 + 주소 박스</div>
+    <div class="desc">상점 설명 텍스트 + "Read More" + Address Details 2열 그리드</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>소개 텍스트</h5><ul>
+      <li>14px color gray-600 line-height 1.7</li>
+      <li>"Read More" 언더라인 링크 (bold)</li>
+      <li>2줄 이하 시 "Read More" 숨김</li>
+    </ul></div>
+    <div class="dc"><h5>Address 박스</h5><ul>
+      <li>border 1px gray-200 · border-radius 12px</li>
+      <li>2열 그리드 (주소·웹·영업시간·전화)</li>
+      <li>📍 🌐 🕐 📞 아이콘 인라인</li>
+      <li>Open 초록 뱃지</li>
+    </ul></div>
+    <div class="dc"><h5>사진 그리드</h5><ul>
+      <li>2열 2행 · 좌측 메인(grid-row 1/3)</li>
+      <li>height: 175px × 2</li>
+      <li>border-radius 12px overflow:hidden</li>
+      <li>우하단 "8+" 카운트 pill</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B4</div>
+    <div class="nm">Amenities 탭 — 시설 그리드</div>
+    <div class="desc">3열 아이콘 카드 그리드. 이모지 + 시설명 + 서브텍스트</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>카드 구성</h5><ul>
+      <li>background gray-50 · border 1px gray-200</li>
+      <li>border-radius 10px · padding 12px</li>
+      <li>이모지 아이콘 20px + 이름 + 서브</li>
+    </ul></div>
+    <div class="dc"><h5>항목 예시</h5><ul>
+      <li>☕ 핸드드립 · 스페셜티 원두</li>
+      <li>🥐 브런치 · 시즌 메뉴</li>
+      <li>📶 무료 Wi-Fi</li>
+      <li>🎁 토큰 혜택 · 10% 할인</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B5</div>
+    <div class="nm">Review 탭 — 리뷰 목록</div>
+    <div class="desc">정렬 칩 (All·Latest·Positive·With Photo) + 아바타·이름·별점·텍스트 리뷰 행</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>정렬 칩</h5><ul>
+      <li>All · Latest · Oldest</li>
+      <li>Positive · Negative · With Photo</li>
+      <li>active: bg gray-900 color white</li>
+      <li>border-radius 20px · font-size 12px</li>
+    </ul></div>
+    <div class="dc"><h5>리뷰 행</h5><ul>
+      <li>아바타 36×36 border-radius 50%</li>
+      <li>이름(bold) + 보유 토큰 수 + N Guests</li>
+      <li>날짜 우측 정렬</li>
+      <li>별점 ★ + 숫자</li>
+      <li>리뷰 텍스트 13px line-height 1.6</li>
+    </ul></div>
+    <div class="dc"><h5>구분선</h5><ul>
+      <li>border-bottom 1px gray-100</li>
+      <li>마지막 리뷰 border-bottom none</li>
+      <li>padding 14px 0</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B6</div>
+    <div class="nm">Location 탭 — 지도 영역</div>
+    <div class="desc">지도 플레이스홀더 + 주소·교통 텍스트</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>지도 영역</h5><ul>
+      <li>bg gray-50 · border 1px gray-200</li>
+      <li>border-radius 12px · height 200px</li>
+      <li>Phase 2: Kakao/Google Maps API 연동</li>
+    </ul></div>
+    <div class="dc"><h5>주소 텍스트</h5><ul>
+      <li>전체 주소</li>
+      <li>교통편 (지하철 도보 N분)</li>
+      <li>font-size 13px color gray-600</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid B -->
+
+<!-- ══ C. 차트 ══ -->
+<div class="sec">C. 차트 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C1</div>
+    <div class="nm">차트 메타 툴바</div>
+    <div class="desc">O·H·L·C·변동률 인라인 수치 + Timeframe·Interval 드롭다운 + 차트 타입 토글</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>OHLC 수치</h5><ul>
+      <li>O(회색) H(초록) L(빨강) C(회색)</li>
+      <li>변동률 (초록/빨강)</li>
+      <li>font-family DM Mono · font-size 11px</li>
+    </ul></div>
+    <div class="dc"><h5>우측 컨트롤</h5><ul>
+      <li>Timeframe 드롭다운 (1d ▾)</li>
+      <li>Interval 드롭다운 (15m ▾)</li>
+      <li>〰 라인/캔들 전환 버튼</li>
+      <li>📊 지표 토글 버튼</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>justify-content space-between</li>
+      <li>margin-bottom 6px</li>
+      <li>flex-wrap wrap gap 8px</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C2</div>
+    <div class="nm">라인 차트 (파란 그라디언트) <span class="nb nb-st">OpenSea 스타일</span></div>
+    <div class="desc">Canvas 기반 라인 차트 + 파란 그라디언트 채우기 + 끝점 애니메이션 dot + X축 시간</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>차트 본체</h5><ul>
+      <li>Canvas position:absolute inset:0</li>
+      <li>height 240px · border-radius 12px</li>
+      <li>border 1px gray-100</li>
+    </ul></div>
+    <div class="dc"><h5>시각 요소</h5><ul>
+      <li>라인: #2970FF · lineWidth 2</li>
+      <li>그라디언트: rgba(41,112,255,.25)→0</li>
+      <li>끝점 dot 4px + 번짐 8px opacity .2</li>
+      <li>X축 시간 레이블 (DM Mono 10px)</li>
+    </ul></div>
+    <div class="dc"><h5>동작</h5><ul>
+      <li>window resize 시 재측정</li>
+      <li>Timeframe 전환 시 데이터 교체</li>
+      <li>마지막 pts = 현재가로 고정</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C3</div>
+    <div class="nm">시간대 기간 버튼 행</div>
+    <div class="desc">3m·1m·7d·3d·6h·1h 기간 버튼 + KST 시각 표시. 차트 하단 툴바</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>버튼 구성</h5><ul>
+      <li>3m · 1m · 7d(기본 active) · 3d · 6h · 1h</li>
+      <li>font-family DM Mono</li>
+      <li>active: bg primary-50 color primary-600</li>
+      <li>border-radius 6px</li>
+    </ul></div>
+    <div class="dc"><h5>우측 시각</h5><ul>
+      <li>현재 KST 시각 표시</li>
+      <li>font-size 11px color gray-400</li>
+      <li>chart-tf: border-top 1px gray-100</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid C -->
+
+<!-- ══ D. 우측 주문 패널 ══ -->
+<div class="sec">D. 우측 주문 패널 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D1</div>
+    <div class="nm">Buy / Sell 탭 헤더</div>
+    <div class="desc">Buy·Sell 언더라인 탭 + AUTO 버튼 + 슬리피지 % + ⚙ 설정 아이콘</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>탭</h5><ul>
+      <li>Buy active: color primary-600 · border-bottom-color primary-600</li>
+      <li>Sell active: color error-500 · border-bottom-color error-500</li>
+      <li>border-bottom 1px gray-200</li>
+      <li>margin-bottom -1px (언더라인 겹침)</li>
+    </ul></div>
+    <div class="dc"><h5>우측 컨트롤</h5><ul>
+      <li>AUTO 버튼 (회색 bg)</li>
+      <li>1% 슬리피지 표시 (DM Mono)</li>
+      <li>⚙ 설정 아이콘</li>
+      <li>margin-left auto로 우측 정렬</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D2</div>
+    <div class="nm">Pay with 입력 박스</div>
+    <div class="desc">대형 숫자 입력 + USD 환산 + 토큰 선택 ▾ + 잔액 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>입력 필드</h5><ul>
+      <li>font-size 26px font-weight 700 (DM Mono)</li>
+      <li>background transparent · border none</li>
+      <li>width 100% outline none</li>
+    </ul></div>
+    <div class="dc"><h5>박스 스타일</h5><ul>
+      <li>border 1px gray-200 · border-radius 10px</li>
+      <li>padding 10px 12px · bg gray-50</li>
+      <li>align-items flex-end (좌우 정렬)</li>
+    </ul></div>
+    <div class="dc"><h5>토큰 선택</h5><ul>
+      <li>토큰 아이콘 20×20 border-radius 50%</li>
+      <li>토큰명 14px bold</li>
+      <li>▾ 드롭다운 화살표</li>
+      <li>잔액 11px gray-400 (하단)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D3</div>
+    <div class="nm">↓ 방향 전환 버튼 + Receive at least</div>
+    <div class="desc">화살표 버튼 클릭 시 Buy↔Sell 전환 + 수령 예상 토큰 수 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">Ondo 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>↓ 버튼</h5><ul>
+      <li>28×28px · border-radius 8px</li>
+      <li>border 1px gray-200</li>
+      <li>hover: bg gray-50</li>
+      <li>클릭 → Buy↔Sell 토큰 방향 교체</li>
+    </ul></div>
+    <div class="dc"><h5>Receive 박스</h5><ul>
+      <li>rc-val: 26px bold DM Mono</li>
+      <li>입력 전: color gray-300 ("—")</li>
+      <li>입력 후: color gray-900 (계산값)</li>
+      <li>USD 환산 서브텍스트</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D4</div>
+    <div class="nm">Buy / Sell 실행 버튼</div>
+    <div class="desc">Buy: 파랑 / Sell: 빨강. 클릭 시 "✓ 완료" 2초 피드백</div>
+    <div class="pri must">필수</div>
+    <div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>Buy 상태</h5><ul>
+      <li>background primary-500 · color #fff</li>
+      <li>hover: primary-700</li>
+      <li>border-radius 10px · padding 12px</li>
+      <li>font-size 15px font-weight 700</li>
+    </ul></div>
+    <div class="dc"><h5>Sell 상태</h5><ul>
+      <li>background error-500 · color #fff</li>
+      <li>hover: error-700</li>
+      <li>클릭: "✓ 완료" + opacity .7 → 2초 후 원복</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FCEBEB;color:#A32D2D">D5</div>
+    <div class="nm">런치패드 배너 카드 <span class="nb nb-new">Starzip 고유</span></div>
+    <div class="desc">주문 패널 하단. 런치패드 진행중 표시 + D-day + 진행률 바 + STAR 부스트</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>border 1px primary-100 · border-radius 12px</li>
+      <li>bg linear-gradient (primary-50 계열)</li>
+      <li>"🚀 런치패드 진행중" 제목</li>
+      <li>D-day 카운트다운 (DM Mono)</li>
+    </ul></div>
+    <div class="dc"><h5>진행 바</h5><ul>
+      <li>height 4px · bg primary-100</li>
+      <li>fill: width % · bg primary-500</li>
+      <li>$달성액 / $목표 · % 텍스트</li>
+      <li>STAR N× 부스트 pill (primary-100)</li>
+    </ul></div>
+    <div class="insight"><strong>런치패드 진행 중인 상점만 표시.</strong> 공모 종료 후 자동 숨김. Trade v4에서 주문 패널 아래 독립 카드로 배치 — 주문 흐름을 방해하지 않으면서 공모 정보 노출.</div>
+  </div></div>
+</div>
+
+</div><!-- /grid D -->
+
+<!-- ══ E. 정보 요약 ══ -->
+<div class="sec">E. 주문 정보 요약 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E1</div>
+    <div class="nm">수수료 정보 행</div>
+    <div class="desc">가격(CAFE/USDT) + 수수료 0.39% + 배분처(상점 3% / Starzip 97%) 인라인 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>행 구성</h5><ul>
+      <li>가격 (CAFE/USDT) 행</li>
+      <li>수수료 0.39% 실시간 계산</li>
+      <li>구분선 (1px gray-100)</li>
+      <li>배분처: "브루밍 카페 3%" + "Starzip 97%"</li>
+    </ul></div>
+    <div class="dc"><h5>스타일</h5><ul>
+      <li>label: 12px gray-500</li>
+      <li>value: 12px gray-800 font-weight 500 DM Mono</li>
+      <li>배분처: 11px gray-400 (투명 공시)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E2</div>
+    <div class="nm">DUST 적립 행 <span class="nb nb-new">Starzip 고유</span></div>
+    <div class="desc">거래 시 DUST 적립 예상량. 주황 dot + 주황 수치. 입력 변동 시 실시간 갱신</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>주황 dot 5px border-radius 50%</li>
+      <li>"DUST 적립" 라벨 12px gray-500</li>
+      <li>적립량: 12px font-weight 700 #B54708</li>
+      <li>단위: "DUST"</li>
+    </ul></div>
+    <div class="dc"><h5>계산</h5><ul>
+      <li>거래금액 × 0.001 × 1000 = DUST</li>
+      <li>Pay with 입력 시 실시간 갱신</li>
+      <li>입력 없으면 "—" 표시</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">E3</div>
+    <div class="nm">2컬럼 레이아웃 + 우측 sticky</div>
+    <div class="desc">grid-template-columns: 1fr 300px. 우측 패널 position sticky top:56px</div>
+    <div class="pri must">필수</div>
+    <div class="src">공통</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>레이아웃</h5><ul>
+      <li>grid 2열 gap 20px</li>
+      <li>max-width 1140px · margin 0 auto</li>
+      <li>padding 0 16px 80px</li>
+      <li>align-items start</li>
+    </ul></div>
+    <div class="dc"><h5>우측 패널</h5><ul>
+      <li>position sticky · top 56px (nav 높이)</li>
+      <li>order-card: border-radius 16px</li>
+      <li>모바일: position static</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid E -->
+
+<!-- ══ F. 푸터 ══ -->
+<div class="sec">F. 푸터 영역 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F1</div>
+    <div class="nm">하단 고정 푸터 바 <span class="nb nb-st">OpenSea 참고</span></div>
+    <div class="desc">Live dot + Aggregating·Networks·약관 + 잔액 + Collector/Pro/Crypto/USD 모드 버튼</div>
+    <div class="pri must">필수</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>좌측</h5><ul>
+      <li>🟢 Live dot (animate pulse)</li>
+      <li>⚡ Aggregating 링크</li>
+      <li>🔗 Networks 링크</li>
+      <li>Terms of Service · Privacy Policy</li>
+    </ul></div>
+    <div class="dc"><h5>우측</h5><ul>
+      <li>💳 $잔액 (DM Mono bold)</li>
+      <li>Collector · Pro · Crypto · USD 토글</li>
+      <li>🔊 볼륨 아이콘</li>
+    </ul></div>
+    <div class="dc"><h5>스펙</h5><ul>
+      <li>position fixed · bottom 0</li>
+      <li>height 44px · z-index 100</li>
+      <li>border-top 1px gray-200</li>
+      <li>bg #fff · gap 14px</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F1EFE8;color:#444441">F2</div>
+    <div class="nm">모드 전환 버튼 (Collector·Pro·Crypto·USD)</div>
+    <div class="desc">토글 가능한 멀티 선택 버튼. active: bg gray-900 color white. localStorage 저장</div>
+    <div class="pri high">높음</div>
+    <div class="src src-on">OpenSea 참고</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>버튼 스타일</h5><ul>
+      <li>padding 3px 9px · border-radius 20px</li>
+      <li>border 1px gray-200</li>
+      <li>active: bg gray-900 color #fff border-color gray-900</li>
+      <li>font-size 11px font-weight 500</li>
+    </ul></div>
+    <div class="dc"><h5>토글 동작</h5><ul>
+      <li>최소 1개는 항상 active 유지</li>
+      <li>여러 개 동시 active 가능</li>
+      <li>선택 상태 localStorage 저장</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid F -->
+
+<!-- 하단 요약 -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 상단<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1B7A4A"></div>B. 좌측 콘텐츠<span class="fc">6</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#854F0B"></div>C. 차트<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('d',document.querySelectorAll('.zt')[4])"><div class="fd" style="background:#A32D2D"></div>D. 주문 패널<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('e',document.querySelectorAll('.zt')[5])"><div class="fd" style="background:#444441"></div>E. 정보 요약<span class="fc">3</span></div>
+  <div class="fp" onclick="sw('f',document.querySelectorAll('.zt')[6])"><div class="fd" style="background:#5F5E5A"></div>F. 푸터<span class="fc">2</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">19</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">2</span></div>
+  <div class="fp" style="background:#E6F1FB;border-color:#B0CCEF"><span style="color:#0C447C">Starzip 고유</span><span class="fc" style="color:#0C447C">5</span></div>
+  <div class="ft">총 <strong>22개</strong> · 6개 영역</div>
+</div>
+
+</div><!-- /z-all -->
+
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+<div class="zp" id="z-d"></div>
+<div class="zp" id="z-e"></div>
+<div class="zp" id="z-f"></div>
+
+</div><!-- /root -->
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return;}
+  const pref={a:'A',b:'B',c:'C',d:'D',e:'E',f:'F'}[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>
