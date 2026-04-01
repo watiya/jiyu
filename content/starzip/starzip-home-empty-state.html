@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 지역 상점을 위한 DEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g25:#FCFCFD;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p25:#F5F8FF;--p50:#EFF4FF;--p100:#D1E0FF;--p300:#84ADFF;
+  --p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s700:#027A48;
+  --e50:#FEF3F2;--e500:#F04438;--e700:#B42318;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;--r24:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--g0);color:var(--g900);font-size:14px;line-height:1.5;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--g200);
+  height:52px;display:flex;align-items:center;padding:0 24px;gap:8px
+}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:var(--g900);margin-right:24px;text-decoration:none;letter-spacing:-.02em}
+.nav-logo-mark{width:28px;height:28px;border-radius:7px;background:var(--p600);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;letter-spacing:0}
+.nl{padding:6px 10px;border-radius:var(--r6);font-size:13px;font-weight:500;color:var(--g500);border:none;background:none;cursor:pointer;transition:all .12s}
+.nl:hover{color:var(--g700);background:var(--g50)}
+.nl.on{color:var(--g900);font-weight:600}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn-ghost{padding:7px 14px;border-radius:var(--r8);border:1px solid var(--g300);font-size:13px;font-weight:500;color:var(--g700);background:var(--g0);cursor:pointer;transition:all .12s}
+.btn-ghost:hover{background:var(--g50)}
+.btn-primary{padding:7px 16px;border-radius:var(--r8);border:none;font-size:13px;font-weight:700;background:var(--g900);color:#fff;cursor:pointer;transition:background .12s}
+.btn-primary:hover{background:var(--g700)}
+
+/* ── HERO ── */
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg, #0A0F1E 0%, #0D1B3E 45%, #0A0F1E 100%);
+  padding:72px 24px 80px;
+  display:grid;grid-template-columns:1fr 420px;gap:48px;
+  max-width:1200px;margin:0 auto;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 70% 50%, rgba(41,112,255,.12) 0%, transparent 70%);
+  pointer-events:none
+}
+/* 배경 격자 패턴 */
+.hero-bg{position:absolute;inset:0;opacity:.06;background-image:linear-gradient(var(--g300) 1px,transparent 1px),linear-gradient(90deg,var(--g300) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
+
+.hero-left{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:rgba(41,112,255,.15);color:var(--p300);border:1px solid rgba(41,112,255,.25);margin-bottom:20px;width:fit-content;letter-spacing:.03em}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--p300);animation:pulse2 2s infinite}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero-title{font-size:46px;font-weight:800;color:#fff;line-height:1.1;letter-spacing:-.03em;margin-bottom:16px}
+.hero-title .accent{color:var(--p300)}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:28px;max-width:460px}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.hcta-primary{padding:12px 24px;border-radius:var(--r8);background:var(--p500);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px}
+.hcta-primary:hover{background:var(--p700);transform:translateY(-1px)}
+.hcta-ghost{padding:12px 24px;border-radius:var(--r8);background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .15s}
+.hcta-ghost:hover{background:rgba(255,255,255,.12)}
+.hero-stats{display:flex;gap:28px;flex-wrap:wrap}
+.hs-item{}
+.hs-val{font-size:22px;font-weight:800;color:#fff;font-family:var(--mono);letter-spacing:-.02em}
+.hs-lbl{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+
+/* 히어로 우측: 런치패드 카운트다운 카드 */
+.hero-right{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px}
+.hero-card{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:var(--r16);padding:18px;transition:all .15s}
+.hc-launch{background:linear-gradient(135deg,rgba(41,112,255,.2),rgba(41,112,255,.05));border-color:rgba(41,112,255,.3)}
+.hc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.5)}
+.hc-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(41,112,255,.3);color:var(--p300);border:1px solid rgba(41,112,255,.3)}
+.hc-badge-w{background:rgba(247,144,9,.2);color:#FDB022;border-color:rgba(247,144,9,.3)}
+.hc-store-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hc-store-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:linear-gradient(135deg,#C8B498,#9A7050)}
+.hc-store-name{font-size:14px;font-weight:700;color:#fff}
+.hc-store-meta{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.hc-clock{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hc-clock-item{background:rgba(0,0,0,.3);border-radius:var(--r8);padding:8px 4px;text-align:center}
+.hc-clock-num{font-size:22px;font-weight:800;color:#fff;font-family:var(--mono);line-height:1}
+.hc-clock-lbl{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.hc-progress{margin-top:12px}
+.hcp-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.hcp-lbl{color:rgba(255,255,255,.4)}
+.hcp-val{color:var(--p300);font-weight:600;font-family:var(--mono)}
+.hcp-bar-bg{height:5px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
+.hcp-bar-fill{height:100%;width:42%;background:linear-gradient(90deg,var(--p500),var(--p300));border-radius:4px}
+/* 수수료 구조 카드 */
+.hc-fee-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px}
+.hcfg-item{text-align:center}
+.hcfg-val{font-size:16px;font-weight:700;color:#fff;font-family:var(--mono)}
+.hcfg-lbl{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px}
+
+/* ── 히어로 아래 섹션 래퍼 ── */
+.page{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ── Binance식 핫/뉴/상승 3단 카드 ── */
+.spotlight{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:28px 0}
+.sp-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r16);padding:16px;transition:all .15s}
+.sp-card:hover{border-color:var(--g300);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.sp-title{font-size:12px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.sp-title-ico{font-size:14px}
+/* 상점 없음 - 빈 슬롯 */
+.sp-empty-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100)}
+.sp-empty-row:last-child{border-bottom:none}
+.sp-slot{width:32px;height:32px;border-radius:50%;background:var(--g100);flex-shrink:0;border:1px dashed var(--g300)}
+.sp-slot-info{flex:1}
+.sp-slot-name{height:10px;background:var(--g100);border-radius:4px;width:70%;margin-bottom:4px}
+.sp-slot-sub{height:8px;background:var(--g100);border-radius:4px;width:50%}
+.sp-slot-price{text-align:right}
+.sp-slot-val{height:10px;background:var(--g100);border-radius:4px;width:40px;margin-left:auto;margin-bottom:4px}
+.sp-slot-chg{height:8px;background:var(--g100);border-radius:4px;width:30px;margin-left:auto}
+.sp-cta{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:12px;padding:8px 0;border-radius:var(--r6);background:var(--g50);border:1px dashed var(--g200);font-size:12px;color:var(--g400);cursor:pointer;transition:all .12s}
+.sp-cta:hover{background:var(--g100);color:var(--g600)}
+
+/* ── 런치패드 섹션 ── */
+.section-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:18px;font-weight:800;color:var(--g900);letter-spacing:-.02em}
+.section-sub{font-size:12px;color:var(--g400);margin-top:2px}
+.section-link{font-size:13px;font-weight:600;color:var(--p600);cursor:pointer;display:flex;align-items:center;gap:4px}
+
+/* ── 런치패드 카드 그리드 ── */
+.lp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px}
+.lp-card{border:1px solid var(--g200);border-radius:var(--r16);overflow:hidden;background:var(--g0);transition:all .15s;cursor:pointer}
+.lp-card:hover{border-color:var(--g300);box-shadow:0 6px 20px rgba(0,0,0,.07);transform:translateY(-2px)}
+.lp-thumb{height:140px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.lp-wm{font-size:52px;font-weight:900;letter-spacing:-3px;user-select:none;opacity:.12;color:#fff}
+.lp-s-badge{position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;backdrop-filter:blur(8px)}
+.lp-s-soon{background:rgba(102,112,133,.85);color:#fff}
+.lp-s-active{background:rgba(41,112,255,.9);color:#fff}
+.lp-s-pre{background:rgba(247,144,9,.85);color:#fff}
+.lp-dday{position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(0,0,0,.6);color:#fff;font-family:var(--mono);backdrop-filter:blur(8px)}
+.lp-body{padding:14px}
+.lp-name{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:4px}
+.lp-meta{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.lp-chip{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g600)}
+.lp-loc{font-size:11px;color:var(--g400);display:flex;align-items:center;gap:3px}
+/* 사전 등록 바 */
+.lp-pre-bar{margin-bottom:8px}
+.lpb-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.lpb-lbl{color:var(--g400)}
+.lpb-val{font-weight:600;color:var(--g700);font-family:var(--mono)}
+.lp-bar-bg{height:5px;background:var(--g100);border-radius:4px;overflow:visible;position:relative}
+.lp-bar-fill{height:100%;border-radius:4px}
+.lp-bar-p{background:var(--w500)}
+.lp-bar-a{background:var(--p500)}
+.lp-softcap-line{position:absolute;top:-3px;height:11px;width:2px;background:var(--g400);left:30%;border-radius:1px}
+.lp-stats{display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--g100)}
+.lp-stat .v{font-size:12px;font-weight:600;color:var(--g800);font-family:var(--mono)}
+.lp-stat .l{font-size:10px;color:var(--g400);margin-top:1px}
+.lp-cta{width:100%;margin-top:10px;padding:9px 0;border-radius:var(--r8);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .12s}
+.lp-cta-pre{background:var(--w50);color:var(--w700);border:1px solid var(--w200)}
+.lp-cta-pre:hover{background:var(--w200)}
+.lp-cta-active{background:var(--p500);color:#fff}
+.lp-cta-active:hover{background:var(--p700)}
+/* 예정 카드 스타일 */
+.lp-card-soon{opacity:.75}
+
+/* ── 플랫폼 소개 ── */
+.platform-intro{background:var(--g50);border-radius:var(--r24);padding:40px;margin-bottom:40px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.pi-title{font-size:26px;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:12px}
+.pi-sub{font-size:14px;color:var(--g600);line-height:1.7;margin-bottom:24px}
+.pi-features{display:flex;flex-direction:column;gap:12px}
+.pif-item{display:flex;align-items:flex-start;gap:10px}
+.pif-ico{width:36px;height:36px;border-radius:10px;background:var(--p50);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pif-title{font-size:13px;font-weight:700;color:var(--g900);margin-bottom:2px}
+.pif-desc{font-size:12px;color:var(--g500);line-height:1.5}
+/* 우측: 수수료·구조 카드들 */
+.pi-right{display:flex;flex-direction:column;gap:10px}
+.pi-metric-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:14px 16px;display:flex;align-items:center;gap:14px}
+.pm-icon{font-size:24px;flex-shrink:0}
+.pm-val{font-size:20px;font-weight:800;color:var(--g900);font-family:var(--mono);letter-spacing:-.02em}
+.pm-lbl{font-size:12px;color:var(--g500);margin-top:1px}
+.pm-badge{margin-left:auto;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.pm-badge-g{background:var(--s50);color:var(--s700)}
+.pm-badge-b{background:var(--p50);color:var(--p600)}
+
+/* ── 마켓 테이블 섹션 (비어있는 상태) ── */
+.market-section{margin-bottom:40px}
+.market-tabs{display:flex;gap:0;border-bottom:1px solid var(--g200);margin-bottom:0}
+.mtab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;white-space:nowrap}
+.mtab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.market-toolbar{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--g100)}
+.mt-search{display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);padding:7px 12px;font-size:13px;color:var(--g400);min-width:220px}
+.mt-search input{border:none;outline:none;background:transparent;font-size:13px;color:var(--g700);font-family:var(--sans);width:100%}
+.mt-search input::placeholder{color:var(--g400)}
+.mt-chips{display:flex;gap:5px;flex-wrap:wrap}
+.mt-chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.mt-chip.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.mt-sort{margin-left:auto;padding:6px 12px;border-radius:20px;font-size:12px;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer}
+
+/* 테이블 헤더 */
+.market-table{width:100%;border-collapse:collapse}
+.mt-th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);padding:10px 12px;text-align:left;border-bottom:1px solid var(--g200);background:var(--g0);white-space:nowrap}
+.mt-th:first-child{padding-left:0}
+
+/* 빈 상태 */
+.market-empty{padding:60px 0;text-align:center;border-bottom:1px solid var(--g100)}
+.me-icon{font-size:48px;margin-bottom:12px;opacity:.3}
+.me-title{font-size:16px;font-weight:700;color:var(--g700);margin-bottom:6px}
+.me-sub{font-size:13px;color:var(--g400);line-height:1.6;margin-bottom:20px}
+.me-cta{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--r8);background:var(--p500);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .12s}
+.me-cta:hover{background:var(--p700)}
+
+/* ── 뉴스·업데이트 ── */
+.news-section{margin-bottom:48px}
+.news-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.news-main{display:flex;flex-direction:column;gap:0}
+.news-item{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--g100);cursor:pointer;transition:background .12s}
+.news-item:last-child{border-bottom:none}
+.news-item:hover .ni-title{color:var(--p600)}
+.ni-num{font-size:11px;font-weight:700;color:var(--g300);font-family:var(--mono);flex-shrink:0;width:20px;margin-top:2px}
+.ni-body{flex:1;min-width:0}
+.ni-title{font-size:13px;font-weight:600;color:var(--g800);line-height:1.4;margin-bottom:3px;transition:color .12s}
+.ni-meta{font-size:11px;color:var(--g400)}
+.ni-badge{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;margin-right:5px}
+.nb-announce{background:var(--p50);color:var(--p600)}
+.nb-guide{background:var(--s50);color:var(--s700)}
+.nb-update{background:var(--w50);color:var(--w700)}
+
+/* 우측 사이드 카드 */
+.side-card{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r16);padding:18px;margin-bottom:12px}
+.sc-title{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:12px}
+.sc-steps{display:flex;flex-direction:column;gap:10px}
+.sc-step{display:flex;align-items:flex-start;gap:10px}
+.sc-step-num{width:22px;height:22px;border-radius:50%;background:var(--p50);color:var(--p600);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sc-step-title{font-size:12px;font-weight:600;color:var(--g800);margin-bottom:1px}
+.sc-step-sub{font-size:11px;color:var(--g500)}
+.sc-btn{width:100%;margin-top:14px;padding:10px 0;border-radius:var(--r8);background:var(--g900);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .12s}
+.sc-btn:hover{background:var(--g700)}
+
+/* 파트너 배너 */
+.partner-banner{background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:var(--r16);padding:32px 40px;margin-bottom:48px;display:flex;align-items:center;justify-content:space-between;gap:24px;overflow:hidden;position:relative}
+.pb-bg{position:absolute;inset:0;background:radial-gradient(ellipse 40% 100% at 90% 50%,rgba(41,112,255,.2) 0%,transparent 70%);pointer-events:none}
+.pb-left{position:relative;z-index:1}
+.pb-eyebrow{font-size:11px;font-weight:600;color:var(--p300);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.pb-title{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:8px}
+.pb-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:460px;line-height:1.6}
+.pb-right{position:relative;z-index:1;display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap}
+.pb-btn-p{padding:11px 22px;border-radius:var(--r8);background:var(--p500);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .15s}
+.pb-btn-p:hover{background:var(--p700);transform:translateY(-1px)}
+.pb-btn-g{padding:11px 22px;border-radius:var(--r8);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .15s}
+.pb-btn-g:hover{background:rgba(255,255,255,.15)}
+
+/* ── FAQ ── */
+.faq-section{margin-bottom:60px}
+.faq-list{display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--g200)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:14px;font-weight:600;color:var(--g800);cursor:pointer;gap:12px}
+.faq-q:hover{color:var(--g900)}
+.faq-ico{color:var(--g400);font-size:16px;flex-shrink:0;transition:transform .2s}
+.faq-item.open .faq-ico{transform:rotate(45deg)}
+.faq-a{font-size:13px;color:var(--g600);line-height:1.7;padding-bottom:16px;display:none}
+.faq-item.open .faq-a{display:block}
+
+/* ── FOOTER ── */
+.footer{background:var(--g900);padding:48px 24px 24px;color:rgba(255,255,255,.5)}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:32px;margin-bottom:48px}
+.ft-logo{font-size:16px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ft-logo-mark{width:26px;height:26px;border-radius:6px;background:var(--p600);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.ft-desc{font-size:12px;line-height:1.6;color:rgba(255,255,255,.35);margin-bottom:16px}
+.ft-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.5);margin-bottom:12px}
+.ft-link{display:block;font-size:12px;color:rgba(255,255,255,.4);padding:3px 0;cursor:pointer;transition:color .12s}
+.ft-link:hover{color:rgba(255,255,255,.8)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.3);flex-wrap:wrap;gap:8px}
+.fb-links{display:flex;gap:16px;flex-wrap:wrap}
+.fb-link{color:rgba(255,255,255,.3);cursor:pointer;transition:color .12s}
+.fb-link:hover{color:rgba(255,255,255,.6)}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;height:44px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-top:1px solid var(--g200);display:flex;align-items:center;padding:0 24px;gap:8px;z-index:100}
+.bb-live{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--s700)}
+.bb-dot{width:6px;height:6px;border-radius:50%;background:var(--s500);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.bb-sep{width:1px;height:14px;background:var(--g200)}
+.bb-link{font-size:12px;color:var(--g500);cursor:pointer;padding:4px 6px;border-radius:4px;transition:all .12s}
+.bb-link:hover{background:var(--g100);color:var(--g700)}
+.bb-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.bb-net{font-size:11px;color:var(--g400);font-family:var(--mono)}
+
+/* ── 반응형 ── */
+@media(max-width:1024px){
+  .hero{grid-template-columns:1fr;padding:48px 20px 56px}
+  .hero-right{display:none}
+  .hero-title{font-size:36px}
+  .spotlight{grid-template-columns:1fr 1fr 1fr}
+  .lp-grid{grid-template-columns:1fr 1fr}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .news-grid{grid-template-columns:1fr}
+  .platform-intro{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .hero-title{font-size:28px}
+  .spotlight{grid-template-columns:1fr}
+  .lp-grid{grid-template-columns:1fr}
+  .hero-stats{gap:16px}
+  .partner-banner{flex-direction:column}
+}
+
+/* fade-in 애니메이션 */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease both}
+.fd1{animation-delay:.05s}.fd2{animation-delay:.1s}.fd3{animation-delay:.15s}.fd4{animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#"><div class="nav-logo-mark">SZ</div>Starzip</a>
+  <button class="nl on">Market</button>
+  <button class="nl">Trade</button>
+  <button class="nl">Launchpad</button>
+  <button class="nl">Portfolio</button>
+  <button class="nl">More ▾</button>
+  <div class="nav-r">
+    <button class="btn-ghost">지갑 연결</button>
+  </div>
+</nav>
+
+<!-- HERO (풀 다크 섹션) -->
+<section style="background:linear-gradient(160deg,#0A0F1E 0%,#0D1B3E 45%,#0A0F1E 100%);padding-bottom:0">
+<div style="position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:.05;background-image:linear-gradient(rgba(255,255,255,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.4) 1px,transparent 1px);background-size:32px 32px;pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(41,112,255,.12),transparent 70%);pointer-events:none"></div>
+  <div class="page" style="display:grid;grid-template-columns:1fr 400px;gap:48px;padding-top:68px;padding-bottom:72px;align-items:center">
+
+    <!-- 히어로 좌측 -->
+    <div class="fade-up fd1">
+      <div class="hero-eyebrow">
+        <div class="hero-dot"></div>
+        BETA LAUNCH · 첫 번째 상점 모집 중
+      </div>
+      <h1 class="hero-title">
+        좋아하는 상점에<br>
+        <span class="accent">투자하고, 함께 성장</span>하세요
+      </h1>
+      <p class="hero-sub">
+        Starzip은 지역 상점이 자신만의 토큰을 발행하고,<br>
+        고객이 그 성장에 함께 참여하는 DEX 플랫폼입니다.<br>
+        은행 없이, 복잡한 절차 없이.
+      </p>
+      <div class="hero-ctas">
+        <button class="hcta-primary">🚀 런치패드 참여하기</button>
+        <button class="hcta-ghost">상점 등록 신청</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hs-item">
+          <div class="hs-val">8</div>
+          <div class="hs-lbl">예정 상점</div>
+        </div>
+        <div class="hs-item" style="border-left:1px solid rgba(255,255,255,.1);padding-left:28px">
+          <div class="hs-val">$0</div>
+          <div class="hs-lbl">거래 수수료<br><span style="font-size:9px;opacity:.5">Paymaster 대납</span></div>
+        </div>
+        <div class="hs-item" style="border-left:1px solid rgba(255,255,255,.1);padding-left:28px">
+          <div class="hs-val">0.39%</div>
+          <div class="hs-lbl">거래 수수료</div>
+        </div>
+        <div class="hs-item" style="border-left:1px solid rgba(255,255,255,.1);padding-left:28px">
+          <div class="hs-val">opBNB</div>
+          <div class="hs-lbl">블록체인</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 히어로 우측: 런치패드 카운트다운 카드 -->
+    <div style="display:flex;flex-direction:column;gap:12px;position:relative;z-index:1" class="fade-up fd2">
+      <!-- 메인 런치패드 카드 -->
+      <div class="hero-card hc-launch">
+        <div class="hc-top">
+          <span class="hc-label">🚀 첫 런치패드 준비 중</span>
+          <span class="hc-badge">사전 등록</span>
+        </div>
+        <div class="hc-store-row">
+          <div class="hc-store-icon">☕</div>
+          <div>
+            <div class="hc-store-name">브루밍 카페</div>
+            <div class="hc-store-meta">성수동 · 카페 · CAFE 토큰</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:10px">런치패드 오픈까지</div>
+        <div class="hc-clock">
+          <div class="hc-clock-item"><div class="hc-clock-num" id="hc-d">07</div><div class="hc-clock-lbl">Days</div></div>
+          <div class="hc-clock-item"><div class="hc-clock-num" id="hc-h">14</div><div class="hc-clock-lbl">Hours</div></div>
+          <div class="hc-clock-item"><div class="hc-clock-num" id="hc-m">32</div><div class="hc-clock-lbl">Mins</div></div>
+          <div class="hc-clock-item"><div class="hc-clock-num" id="hc-s">08</div><div class="hc-clock-lbl">Secs</div></div>
+        </div>
+        <div class="hc-progress">
+          <div class="hcp-row">
+            <span class="hcp-lbl">사전 등록 현황</span>
+            <span class="hcp-val">42% / 50% 기준선</span>
+          </div>
+          <div class="hcp-bar-bg"><div class="hcp-bar-fill"></div></div>
+        </div>
+        <button style="width:100%;margin-top:12px;padding:10px 0;border-radius:8px;background:rgba(41,112,255,.9);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .12s" onmouseover="this.style.background='rgba(41,112,255,1)'" onmouseout="this.style.background='rgba(41,112,255,.9)'">참여 의향 등록하기</button>
+      </div>
+
+      <!-- 수수료 구조 미니 카드 -->
+      <div class="hero-card">
+        <div class="hc-top"><span class="hc-label">💰 수수료 구조</span><span class="hc-badge hc-badge-w">자동 분배</span></div>
+        <div class="hc-fee-grid">
+          <div class="hcfg-item"><div class="hcfg-val">3%</div><div class="hcfg-lbl">상점 수익</div></div>
+          <div class="hcfg-item"><div class="hcfg-val">97%</div><div class="hcfg-lbl">Starzip</div></div>
+          <div class="hcfg-item"><div class="hcfg-val">$0</div><div class="hcfg-lbl">가스비</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- 메인 콘텐츠 -->
+<div class="page" style="padding-top:32px;padding-bottom:60px">
+
+  <!-- ── Binance식 핫/뉴/상승 스팟라이트 (비어있음) ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:32px">
+
+    <!-- Hot -->
+    <div class="sp-card">
+      <div class="sp-title"><span class="sp-title-ico">🔥</span>Hot <span style="font-size:10px;color:var(--g300);font-weight:400;margin-left:4px">거래량 상위</span></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-cta" onclick="">🚀 상장 예정 · 곧 만나요</div>
+    </div>
+
+    <!-- New Listing -->
+    <div class="sp-card">
+      <div class="sp-title"><span class="sp-title-ico">🆕</span>신규 상장 <span style="font-size:10px;color:var(--g300);font-weight:400;margin-left:4px">New Listing</span></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-cta" onclick="">🏁 첫 상장을 기다리고 있어요</div>
+    </div>
+
+    <!-- Top Gainer -->
+    <div class="sp-card">
+      <div class="sp-title"><span class="sp-title-ico">📈</span>Top Gainer <span style="font-size:10px;color:var(--g300);font-weight:400;margin-left:4px">24H 상승</span></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-empty-row"><div class="sp-slot"></div><div class="sp-slot-info"><div class="sp-slot-name"></div><div class="sp-slot-sub"></div></div><div class="sp-slot-price"><div class="sp-slot-val"></div><div class="sp-slot-chg"></div></div></div>
+      <div class="sp-cta" onclick="">✨ 첫 상장 후 업데이트돼요</div>
+    </div>
+  </div>
+
+  <!-- ── 런치패드 섹션 ── -->
+  <div class="section-hd">
+    <div>
+      <div class="section-title">🚀 런치패드</div>
+      <div class="section-sub">상장 전 공모에 참여하고 STAR 부스트로 배정 우선권을 확보하세요</div>
+    </div>
+    <a class="section-link">전체 보기 →</a>
+  </div>
+
+  <div class="lp-grid">
+
+    <!-- 진행중 카드 1 -->
+    <div class="lp-card">
+      <div class="lp-thumb" style="background:linear-gradient(160deg,#C8B498,#9A7050)">
+        <div class="lp-wm">CAFE</div>
+        <span class="lp-s-badge lp-s-pre">⏰ 사전 등록</span>
+        <span class="lp-dday">D-7</span>
+      </div>
+      <div class="lp-body">
+        <div class="lp-name">브루밍 카페</div>
+        <div class="lp-meta">
+          <span class="lp-chip">☕ 카페</span>
+          <span class="lp-loc">📍 성수동, 서울</span>
+        </div>
+        <div class="lp-pre-bar">
+          <div class="lpb-row"><span class="lpb-lbl">사전 등록 현황</span><span class="lpb-val">42% / 50% 기준</span></div>
+          <div class="lp-bar-bg"><div class="lp-bar-fill lp-bar-p" style="width:42%"></div><div class="lp-softcap-line"></div></div>
+        </div>
+        <div class="lp-stats">
+          <div class="lp-stat"><div class="v">$10,000</div><div class="l">목표금액</div></div>
+          <div class="lp-stat"><div class="v">$0.00010</div><div class="l">공모가</div></div>
+          <div class="lp-stat"><div class="v">284명</div><div class="l">사전등록</div></div>
+        </div>
+        <button class="lp-cta lp-cta-pre">참여 의향 등록하기</button>
+      </div>
+    </div>
+
+    <!-- 예정 카드 2 -->
+    <div class="lp-card lp-card-soon">
+      <div class="lp-thumb" style="background:linear-gradient(160deg,#8FA8C8,#5078A0)">
+        <div class="lp-wm">HAIR</div>
+        <span class="lp-s-badge lp-s-soon">📅 예정</span>
+        <span class="lp-dday">D-21</span>
+      </div>
+      <div class="lp-body">
+        <div class="lp-name">헤어살롱 아뜰리에</div>
+        <div class="lp-meta">
+          <span class="lp-chip">💇 뷰티</span>
+          <span class="lp-loc">📍 홍대, 서울</span>
+        </div>
+        <div class="lp-pre-bar">
+          <div class="lpb-row"><span class="lpb-lbl">공모 예정일</span><span class="lpb-val">2026.04.20</span></div>
+          <div class="lp-bar-bg" style="background:var(--g200)"><div class="lp-bar-fill" style="width:0%;background:var(--g300)"></div></div>
+        </div>
+        <div class="lp-stats">
+          <div class="lp-stat"><div class="v">$15,000</div><div class="l">목표금액</div></div>
+          <div class="lp-stat"><div class="v">$0.00020</div><div class="l">예상 공모가</div></div>
+          <div class="lp-stat"><div class="v">TBD</div><div class="l">총 공급량</div></div>
+        </div>
+        <button class="lp-cta lp-cta-pre" style="opacity:.7">알림 받기</button>
+      </div>
+    </div>
+
+    <!-- 예정 카드 3 -->
+    <div class="lp-card lp-card-soon">
+      <div class="lp-thumb" style="background:linear-gradient(160deg,#A0C8A8,#608060)">
+        <div class="lp-wm">FIT</div>
+        <span class="lp-s-badge lp-s-soon">📅 예정</span>
+        <span class="lp-dday">D-35</span>
+      </div>
+      <div class="lp-body">
+        <div class="lp-name">강남 피트 스튜디오</div>
+        <div class="lp-meta">
+          <span class="lp-chip">💪 피트니스</span>
+          <span class="lp-loc">📍 강남, 서울</span>
+        </div>
+        <div class="lp-pre-bar">
+          <div class="lpb-row"><span class="lpb-lbl">공모 예정일</span><span class="lpb-val">2026.05.05</span></div>
+          <div class="lp-bar-bg" style="background:var(--g200)"><div class="lp-bar-fill" style="width:0%;background:var(--g300)"></div></div>
+        </div>
+        <div class="lp-stats">
+          <div class="lp-stat"><div class="v">$20,000</div><div class="l">목표금액</div></div>
+          <div class="lp-stat"><div class="v">미정</div><div class="l">공모가</div></div>
+          <div class="lp-stat"><div class="v">TBD</div><div class="l">총 공급량</div></div>
+        </div>
+        <button class="lp-cta lp-cta-pre" style="opacity:.7">알림 받기</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── 마켓 테이블 섹션 (빈 상태) ── -->
+  <div class="market-section">
+    <div class="section-hd" style="margin-bottom:0">
+      <div>
+        <div class="section-title">📊 마켓</div>
+        <div class="section-sub">현재 거래 가능한 상점 토큰이 없습니다. 런치패드 이후 상장됩니다.</div>
+      </div>
+    </div>
+    <div class="market-tabs" style="margin-top:14px">
+      <button class="mtab on">전체</button>
+      <button class="mtab">즐겨찾기 ★</button>
+      <button class="mtab">신규 상장</button>
+      <button class="mtab">Hot 🔥</button>
+    </div>
+    <div class="market-toolbar">
+      <div class="mt-search"><span style="color:var(--g400)">🔍</span><input type="text" placeholder="상점 검색..."></div>
+      <div class="mt-chips">
+        <button class="mt-chip on">전체 업종</button>
+        <button class="mt-chip">☕ 카페</button>
+        <button class="mt-chip">💄 뷰티</button>
+        <button class="mt-chip">🍴 식음료</button>
+      </div>
+      <select class="mt-sort"><option>거래량 순</option><option>FDV 순</option><option>신규 순</option></select>
+    </div>
+    <table class="market-table">
+      <thead>
+        <tr>
+          <th class="mt-th" style="width:40px">#</th>
+          <th class="mt-th">상점</th>
+          <th class="mt-th">가격</th>
+          <th class="mt-th">24H 변동</th>
+          <th class="mt-th">24H 거래량</th>
+          <th class="mt-th">시가총액(FDV)</th>
+          <th class="mt-th">24H 차트</th>
+          <th class="mt-th">액션</th>
+        </tr>
+      </thead>
+    </table>
+    <!-- 빈 상태 -->
+    <div class="market-empty">
+      <div class="me-icon">🏪</div>
+      <div class="me-title">아직 상장된 토큰이 없습니다</div>
+      <div class="me-sub">런치패드를 통해 첫 번째 상점 토큰이 공모되고,<br>공모 종료 후 이 마켓에 자동 상장됩니다.<br>지금 런치패드에 참여해 더 좋은 배정 기회를 얻으세요.</div>
+      <button class="me-cta">🚀 런치패드 참여하기</button>
+    </div>
+  </div>
+
+  <!-- ── 플랫폼 소개 ── -->
+  <div class="platform-intro">
+    <div>
+      <div class="pi-title">상점과 고객이 함께<br>만드는 경제</div>
+      <div class="pi-sub">기존 포인트는 쓰면 사라지지만, Starzip 토큰은 거래되고 성장합니다. 좋아하는 카페의 CAFE 토큰을 보유하면, 그 카페가 잘 될수록 함께 성장할 수 있습니다.</div>
+      <div class="pi-features">
+        <div class="pif-item">
+          <div class="pif-ico">🏪</div>
+          <div><div class="pif-title">상점: 커뮤니티 자금 조달</div><div class="pif-desc">은행 대출 없이 충성 고객으로부터 직접 운영 자금을 모집합니다.</div></div>
+        </div>
+        <div class="pif-item">
+          <div class="pif-ico">👥</div>
+          <div><div class="pif-title">고객: 상점 성장에 참여</div><div class="pif-desc">단순 소비자가 아닌, 토큰을 통해 상점 의사결정에 참여하는 주주가 됩니다.</div></div>
+        </div>
+        <div class="pif-item">
+          <div class="pif-ico">💰</div>
+          <div><div class="pif-title">거래마다 상점 수익 공유</div><div class="pif-desc">토큰이 거래될 때마다 수수료의 3%가 해당 상점에 자동 분배됩니다.</div></div>
+        </div>
+        <div class="pif-item">
+          <div class="pif-ico">⛓</div>
+          <div><div class="pif-title">opBNB 기반 · 가스비 $0</div><div class="pif-desc">Paymaster가 대신 내드립니다. 사용자는 가스비 걱정 없이 거래할 수 있습니다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="pi-right">
+      <div class="pi-metric-card">
+        <div class="pm-icon">⚡</div>
+        <div><div class="pm-val">$0</div><div class="pm-lbl">가스비 (Paymaster 대납)</div></div>
+        <span class="pm-badge pm-badge-g">무료</span>
+      </div>
+      <div class="pi-metric-card">
+        <div class="pm-icon">💸</div>
+        <div><div class="pm-val">0.39%</div><div class="pm-lbl">거래 수수료 (Taker)</div></div>
+        <span class="pm-badge pm-badge-b">STAR 할인</span>
+      </div>
+      <div class="pi-metric-card">
+        <div class="pm-icon">🏪</div>
+        <div><div class="pm-val">3%</div><div class="pm-lbl">상점 자동 배분 (수수료의)</div></div>
+        <span class="pm-badge pm-badge-g">실시간</span>
+      </div>
+      <div class="pi-metric-card">
+        <div class="pm-icon">🌐</div>
+        <div><div class="pm-val">opBNB</div><div class="pm-lbl">블록체인 네트워크</div></div>
+        <span class="pm-badge" style="background:var(--w50);color:var(--w700)">초당 수천 건</span>
+      </div>
+      <div class="pi-metric-card">
+        <div class="pm-icon">✦</div>
+        <div><div class="pm-val">DUST</div><div class="pm-lbl">거래·참여 시 적립 → STAR 전환</div></div>
+        <span class="pm-badge pm-badge-g">TGE 후</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 뉴스·가이드 ── -->
+  <div class="news-section">
+    <div class="section-hd">
+      <div>
+        <div class="section-title">📰 공지·가이드</div>
+        <div class="section-sub">Starzip 베타 런치 소식과 사용 가이드</div>
+      </div>
+      <a class="section-link">전체 보기 →</a>
+    </div>
+    <div class="news-grid">
+      <!-- 뉴스 목록 -->
+      <div class="news-main">
+        <div class="news-item">
+          <div class="ni-num">01</div>
+          <div class="ni-body">
+            <div class="ni-title">Starzip 베타 런치 — 지역 상점 DEX, 첫 번째 파일럿 시작</div>
+            <div class="ni-meta"><span class="ni-badge nb-announce">공지</span>2026.04.01</div>
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="ni-num">02</div>
+          <div class="ni-body">
+            <div class="ni-title">런치패드 완전 정복 — 비례 배정, STAR 부스트, OCT 희석까지</div>
+            <div class="ni-meta"><span class="ni-badge nb-guide">가이드</span>2026.03.28</div>
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="ni-num">03</div>
+          <div class="ni-body">
+            <div class="ni-title">사업주 가이드 — 토큰 발행부터 DEX 상장까지 한 번에</div>
+            <div class="ni-meta"><span class="ni-badge nb-guide">가이드</span>2026.03.25</div>
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="ni-num">04</div>
+          <div class="ni-body">
+            <div class="ni-title">DUST 포인트란? — 거래할수록 쌓이고, TGE 후 STAR로 전환</div>
+            <div class="ni-meta"><span class="ni-badge nb-update">업데이트</span>2026.03.20</div>
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="ni-num">05</div>
+          <div class="ni-body">
+            <div class="ni-title">Optimistic Compliance — 분기 공시 어떻게 작동하나요?</div>
+            <div class="ni-meta"><span class="ni-badge nb-guide">가이드</span>2026.03.18</div>
+          </div>
+        </div>
+      </div>
+      <!-- 우측: 시작하기 가이드 -->
+      <div>
+        <div class="side-card">
+          <div class="sc-title">🏁 지금 바로 시작하기</div>
+          <div class="sc-steps">
+            <div class="sc-step"><div class="sc-step-num">1</div><div><div class="sc-step-title">지갑 연결</div><div class="sc-step-sub">MetaMask 또는 WalletConnect</div></div></div>
+            <div class="sc-step"><div class="sc-step-num">2</div><div><div class="sc-step-title">USDT 입금</div><div class="sc-step-sub">opBNB 네트워크로 입금</div></div></div>
+            <div class="sc-step"><div class="sc-step-num">3</div><div><div class="sc-step-title">런치패드 참여</div><div class="sc-step-sub">공모에 참여하고 DUST 적립</div></div></div>
+            <div class="sc-step"><div class="sc-step-num">4</div><div><div class="sc-step-title">토큰 수령 & 거래</div><div class="sc-step-sub">TGE 후 클레임 → DEX 거래</div></div></div>
+          </div>
+          <button class="sc-btn">시작하기 →</button>
+        </div>
+        <div class="side-card" style="background:var(--w50);border-color:var(--w200)">
+          <div class="sc-title" style="color:var(--w700)">⚡ STAR 스테이킹 부스트</div>
+          <div style="font-size:12px;color:var(--w700);line-height:1.6">STAR를 스테이킹하면 런치패드 배정 배율이 최대 <strong>2.0×</strong>까지 높아집니다. 수수료 10% 할인도 함께.</div>
+          <button style="width:100%;margin-top:12px;padding:8px 0;border-radius:8px;background:var(--w500);color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer">STAR 스테이킹 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 파트너·사업주 모집 배너 ── -->
+  <div class="partner-banner">
+    <div class="pb-bg"></div>
+    <div class="pb-left">
+      <div class="pb-eyebrow">📣 상점 모집 중</div>
+      <div class="pb-title">내 상점도 Starzip에<br>올릴 수 있어요</div>
+      <div class="pb-sub">파트너를 통해 신청하거나 직접 신청하세요. 최소 6개월 이상 운영 중인 오프라인 매장이라면 누구나 신청 가능합니다. 은행 없이 커뮤니티에서 직접 자금을 모집하세요.</div>
+    </div>
+    <div class="pb-right">
+      <button class="pb-btn-p">상점 등록 신청하기 →</button>
+      <button class="pb-btn-g">파트너 신청</button>
+    </div>
+  </div>
+
+  <!-- ── FAQ ── -->
+  <div class="faq-section">
+    <div class="section-hd">
+      <div class="section-title">자주 묻는 질문</div>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="togFaq(this)"><span>Starzip은 어떤 플랫폼인가요?</span><span class="faq-ico">+</span></div>
+        <div class="faq-a">Starzip은 지역 상점(카페·음식점·헬스장 등)이 자신만의 토큰을 발행하고, 그 토큰을 고객들이 사고팔 수 있는 탈중앙화 거래소(DEX)입니다. 상점은 은행 없이 커뮤니티에서 자금을 모집하고, 고객은 좋아하는 상점의 성장에 함께 참여할 수 있습니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="togFaq(this)"><span>런치패드란 무엇인가요?</span><span class="faq-ico">+</span></div>
+        <div class="faq-a">런치패드는 상점 토큰이 DEX에 상장되기 전에 공개 모집하는 과정입니다. USDT/USDC로 참여하면 공모가로 토큰을 배정받습니다. STAR 스테이킹 시 최대 2.0× 부스트가 적용됩니다. 소프트캡(목표의 30%)을 달성하지 못하면 전액 자동 환불됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="togFaq(this)"><span>가스비가 정말 $0인가요?</span><span class="faq-ico">+</span></div>
+        <div class="faq-a">사업주 콘솔에서 발행·공시·투표 등 온체인 작업은 Paymaster가 가스비를 대납합니다(월 최대 $1 한도). 일반 사용자의 DEX 거래는 opBNB 네트워크의 가스비가 건당 약 $0.001로 매우 저렴합니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="togFaq(this)"><span>DUST 포인트는 무엇인가요?</span><span class="faq-ico">+</span></div>
+        <div class="faq-a">거래·런치패드 참여·추천 등 플랫폼 활동으로 적립되는 포인트입니다. TGE 이후 STAR 토큰으로 전환할 수 있으며, 만료 없이 유지됩니다. 거래금액의 0.1%, 런치패드 참여금의 0.5%가 적립됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="togFaq(this)"><span>내 자산은 안전한가요?</span><span class="faq-ico">+</span></div>
+        <div class="faq-a">모든 자산은 opBNB 블록체인에 스마트 컨트랙트로 보관됩니다. Starzip은 사용자 자산을 수탁하지 않습니다. 오더북 장애 시에도 자산은 온체인에 안전하게 유지됩니다. 메인넷 배포 전 외부 보안 감사를 완료할 예정입니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="togFaq(this)"><span>상점은 어떻게 등록하나요?</span><span class="faq-ico">+</span></div>
+        <div class="faq-a">파트너를 통해 추천받거나 직접 신청할 수 있습니다. 최소 6개월 이상 운영 중인 오프라인 매장, 사업자등록증 보유 시 신청 가능합니다. 도박·성인·무기·가상자산 관련 업종은 상장이 불가합니다. 심사 기간은 2~4주입니다.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="ft-logo"><div class="ft-logo-mark">SZ</div>Starzip</div>
+        <div class="ft-desc">지역 상점을 위한 탈중앙화 거래소. 상점과 고객이 함께 성장하는 새로운 경제를 만듭니다.</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.2)">Built on opBNB · © 2026 Starzip</div>
+      </div>
+      <div>
+        <div class="ft-col-title">플랫폼</div>
+        <a class="ft-link">Market</a>
+        <a class="ft-link">Trade</a>
+        <a class="ft-link">Launchpad</a>
+        <a class="ft-link">Portfolio</a>
+        <a class="ft-link">DAO</a>
+      </div>
+      <div>
+        <div class="ft-col-title">상점·파트너</div>
+        <a class="ft-link">상점 등록 신청</a>
+        <a class="ft-link">파트너 신청</a>
+        <a class="ft-link">사업주 콘솔</a>
+        <a class="ft-link">파트너 콘솔</a>
+        <a class="ft-link">교육 자료</a>
+      </div>
+      <div>
+        <div class="ft-col-title">알아보기</div>
+        <a class="ft-link">공지사항</a>
+        <a class="ft-link">가이드</a>
+        <a class="ft-link">FAQ</a>
+        <a class="ft-link">STAR 토큰</a>
+        <a class="ft-link">DUST 포인트</a>
+      </div>
+      <div>
+        <div class="ft-col-title">지원</div>
+        <a class="ft-link">고객센터</a>
+        <a class="ft-link">Discord</a>
+        <a class="ft-link">Twitter/X</a>
+        <a class="ft-link">Telegram</a>
+        <a class="ft-link">이용약관</a>
+        <a class="ft-link">개인정보처리방침</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Starzip은 opBNB 블록체인 기반 DEX 플랫폼입니다. 투자에 따른 손실은 사용자 본인 책임입니다.</span>
+      <div class="fb-links">
+        <a class="fb-link">이용약관</a>
+        <a class="fb-link">개인정보처리방침</a>
+        <a class="fb-link">쿠키 설정</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="bb-live"><div class="bb-dot"></div>Live</div>
+  <div class="bb-sep"></div>
+  <span class="bb-link">⚡ Aggregating</span>
+  <div class="bb-sep"></div>
+  <span class="bb-link">🔗 opBNB</span>
+  <div class="bb-sep"></div>
+  <span class="bb-link">Terms</span>
+  <span class="bb-link">Privacy</span>
+  <div class="bb-r">
+    <span class="bb-net">Block #8,241,047</span>
+    <button style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer">🌙 Dark</button>
+  </div>
+</div>
+
+<script>
+/* 카운트다운 */
+let secs = 7*86400+14*3600+32*60+8;
+setInterval(()=>{
+  secs = Math.max(0, secs-1);
+  const d=Math.floor(secs/86400),h=Math.floor((secs%86400)/3600),m=Math.floor((secs%3600)/60),s=secs%60;
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('hc-d').textContent=pad(d);
+  document.getElementById('hc-h').textContent=pad(h);
+  document.getElementById('hc-m').textContent=pad(m);
+  document.getElementById('hc-s').textContent=pad(s);
+},1000);
+
+/* FAQ 토글 */
+function togFaq(btn){
+  const item=btn.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+/* 탭 토글 */
+document.querySelectorAll('.mtab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.mtab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+}));
+document.querySelectorAll('.mt-chip').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.mt-chip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+}));
+</script>
+</body>
+</html>
