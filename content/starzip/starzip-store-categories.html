@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 상점 카테고리</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p50:#EFF4FF;--p100:#D1E0FF;--p500:#2970FF;--p600:#155EEF;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s700:#027A48;
+  --e50:#FEF3F2;--e500:#F04438;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r8:8px;--r12:12px;--r16:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--g50);color:var(--g900);font-size:14px;line-height:1.5;min-height:100vh;padding:32px 20px 60px}
+.root{max-width:980px;margin:0 auto}
+
+/* 헤더 */
+.hd{margin-bottom:28px}
+.hd-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.hd-pill{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--p50);color:var(--p600);border:1px solid var(--p100)}
+.hd-title{font-size:22px;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:4px}
+.hd-sub{font-size:13px;color:var(--g500)}
+
+/* 검색 + 뷰 컨트롤 */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--g0);border:1px solid var(--g200);border-radius:var(--r8);padding:8px 12px;flex:1;min-width:200px;transition:border-color .15s}
+.search-box:focus-within{border-color:var(--p500);box-shadow:0 0 0 3px rgba(41,112,255,.08)}
+.search-ico{color:var(--g400);font-size:14px;flex-shrink:0}
+.search-input{border:none;outline:none;font-size:13px;color:var(--g700);background:transparent;flex:1;font-family:var(--sans)}
+.search-input::placeholder{color:var(--g400)}
+.count-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g500);white-space:nowrap}
+.view-toggle{display:flex;gap:3px;background:var(--g100);border-radius:var(--r8);padding:3px}
+.vt-btn{width:30px;height:30px;border-radius:6px;border:none;background:none;cursor:pointer;color:var(--g400);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.vt-btn.on{background:var(--g0);color:var(--g900);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* 카테고리 섹션 */
+.cat-section{margin-bottom:28px}
+.cat-sec-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cat-sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400)}
+.cat-sec-line{flex:1;height:1px;background:var(--g200)}
+.cat-sec-count{font-size:11px;font-weight:500;color:var(--g400);font-family:var(--mono)}
+
+/* 카테고리 카드 그리드 */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.cat-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:14px 12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;user-select:none}
+.cat-card:hover{border-color:var(--g300);box-shadow:0 2px 8px rgba(0,0,0,.07);transform:translateY(-1px)}
+.cat-card.on{border-color:var(--p500);background:var(--p50)}
+.cat-card::before{content:'';position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .15s}
+.cat-card:hover::before{opacity:.04;background:var(--g900)}
+.cat-icon{font-size:24px;margin-bottom:8px;display:block;line-height:1}
+.cat-name{font-size:13px;font-weight:600;color:var(--g800);margin-bottom:2px;line-height:1.3}
+.cat-name-en{font-size:10px;color:var(--g400);font-weight:500;letter-spacing:.02em}
+.cat-count{font-size:10px;font-weight:600;color:var(--g400);font-family:var(--mono);margin-top:6px;display:flex;align-items:center;gap:3px}
+.cat-count-dot{width:5px;height:5px;border-radius:50%}
+.cat-card.on .cat-name{color:var(--p700)}
+.cat-card.on .cat-name-en{color:var(--p500)}
+.cat-card.on .cat-count{color:var(--p500)}
+
+/* 리스트 뷰 */
+.cat-list{display:flex;flex-direction:column;gap:4px}
+.cat-list-item{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r8);padding:10px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .12s}
+.cat-list-item:hover{border-color:var(--g300);background:var(--g50)}
+.cat-list-item.on{border-color:var(--p500);background:var(--p50)}
+.li-icon{font-size:18px;flex-shrink:0;width:32px;text-align:center}
+.li-info{flex:1;min-width:0}
+.li-name{font-size:13px;font-weight:600;color:var(--g800)}
+.li-name-en{font-size:11px;color:var(--g400)}
+.li-desc{font-size:11px;color:var(--g500);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.li-count{font-size:11px;font-weight:600;color:var(--g400);font-family:var(--mono)}
+.li-arrow{color:var(--g300);font-size:12px}
+.cat-list-item.on .li-name{color:var(--p700)}
+.cat-list-item.on .li-count{color:var(--p500)}
+
+/* 선택 상태 바 */
+.selection-bar{display:flex;align-items:center;gap:10px;background:var(--g900);color:#fff;border-radius:var(--r12);padding:10px 16px;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.sb-label{font-size:13px;font-weight:600}
+.sb-tags{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.sb-tag{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500}
+.sb-tag-x{cursor:pointer;opacity:.7;transition:opacity .12s}
+.sb-tag-x:hover{opacity:1}
+.sb-clear{font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.2);transition:all .12s;white-space:nowrap}
+.sb-clear:hover{background:rgba(255,255,255,.1)}
+
+/* 필터 칩 행 */
+.filter-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.filter-chip:hover{border-color:var(--g400)}
+.filter-chip.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+
+/* 금지 업종 배너 */
+.prohibited-banner{background:var(--e50);border:1px solid #FECDCA;border-radius:var(--r8);padding:10px 14px;font-size:12px;color:var(--e500);display:flex;align-items:center;gap:8px;margin-bottom:20px}
+
+/* 카테고리 없음 */
+.empty{text-align:center;padding:40px 0;color:var(--g400)}
+.empty-ico{font-size:32px;margin-bottom:8px;opacity:.5}
+.empty-txt{font-size:13px}
+
+/* 반응형 */
+@media(max-width:600px){.cat-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}}
+</style>
+</head>
+<body>
+<div class="root">
+
+  <!-- 헤더 -->
+  <div class="hd">
+    <div class="hd-eyebrow">
+      <span class="hd-pill">Starzip 상점 카테고리</span>
+    </div>
+    <div class="hd-title">상점 카테고리 목록</div>
+    <div class="hd-sub">런치패드·Trade 필터, 사업주 등록, 마켓 탐색에 공통 적용되는 분류 체계 · 총 6개 대분류 / 42개 소분류</div>
+  </div>
+
+  <!-- 필터 칩 -->
+  <div class="filter-row">
+    <button class="filter-chip on" onclick="filterGroup('all',this)">전체</button>
+    <button class="filter-chip" onclick="filterGroup('food',this)">🍴 식음료</button>
+    <button class="filter-chip" onclick="filterGroup('beauty',this)">💄 뷰티·웰니스</button>
+    <button class="filter-chip" onclick="filterGroup('life',this)">🏠 생활·서비스</button>
+    <button class="filter-chip" onclick="filterGroup('culture',this)">🎭 문화·엔터테인먼트</button>
+    <button class="filter-chip" onclick="filterGroup('edu',this)">📚 교육·전문직</button>
+    <button class="filter-chip" onclick="filterGroup('retail',this)">🛍 리테일</button>
+  </div>
+
+  <!-- 툴바 -->
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-ico">🔍</span>
+      <input class="search-input" id="search-input" type="text" placeholder="카테고리 검색..." oninput="doSearch()">
+    </div>
+    <span class="count-badge" id="count-badge">42개 카테고리</span>
+    <div class="view-toggle">
+      <button class="vt-btn on" id="vt-grid" onclick="setView('grid')" title="그리드 뷰">⊞</button>
+      <button class="vt-btn" id="vt-list" onclick="setView('list')" title="리스트 뷰">☰</button>
+    </div>
+  </div>
+
+  <!-- 선택 상태 바 (선택 시 표시) -->
+  <div class="selection-bar" id="sel-bar" style="display:none">
+    <span class="sb-label">선택됨</span>
+    <div class="sb-tags" id="sel-tags"></div>
+    <span class="sb-clear" onclick="clearAll()">전체 해제</span>
+  </div>
+
+  <!-- 금지 업종 배너 -->
+  <div class="prohibited-banner">
+    🚫 도박·성인·무기·가상자산 관련 업종은 상장 불가입니다. 금지 업종은 관리자 콘솔에서 DB로 관리됩니다.
+  </div>
+
+  <!-- 카테고리 컨텐츠 -->
+  <div id="cat-content"></div>
+
+</div>
+
+<script>
+/* ══ 데이터 ══ */
+const GROUPS = [
+  {
+    id:'food', label:'식음료', en:'Food & Beverage', count:10,
+    cats:[
+      {id:'cafe',       icon:'☕', name:'카페·커피',      en:'Café & Coffee',     desc:'스페셜티·핸드드립·에스프레소 카페',       n:47},
+      {id:'restaurant', icon:'🍽', name:'음식점',         en:'Restaurant',        desc:'한식·중식·일식·양식·분식 등',             n:83},
+      {id:'bakery',     icon:'🥐', name:'베이커리·디저트', en:'Bakery & Dessert',  desc:'빵집·케이크·마카롱·아이스크림',          n:34},
+      {id:'bar',        icon:'🍺', name:'바·주점',        en:'Bar & Pub',         desc:'와인바·이자카야·맥주집',                  n:21},
+      {id:'fastfood',   icon:'🍔', name:'패스트푸드·분식', en:'Fast Food',         desc:'버거·분식·도시락·포케',                   n:29},
+      {id:'cafe_tearoom',icon:'🫖',name:'티룸·음료',      en:'Tea Room',          desc:'버블티·과일음료·전통차',                  n:18},
+      {id:'foodtruck',  icon:'🚚', name:'푸드트럭',       en:'Food Truck',        desc:'이동식 음식 판매',                        n:9},
+      {id:'brunch',     icon:'🥗', name:'브런치·샐러드',  en:'Brunch & Salad',    desc:'건강식·샐러드바·비건',                    n:15},
+      {id:'bbq',        icon:'🥩', name:'고기·BBQ',       en:'BBQ & Grill',       desc:'삼겹살·갈비·스테이크',                    n:26},
+      {id:'seafood',    icon:'🦞', name:'해산물·횟집',    en:'Seafood',           desc:'회·해물탕·조개구이',                      n:14},
+    ]
+  },
+  {
+    id:'beauty', label:'뷰티·웰니스', en:'Beauty & Wellness', count:9,
+    cats:[
+      {id:'hair',       icon:'💇', name:'헤어살롱',       en:'Hair Salon',        desc:'커트·염색·펌·케어',                       n:62},
+      {id:'nail',       icon:'💅', name:'네일샵',         en:'Nail Shop',         desc:'젤네일·네일아트·케어',                    n:38},
+      {id:'skincare',   icon:'🧴', name:'피부관리실',     en:'Skin Care',         desc:'피부관리·클렌징·미용기기',                n:27},
+      {id:'makeup',     icon:'💄', name:'메이크업·속눈썹', en:'Makeup & Lash',    desc:'반영구·속눈썹·메이크업',                  n:19},
+      {id:'massage',    icon:'🧘', name:'마사지·스파',    en:'Massage & Spa',     desc:'타이마사지·아로마·스파',                  n:23},
+      {id:'fitness',    icon:'💪', name:'피트니스·헬스',  en:'Fitness & Gym',     desc:'헬스장·PT·필라테스·요가',                 n:41},
+      {id:'yoga',       icon:'🤸', name:'요가·필라테스',  en:'Yoga & Pilates',    desc:'스튜디오·소그룹 수업',                    n:30},
+      {id:'barbershop', icon:'💈', name:'바버샵',         en:'Barber Shop',       desc:'남성 커트·면도·왁싱',                     n:16},
+      {id:'tanning',    icon:'☀️', name:'태닝·왁싱',      en:'Tanning & Waxing',  desc:'선탠·제모·왁싱',                          n:11},
+    ]
+  },
+  {
+    id:'life', label:'생활·서비스', en:'Life & Services', count:8,
+    cats:[
+      {id:'laundry',    icon:'👕', name:'세탁·수선',      en:'Laundry & Repair',  desc:'셀프세탁·드라이클리닝·수선',              n:22},
+      {id:'pet',        icon:'🐾', name:'반려동물',       en:'Pet Care',          desc:'펫숍·미용·동물병원·호텔',                 n:34},
+      {id:'pharmacy',   icon:'💊', name:'약국·헬스케어',  en:'Pharmacy',          desc:'약국·건강기능식품',                       n:18},
+      {id:'flowers',    icon:'🌸', name:'꽃집·인테리어',  en:'Flowers & Decor',   desc:'플라워샵·인테리어 소품',                  n:14},
+      {id:'car',        icon:'🚗', name:'자동차 서비스',  en:'Auto Service',      desc:'세차·튜닝·수리·렌트',                     n:19},
+      {id:'printing',   icon:'🖨', name:'인쇄·출력',      en:'Print & Copy',      desc:'인쇄소·사진관·현상',                      n:9},
+      {id:'cleaning',   icon:'🧹', name:'청소·홈케어',    en:'Cleaning',          desc:'가사도우미·입주청소·방역',                n:12},
+      {id:'repair',     icon:'🔧', name:'수리·기술',      en:'Repair Service',    desc:'핸드폰·가전·자전거 수리',                 n:16},
+    ]
+  },
+  {
+    id:'culture', label:'문화·엔터테인먼트', en:'Culture & Entertainment', count:7,
+    cats:[
+      {id:'study',      icon:'📚', name:'독서실·스터디카페', en:'Study Café',     desc:'코인독서실·스터디룸',                     n:28},
+      {id:'arcade',     icon:'🎮', name:'오락·게임',       en:'Arcade & Gaming', desc:'PC방·오락실·보드게임카페',                 n:17},
+      {id:'photozone',  icon:'📸', name:'사진관·포토부스', en:'Photo Studio',    desc:'즉석사진·셀프스튜디오·웨딩',               n:22},
+      {id:'karaoke',    icon:'🎤', name:'노래방·코인노래방', en:'Karaoke',        desc:'일반·코인·룸카라오케',                    n:15},
+      {id:'escape',     icon:'🔐', name:'방탈출·테마파크', en:'Escape Room',     desc:'방탈출카페·VR체험',                       n:10},
+      {id:'billiards',  icon:'🎱', name:'당구·볼링',       en:'Billiards & Bowl',desc:'당구장·볼링장·탁구장',                    n:9},
+      {id:'craft',      icon:'🎨', name:'공방·클래스',     en:'Workshop & Class',desc:'도예·그림·플라워·공예',                   n:24},
+    ]
+  },
+  {
+    id:'edu', label:'교육·전문직', en:'Education & Professional', count:5,
+    cats:[
+      {id:'tutoring',   icon:'✏️', name:'학원·과외',       en:'Tutoring',         desc:'수학·영어·입시·예체능',                  n:31},
+      {id:'language',   icon:'🌐', name:'어학원',          en:'Language School',  desc:'영어·중국어·일어 학원',                   n:19},
+      {id:'music',      icon:'🎵', name:'음악학원',        en:'Music School',     desc:'피아노·기타·드럼·보컬',                   n:22},
+      {id:'art',        icon:'🎨', name:'미술학원',        en:'Art School',       desc:'입시미술·취미미술·디자인',                n:14},
+      {id:'sports_edu', icon:'⚽', name:'스포츠 교습소',   en:'Sports Coaching',  desc:'수영·태권도·골프·테니스',                 n:18},
+    ]
+  },
+  {
+    id:'retail', label:'리테일·쇼핑', en:'Retail & Shopping', count:3,
+    cats:[
+      {id:'fashion',    icon:'👗', name:'의류·패션',       en:'Fashion & Apparel',desc:'옷가게·빈티지·편집숍',                    n:29},
+      {id:'groceries',  icon:'🛒', name:'식품·마트',       en:'Grocery & Market', desc:'편의점·식품점·유기농마켓',                n:21},
+      {id:'gift',       icon:'🎁', name:'선물·잡화',       en:'Gift & General',   desc:'문구·선물가게·생활잡화',                  n:17},
+    ]
+  }
+];
+
+/* ══ 상태 ══ */
+let viewMode = 'grid';
+let selected = new Set();
+let currentGroup = 'all';
+let searchQ = '';
+
+/* ══ 뷰 전환 ══ */
+function setView(v){
+  viewMode = v;
+  document.getElementById('vt-grid').classList.toggle('on', v==='grid');
+  document.getElementById('vt-list').classList.toggle('on', v==='list');
+  render();
+}
+
+/* ══ 그룹 필터 ══ */
+function filterGroup(id, btn){
+  currentGroup = id;
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+/* ══ 검색 ══ */
+function doSearch(){
+  searchQ = document.getElementById('search-input').value.trim().toLowerCase();
+  render();
+}
+
+/* ══ 카드 클릭 ══ */
+function toggleCat(id){
+  if(selected.has(id)) selected.delete(id);
+  else selected.add(id);
+  renderSelBar();
+  render();
+}
+
+/* ══ 전체 해제 ══ */
+function clearAll(){
+  selected.clear();
+  renderSelBar();
+  render();
+}
+
+/* ══ 선택 바 ══ */
+function renderSelBar(){
+  const bar = document.getElementById('sel-bar');
+  const tags = document.getElementById('sel-tags');
+  if(selected.size === 0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  // 선택된 항목 이름 찾기
+  const items = [];
+  GROUPS.forEach(g => g.cats.forEach(c => { if(selected.has(c.id)) items.push(c); }));
+  tags.innerHTML = items.map(c =>
+    `<span class="sb-tag">${c.icon} ${c.name}<span class="sb-tag-x" onclick="toggleCat('${c.id}')">×</span></span>`
+  ).join('');
+}
+
+/* ══ 렌더 ══ */
+function render(){
+  const groups = currentGroup==='all' ? GROUPS : GROUPS.filter(g=>g.id===currentGroup);
+  let totalVisible = 0;
+  let html = '';
+
+  groups.forEach(g => {
+    const cats = g.cats.filter(c => {
+      if(!searchQ) return true;
+      return c.name.includes(searchQ) || c.en.toLowerCase().includes(searchQ) || (c.desc && c.desc.includes(searchQ));
+    });
+    if(cats.length === 0) return;
+    totalVisible += cats.length;
+
+    html += `<div class="cat-section" data-group="${g.id}">
+      <div class="cat-sec-header">
+        <span class="cat-sec-label">${g.label}</span>
+        <div class="cat-sec-line"></div>
+        <span class="cat-sec-count">${cats.length}개</span>
+      </div>`;
+
+    if(viewMode === 'grid'){
+      html += `<div class="cat-grid">`;
+      cats.forEach(c => {
+        const on = selected.has(c.id) ? ' on' : '';
+        const color = getCatColor(g.id);
+        html += `
+          <div class="cat-card${on}" onclick="toggleCat('${c.id}')">
+            <span class="cat-icon">${c.icon}</span>
+            <div class="cat-name">${c.name}</div>
+            <div class="cat-name-en">${c.en}</div>
+            <div class="cat-count">
+              <div class="cat-count-dot" style="background:${color}"></div>
+              ${c.n}개 상점
+            </div>
+          </div>`;
+      });
+      html += `</div>`;
+    } else {
+      html += `<div class="cat-list">`;
+      cats.forEach(c => {
+        const on = selected.has(c.id) ? ' on' : '';
+        html += `
+          <div class="cat-list-item${on}" onclick="toggleCat('${c.id}')">
+            <span class="li-icon">${c.icon}</span>
+            <div class="li-info">
+              <div class="li-name">${c.name} <span style="font-weight:400;color:var(--g400);font-size:11px">${c.en}</span></div>
+              <div class="li-desc">${c.desc}</div>
+            </div>
+            <div class="li-right">
+              <span class="li-count">${c.n}개</span>
+              <span class="li-arrow">›</span>
+            </div>
+          </div>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  if(totalVisible === 0){
+    html = `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">"${searchQ}"에 해당하는 카테고리가 없습니다</div></div>`;
+  }
+
+  document.getElementById('cat-content').innerHTML = html;
+  document.getElementById('count-badge').textContent =
+    selected.size > 0 ? `${totalVisible}개 · ${selected.size}개 선택` : `${totalVisible}개 카테고리`;
+}
+
+function getCatColor(groupId){
+  const map = {food:'#F79009',beauty:'#EE46BC',life:'#2E90FA',culture:'#7A5AF8',edu:'#12B76A',retail:'#F04438'};
+  return map[groupId] || '#667085';
+}
+
+/* 초기 렌더 */
+render();
+</script>
+</body>
+</html>
