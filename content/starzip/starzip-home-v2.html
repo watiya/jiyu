@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 지역 상점 DEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g25:#FCFCFD;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p25:#F5F8FF;--p50:#EFF4FF;--p100:#D1E0FF;--p300:#84ADFF;
+  --p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s600:#039855;--s700:#027A48;
+  --e50:#FEF3F2;--e500:#F04438;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--g0);color:var(--g900);font-size:14px;line-height:1.5;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:4px}
+
+/* ── NAV ── */
+.nav{
+  position:absolute;top:0;left:0;right:0;z-index:100;
+  height:60px;display:flex;align-items:center;padding:0 40px;gap:8px;
+}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:800;color:#fff;margin-right:28px;letter-spacing:-.02em}
+.nav-logo-mark{width:30px;height:30px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--p600)}
+.nl{padding:6px 12px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,.8);border:none;background:none;cursor:pointer;transition:all .12s}
+.nl:hover{color:#fff;background:rgba(255,255,255,.1)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-btn-g{padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.25);cursor:pointer;backdrop-filter:blur(8px);transition:all .12s}
+.nav-btn-g:hover{background:rgba(255,255,255,.22)}
+.nav-btn-p{padding:8px 18px;border-radius:8px;background:#fff;color:var(--g900);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .12s}
+.nav-btn-p:hover{background:var(--g100)}
+
+/* ── HERO ── */
+.hero{
+  position:relative;height:680px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+/* 배경: 그라디언트 기반 풍경 대체 */
+.hero-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,#0A1628 0%,#0D2045 25%,#143580 55%,#1a4c8e 70%,#0a2a5e 100%);
+}
+/* 아쿠아 오버레이 (바다 느낌) */
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 80%, rgba(20,100,180,.4) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 20% 60%, rgba(255,255,255,.04) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 80% 40%, rgba(41,112,255,.15) 0%, transparent 60%);
+}
+/* 격자 패턴 */
+.hero-bg::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+/* 물결 SVG 장식 */
+.hero-wave{position:absolute;bottom:0;left:0;right:0;height:160px;opacity:.15}
+
+.hero-content{
+  position:relative;z-index:2;text-align:center;padding:0 24px;
+  max-width:720px;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;
+  background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.2);margin-bottom:20px;
+  backdrop-filter:blur(8px);letter-spacing:.03em
+}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--s500);animation:hpulse 2s infinite}
+@keyframes hpulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{
+  font-size:52px;font-weight:800;color:#fff;
+  line-height:1.1;letter-spacing:-.03em;margin-bottom:16px
+}
+.hero-title .hl{
+  background:linear-gradient(90deg,#60A5FA,#93C5FD);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.hero-sub{font-size:17px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:0}
+
+/* ── 검색 박스 (Magnolia 스타일) ── */
+.search-box-wrap{
+  position:relative;z-index:10;
+  max-width:980px;margin:-56px auto 0;
+  padding:0 24px;
+}
+.search-box{
+  background:#fff;
+  border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.08);
+  padding:20px 24px 18px;
+}
+.sb-tabs{display:flex;gap:0;margin-bottom:18px;border-bottom:1px solid var(--g100);padding-bottom:0}
+.sb-tab{padding:8px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;display:flex;align-items:center;gap:6px}
+.sb-tab:hover{color:var(--g700)}
+.sb-tab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.sb-fields{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:0;align-items:end}
+.sb-field{padding:0 20px;border-right:1px solid var(--g100)}
+.sb-field:first-child{padding-left:0}
+.sb-field:last-child{border-right:none;padding-right:0}
+.sb-field-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g500);margin-bottom:5px}
+.sb-field-input{display:flex;align-items:center;gap:8px;cursor:pointer}
+.sb-field-ico{font-size:14px;color:var(--g400)}
+.sb-field-val{font-size:14px;font-weight:500;color:var(--g800);flex:1}
+.sb-field-val.placeholder{color:var(--g400);font-weight:400}
+.sb-field-arrow{color:var(--g300);font-size:11px;margin-left:auto}
+.sb-search-btn{
+  padding:14px 28px;border-radius:12px;background:var(--g900);color:#fff;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+  transition:background .12s;height:50px
+}
+.sb-search-btn:hover{background:var(--g700)}
+
+/* 필터 칩 행 */
+.sb-filter-row{display:flex;align-items:center;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--g100);flex-wrap:wrap}
+.sb-filter-label{font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+.sb-chip{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g50);color:var(--g600);cursor:pointer;transition:all .12s;white-space:nowrap}
+.sb-chip:hover{border-color:var(--g400);color:var(--g800)}
+.sb-chip.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+
+/* ── 페이지 래퍼 ── */
+.page{max-width:1160px;margin:0 auto;padding:0 24px}
+
+/* ── 신뢰 로고 바 ── */
+.trust-bar{
+  padding:32px 0;text-align:center;
+  border-bottom:1px solid var(--g100);margin-bottom:0
+}
+.trust-label{font-size:12px;font-weight:500;color:var(--g400);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em}
+.trust-logos{display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap}
+.trust-logo{font-size:13px;font-weight:700;color:var(--g300);letter-spacing:-.01em;display:flex;align-items:center;gap:6px}
+.trust-logo::before{content:'';width:14px;height:14px;border-radius:50%;background:var(--g200)}
+
+/* ── 섹션 공통 ── */
+.section{padding:56px 0}
+.section-hd{text-align:center;margin-bottom:36px}
+.section-hd-left{text-align:left;margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between}
+.section-eyebrow{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--p600);margin-bottom:8px}
+.section-title{font-size:30px;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--g500);line-height:1.6;max-width:520px;margin:0 auto}
+.see-all{font-size:13px;font-weight:600;color:var(--g700);cursor:pointer;display:flex;align-items:center;gap:5px;border:1px solid var(--g200);padding:7px 14px;border-radius:8px;transition:all .12s}
+.see-all:hover{background:var(--g50);border-color:var(--g300)}
+
+/* ── Hot/New/Gainer 스팟라이트 ── */
+.spotlight-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:48px}
+.spot-card{background:var(--g0);border:1px solid var(--g200);border-radius:16px;padding:18px;transition:all .15s}
+.spot-card:hover{border-color:var(--g300);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.spot-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.spot-title{font-size:13px;font-weight:700;color:var(--g700);display:flex;align-items:center;gap:6px}
+.spot-more{font-size:11px;color:var(--g400);cursor:pointer}
+/* 빈 슬롯 */
+.spot-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100)}
+.spot-row:last-of-type{border-bottom:none}
+.spot-avatar{width:34px;height:34px;border-radius:50%;background:var(--g100);border:1.5px dashed var(--g300);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--g300)}
+.spot-info{flex:1}
+.spot-name{height:10px;width:65%;background:var(--g100);border-radius:4px;margin-bottom:5px}
+.spot-sub{height:8px;width:45%;background:var(--g100);border-radius:4px}
+.spot-price-col{text-align:right}
+.spot-price{height:10px;width:44px;background:var(--g100);border-radius:4px;margin-bottom:5px;margin-left:auto}
+.spot-chg{height:8px;width:32px;background:var(--g100);border-radius:4px;margin-left:auto}
+/* 실제 슬롯 (데이터 있을 때) */
+.spot-row-real{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100);cursor:pointer;transition:background .12s}
+.spot-row-real:hover{background:var(--g50);margin:0 -4px;padding:8px 4px;border-radius:6px}
+.spot-row-real:last-of-type{border-bottom:none}
+.sra-ico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.sra-name{font-size:13px;font-weight:600;color:var(--g800)}
+.sra-sub{font-size:11px;color:var(--g400)}
+.sra-price{font-size:13px;font-weight:700;color:var(--g900);font-family:var(--mono);text-align:right}
+.sra-chg{font-size:11px;font-weight:600;text-align:right;font-family:var(--mono)}
+.up{color:var(--s600)}.dn{color:var(--e500)}
+.spot-empty-cta{margin-top:10px;padding:9px 0;border-radius:8px;border:1.5px dashed var(--g200);width:100%;background:none;font-size:12px;color:var(--g400);cursor:pointer;transition:all .12s;text-align:center}
+.spot-empty-cta:hover{border-color:var(--p300);color:var(--p600);background:var(--p50)}
+
+/* ── 런치패드 딜 섹션 (Magnolia 대형 그리드) ── */
+.deals-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:56px}
+.deal-main{grid-row:1/3;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;min-height:480px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .2s}
+.deal-main:hover{transform:scale(1.01)}
+.deal-main-bg{position:absolute;inset:0;background:linear-gradient(160deg,#C8B498,#8A5C30)}
+.deal-main-bg-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,.1) 60%,transparent 100%)}
+.deal-main-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:100px;font-weight:900;color:rgba(255,255,255,.06);letter-spacing:-5px;user-select:none}
+.deal-main-content{position:relative;z-index:2;padding:24px}
+.deal-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;backdrop-filter:blur(8px);margin-bottom:10px}
+.db-pre{background:rgba(247,144,9,.9);color:#fff}
+.db-active{background:rgba(41,112,255,.9);color:#fff}
+.db-soon{background:rgba(102,112,133,.8);color:#fff}
+.deal-main-title{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:4px}
+.deal-main-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:14px}
+.deal-progress-wrap{margin-bottom:14px}
+.dp-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.dp-lbl{color:rgba(255,255,255,.5)}
+.dp-val{color:rgba(255,255,255,.85);font-weight:600;font-family:var(--mono)}
+.dp-bar-bg{height:4px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
+.dp-bar-fill{height:100%;border-radius:4px;background:var(--w500)}
+.deal-meta{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.dm-item{font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px}
+.dm-val{color:#fff;font-weight:600;font-family:var(--mono)}
+.deal-main-btn{padding:11px 0;border-radius:10px;background:#fff;color:var(--g900);font-size:13px;font-weight:700;border:none;cursor:pointer;width:100%;transition:all .12s;text-align:center}
+.deal-main-btn:hover{background:var(--g100)}
+
+/* 우측 소형 카드들 */
+.deal-small{border-radius:16px;overflow:hidden;position:relative;cursor:pointer;min-height:228px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .18s}
+.deal-small:hover{transform:scale(1.01)}
+.ds-bg{position:absolute;inset:0}
+.ds-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 60%)}
+.ds-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:rgba(255,255,255,.08);user-select:none}
+.ds-content{position:relative;z-index:2;padding:16px}
+.ds-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:7px;backdrop-filter:blur(6px)}
+.ds-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.ds-meta{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:10px}
+.ds-bottom{display:flex;align-items:center;justify-content:space-between}
+.ds-price{font-size:13px;font-weight:700;color:#fff;font-family:var(--mono)}
+.ds-btn{padding:7px 14px;border-radius:8px;background:rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.2);cursor:pointer;backdrop-filter:blur(8px);transition:all .12s}
+.ds-btn:hover{background:rgba(255,255,255,.25)}
+.ds-progress{margin-bottom:8px}
+.dsp-bar-bg{height:3px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
+.dsp-bar-fill{height:100%;border-radius:4px;background:var(--w500)}
+
+/* ── 마켓 테이블 ── */
+.market-wrap{margin-bottom:56px}
+.market-header{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--g200);margin-bottom:0}
+.mtab{padding:11px 16px;font-size:13px;font-weight:600;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;white-space:nowrap}
+.mtab.on{color:var(--g900);border-bottom-color:var(--g900)}
+.market-toolbar{display:flex;align-items:center;gap:8px;padding:14px 0;border-bottom:1px solid var(--g100);flex-wrap:wrap}
+.mt-search{display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:8px 14px;min-width:220px;transition:border-color .15s}
+.mt-search:focus-within{border-color:var(--p500)}
+.mt-search input{border:none;outline:none;background:transparent;font-size:13px;color:var(--g700);font-family:var(--sans);width:100%}
+.mt-search input::placeholder{color:var(--g400)}
+.mt-chip{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s;white-space:nowrap}
+.mt-chip:hover{border-color:var(--g300)}
+.mt-chip.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+.mt-sort{margin-left:auto;padding:6px 12px;border-radius:20px;font-size:12px;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;font-family:var(--sans)}
+
+.mkt-table{width:100%;border-collapse:collapse}
+.mkt-th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);padding:10px 12px;text-align:left;border-bottom:1px solid var(--g200);white-space:nowrap;cursor:pointer}
+.mkt-th:hover{color:var(--g600)}
+.mkt-empty{padding:64px 0;text-align:center}
+.me-icon{font-size:52px;margin-bottom:12px;opacity:.25}
+.me-title{font-size:16px;font-weight:700;color:var(--g700);margin-bottom:6px}
+.me-sub{font-size:13px;color:var(--g400);line-height:1.6;margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto}
+.me-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:8px;background:var(--p500);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .12s}
+.me-btn:hover{background:var(--p700)}
+
+/* ── 플랫폼 소개 (Magnolia Best Deals 스타일) ── */
+.intro-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;margin-bottom:56px}
+.intro-left .tag{display:inline-block;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:var(--p50);color:var(--p600);border:1px solid var(--p100);margin-bottom:16px}
+.intro-title{font-size:32px;font-weight:800;color:var(--g900);letter-spacing:-.02em;line-height:1.2;margin-bottom:14px}
+.intro-sub{font-size:15px;color:var(--g500);line-height:1.7;margin-bottom:28px}
+.intro-features{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.intf{background:var(--g50);border:1px solid var(--g200);border-radius:12px;padding:14px}
+.intf-ico{font-size:20px;margin-bottom:8px}
+.intf-title{font-size:13px;font-weight:700;color:var(--g800);margin-bottom:3px}
+.intf-desc{font-size:12px;color:var(--g500);line-height:1.5}
+/* 우측 메트릭 카드들 */
+.intro-right{display:flex;flex-direction:column;gap:10px}
+.metric-card{background:var(--g0);border:1px solid var(--g200);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;transition:all .15s}
+.metric-card:hover{border-color:var(--g300);box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
+.mc-ico{font-size:26px;width:48px;height:48px;border-radius:12px;background:var(--g50);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-val{font-size:22px;font-weight:800;color:var(--g900);font-family:var(--mono);letter-spacing:-.02em;margin-bottom:1px}
+.mc-lbl{font-size:12px;color:var(--g500)}
+.mc-badge{margin-left:auto;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+.mb-g{background:var(--s50);color:var(--s700)}
+.mb-b{background:var(--p50);color:var(--p600)}
+.mb-w{background:var(--w50);color:var(--w700)}
+
+/* ── FAQ ── */
+.faq-section{padding:56px 0;background:var(--g50);margin:0 -24px;padding-left:24px;padding-right:24px}
+.faq-inner{max-width:760px;margin:0 auto}
+.faq-list{margin-top:32px;display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--g200);overflow:hidden}
+.faq-item:first-child{border-top:1px solid var(--g200)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:var(--g0);cursor:pointer;transition:background .12s;gap:12px}
+.faq-item.open .faq-q{background:var(--g900);color:#fff}
+.faq-q-text{font-size:14px;font-weight:600;color:inherit}
+.faq-ico{font-size:18px;flex-shrink:0;transition:transform .2s;color:var(--g400)}
+.faq-item.open .faq-ico{transform:rotate(45deg);color:#fff}
+.faq-a{display:none;padding:18px 24px;background:var(--g50);font-size:13px;color:var(--g600);line-height:1.75}
+.faq-item.open .faq-a{display:block}
+
+/* ── CTA 배너 (Magnolia 하단 배너) ── */
+.cta-banner{
+  margin:56px 0;border-radius:24px;overflow:hidden;
+  position:relative;min-height:300px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+}
+.cta-banner-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,#0A1628 0%,#0D2045 50%,#0A1628 100%)
+}
+.cta-banner-bg::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 50% 120%,rgba(20,100,180,.5),transparent 60%)
+}
+.cta-banner-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:40px 40px
+}
+.cta-content{position:relative;z-index:2;padding:48px 32px}
+.cta-title{font-size:38px;font-weight:800;color:#fff;letter-spacing:-.03em;line-height:1.15;margin-bottom:12px}
+.cta-sub{font-size:15px;color:rgba(255,255,255,.55);margin-bottom:28px;max-width:440px;margin-left:auto;margin-right:auto}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn-p{padding:13px 28px;border-radius:10px;background:var(--p500);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .15s}
+.cta-btn-p:hover{background:var(--p700);transform:translateY(-1px)}
+.cta-btn-g{padding:13px 28px;border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.2);cursor:pointer;transition:all .15s}
+.cta-btn-g:hover{background:rgba(255,255,255,.15)}
+
+/* ── 파트너·뉴스 ── */
+.news-section{padding:0 0 56px}
+.news-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.news-list{display:flex;flex-direction:column;gap:0}
+.ni{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--g100);cursor:pointer}
+.ni:last-child{border-bottom:none}
+.ni:hover .ni-title{color:var(--p600)}
+.ni-idx{font-size:11px;font-weight:700;color:var(--g200);font-family:var(--mono);width:20px;flex-shrink:0;margin-top:2px}
+.ni-title{font-size:13px;font-weight:600;color:var(--g800);line-height:1.4;margin-bottom:3px;transition:color .12s}
+.ni-meta{font-size:11px;color:var(--g400);display:flex;align-items:center;gap:6px}
+.ni-badge{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px}
+.nb-a{background:var(--p50);color:var(--p600)}
+.nb-g{background:var(--s50);color:var(--s700)}
+.nb-u{background:var(--w50);color:var(--w700)}
+.side-card{background:var(--g50);border:1px solid var(--g200);border-radius:16px;padding:18px;margin-bottom:12px}
+.sc-title{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:12px}
+.sc-step{display:flex;gap:10px;margin-bottom:10px}
+.sc-step:last-child{margin-bottom:0}
+.sc-step-n{width:22px;height:22px;border-radius:50%;background:var(--p50);color:var(--p600);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sc-step-t{font-size:12px;font-weight:600;color:var(--g800);margin-bottom:1px}
+.sc-step-s{font-size:11px;color:var(--g500)}
+.sc-btn{width:100%;margin-top:14px;padding:10px 0;border-radius:8px;background:var(--g900);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .12s}
+.sc-btn:hover{background:var(--g700)}
+
+/* ── FOOTER ── */
+.footer{background:var(--g900);color:rgba(255,255,255,.5);padding:48px 24px 24px}
+.footer-inner{max-width:1160px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;gap:32px;margin-bottom:40px}
+.ft-logo{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ft-logo-m{width:26px;height:26px;border-radius:7px;background:var(--p600);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.ft-desc{font-size:12px;line-height:1.6;color:rgba(255,255,255,.3);margin-bottom:16px}
+.ft-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.4);margin-bottom:12px}
+.ft-a{display:block;font-size:12px;color:rgba(255,255,255,.35);padding:3px 0;cursor:pointer;transition:color .12s}
+.ft-a:hover{color:rgba(255,255,255,.75)}
+.ft-subscribe{margin-top:12px;display:flex;gap:8px}
+.ft-email{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:12px;font-family:var(--sans);outline:none}
+.ft-email::placeholder{color:rgba(255,255,255,.3)}
+.ft-sub-btn{padding:8px 14px;border-radius:8px;background:var(--p600);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;white-space:nowrap}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.25);flex-wrap:wrap;gap:8px}
+.fb-links{display:flex;gap:16px}
+.fb-l{color:rgba(255,255,255,.25);cursor:pointer;transition:color .12s}
+.fb-l:hover{color:rgba(255,255,255,.6)}
+
+/* ── BOTTOM BAR ── */
+.bb{position:fixed;bottom:0;left:0;right:0;height:44px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--g200);display:flex;align-items:center;padding:0 24px;gap:8px;z-index:200}
+.bb-live{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--s700)}
+.bb-ld{width:6px;height:6px;border-radius:50%;background:var(--s500);animation:bld 2s infinite}
+@keyframes bld{0%,100%{opacity:1}50%{opacity:.3}}
+.bb-sep{width:1px;height:14px;background:var(--g200)}
+.bb-lnk{font-size:12px;color:var(--g500);cursor:pointer;padding:3px 6px;border-radius:4px;transition:all .12s}
+.bb-lnk:hover{background:var(--g100);color:var(--g700)}
+.bb-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+/* 반응형 */
+@media(max-width:1024px){
+  .sb-fields{grid-template-columns:1fr 1fr auto}
+  .sb-field:nth-child(3){display:none}
+  .deals-grid{grid-template-columns:1fr}
+  .deal-main{min-height:360px}
+  .intro-grid{grid-template-columns:1fr;gap:32px}
+  .footer-top{grid-template-columns:1fr 1fr 1fr}
+  .news-grid{grid-template-columns:1fr}
+  .spotlight-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .hero-title{font-size:34px}
+  .hero{height:520px}
+  .search-box-wrap{padding:0 14px}
+  .sb-fields{grid-template-columns:1fr}
+  .sb-field{border-right:none;border-bottom:1px solid var(--g100);padding:10px 0}
+  .sb-field:last-child{border-bottom:none}
+  .sb-search-btn{width:100%;justify-content:center;margin-top:8px}
+  .spotlight-grid{grid-template-columns:1fr}
+  .deals-grid{grid-template-columns:1fr}
+  .nav{padding:0 16px}
+  .cta-title{font-size:26px}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .5s ease both}
+.fu1{animation-delay:.05s}.fu2{animation-delay:.12s}.fu3{animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-logo-mark">SZ</div>Starzip</div>
+  <button class="nl">Market</button>
+  <button class="nl">Trade</button>
+  <button class="nl">Launchpad</button>
+  <button class="nl">Portfolio</button>
+  <button class="nl">More ▾</button>
+  <div class="nav-r">
+    <button class="nav-btn-g">지갑 연결</button>
+    <button class="nav-btn-p">Sign Up</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <!-- SVG 물결 장식 -->
+  <svg class="hero-wave" viewBox="0 0 1440 160" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 80C180 20 360 140 540 80C720 20 900 140 1080 80C1260 20 1350 100 1440 80V160H0V80Z" fill="rgba(255,255,255,0.04)"/>
+    <path d="M0 120C200 60 400 160 600 100C800 40 1000 160 1200 100C1350 60 1400 120 1440 100V160H0V120Z" fill="rgba(255,255,255,0.03)"/>
+  </svg>
+  <div class="hero-content fu fu1">
+    <div class="hero-eyebrow"><div class="hero-dot"></div>BETA LAUNCH · 첫 번째 런치패드 준비 중</div>
+    <h1 class="hero-title">좋아하는 상점에<br><span class="hl">투자하고, 함께 성장</span>하세요</h1>
+    <p class="hero-sub">지역 카페·음식점·헬스장이 발행한 토큰을 거래하고,<br>상점의 성장에 직접 참여하는 DEX 플랫폼</p>
+  </div>
+</section>
+
+<!-- 검색 박스 (Magnolia 스타일) -->
+<div class="search-box-wrap fu fu2">
+  <div class="search-box">
+    <!-- 탭 -->
+    <div class="sb-tabs">
+      <button class="sb-tab on" onclick="swSbTab(this)">🏪 상점 탐색</button>
+      <button class="sb-tab" onclick="swSbTab(this)">🚀 런치패드</button>
+      <button class="sb-tab" onclick="swSbTab(this)">📊 마켓</button>
+    </div>
+    <!-- 필드 행 -->
+    <div class="sb-fields">
+      <div class="sb-field">
+        <div class="sb-field-label">업종</div>
+        <div class="sb-field-input">
+          <span class="sb-field-ico">🏪</span>
+          <span class="sb-field-val placeholder">업종을 선택하세요</span>
+          <span class="sb-field-arrow">▾</span>
+        </div>
+      </div>
+      <div class="sb-field">
+        <div class="sb-field-label">지역·국가</div>
+        <div class="sb-field-input">
+          <span class="sb-field-ico">📍</span>
+          <span class="sb-field-val placeholder">지역을 선택하세요</span>
+          <span class="sb-field-arrow">▾</span>
+        </div>
+      </div>
+      <div class="sb-field">
+        <div class="sb-field-label">정렬</div>
+        <div class="sb-field-input">
+          <span class="sb-field-ico">📊</span>
+          <span class="sb-field-val placeholder">거래량 순</span>
+          <span class="sb-field-arrow">▾</span>
+        </div>
+      </div>
+      <div class="sb-field">
+        <button class="sb-search-btn">🔍 Search Now →</button>
+      </div>
+    </div>
+    <!-- 필터 칩 -->
+    <div class="sb-filter-row">
+      <span class="sb-filter-label">Filters:</span>
+      <button class="sb-chip on" onclick="togChip(this)">전체 업종</button>
+      <button class="sb-chip" onclick="togChip(this)">☕ 카페</button>
+      <button class="sb-chip" onclick="togChip(this)">🍴 식음료</button>
+      <button class="sb-chip" onclick="togChip(this)">💄 뷰티·웰니스</button>
+      <button class="sb-chip" onclick="togChip(this)">💪 피트니스</button>
+      <button class="sb-chip" onclick="togChip(this)">⚡ STAR 부스트</button>
+      <button class="sb-chip" onclick="togChip(this)">🆕 신규 상장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 본문 -->
+<div class="page" style="padding-top:48px">
+
+  <!-- 신뢰 로고 바 -->
+  <div class="trust-bar">
+    <div class="trust-label">Trusted by · 파트너사</div>
+    <div class="trust-logos">
+      <span class="trust-logo">파트너 기업 A</span>
+      <span class="trust-logo">파트너 기업 B</span>
+      <span class="trust-logo">파트너 기업 C</span>
+      <span class="trust-logo">파트너 기업 D</span>
+      <span class="trust-logo">파트너 기업 E</span>
+    </div>
+  </div>
+
+  <!-- Hot / New / Gainer 스팟라이트 -->
+  <div class="section" style="padding-bottom:16px">
+    <div class="section-hd-left" style="text-align:left;margin-bottom:20px">
+      <div>
+        <div class="section-eyebrow">실시간 현황</div>
+        <div class="section-title" style="margin-bottom:0">시장 현황</div>
+      </div>
+    </div>
+    <div class="spotlight-grid">
+      <div class="spot-card">
+        <div class="spot-head"><span class="spot-title">🔥 Hot <span style="font-size:11px;color:var(--g400);font-weight:400">거래량 상위</span></span><span class="spot-more">More ›</span></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <button class="spot-empty-cta">🏁 첫 상장 후 여기에 표시돼요</button>
+      </div>
+      <div class="spot-card">
+        <div class="spot-head"><span class="spot-title">🆕 New Listing</span><span class="spot-more">More ›</span></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <button class="spot-empty-cta">🚀 런치패드 종료 후 상장돼요</button>
+      </div>
+      <div class="spot-card">
+        <div class="spot-head"><span class="spot-title">📈 Top Gainer <span style="font-size:11px;color:var(--g400);font-weight:400">24H</span></span><span class="spot-more">More ›</span></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <div class="spot-row"><div class="spot-avatar">?</div><div class="spot-info"><div class="spot-name"></div><div class="spot-sub"></div></div><div class="spot-price-col"><div class="spot-price"></div><div class="spot-chg"></div></div></div>
+        <button class="spot-empty-cta">✨ 첫 상장 후 집계돼요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 런치패드 딜 (Magnolia Best Deals 레이아웃) -->
+  <div class="section" style="padding-top:0">
+    <div class="section-hd-left">
+      <div>
+        <div class="section-eyebrow">이달의 런치패드</div>
+        <div class="section-title" style="margin-bottom:0">공모 중인 상점 토큰</div>
+        <div class="section-sub" style="margin:6px 0 0;text-align:left;max-width:none;font-size:13px">지금 참여해 더 좋은 배정 기회를 얻고 DUST를 적립하세요</div>
+      </div>
+      <div class="see-all">전체 보기 →</div>
+    </div>
+
+    <div class="deals-grid">
+      <!-- 좌측 대형 카드 (메인 런치패드) -->
+      <div class="deal-main">
+        <div class="deal-main-bg"></div>
+        <div class="deal-main-bg-overlay"></div>
+        <div class="deal-main-wm">CAFE</div>
+        <div class="deal-main-content">
+          <span class="deal-badge db-pre">⏰ 사전 등록 중</span>
+          <div class="deal-main-title">브루밍 카페 · CAFE</div>
+          <div class="deal-main-sub">성수동 스페셜티 카페 · 월 방문객 ~800명</div>
+          <div class="deal-progress-wrap">
+            <div class="dp-row"><span class="dp-lbl">사전 등록 현황</span><span class="dp-val">42% / 50% 기준</span></div>
+            <div class="dp-bar-bg"><div class="dp-bar-fill" style="width:42%"></div></div>
+          </div>
+          <div class="deal-meta">
+            <div class="dm-item">목표 <span class="dm-val">$10,000</span></div>
+            <div class="dm-item">공모가 <span class="dm-val">$0.00010</span></div>
+            <div class="dm-item">D-day <span class="dm-val" style="color:#FDB022" id="deal-dday">D-7</span></div>
+          </div>
+          <button class="deal-main-btn">참여 의향 등록하기 →</button>
+        </div>
+      </div>
+
+      <!-- 우측 2×2 소형 카드 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px">
+
+        <!-- 예정 카드 1 -->
+        <div class="deal-small">
+          <div class="ds-bg" style="background:linear-gradient(160deg,#8FA8C8,#4A6A90)"></div>
+          <div class="ds-overlay"></div>
+          <div class="ds-wm">HAIR</div>
+          <div class="ds-content">
+            <span class="deal-badge db-soon" style="font-size:9px;padding:3px 8px">📅 공모 예정</span>
+            <div class="ds-name">헤어살롱 아뜰리에</div>
+            <div class="ds-meta">💇 뷰티 · 홍대, 서울</div>
+            <div class="ds-bottom">
+              <span class="ds-price">$15,000 목표</span>
+              <button class="ds-btn">알림 받기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 예정 카드 2 -->
+        <div class="deal-small">
+          <div class="ds-bg" style="background:linear-gradient(160deg,#7BAC8A,#3D7050)"></div>
+          <div class="ds-overlay"></div>
+          <div class="ds-wm">FIT</div>
+          <div class="ds-content">
+            <span class="deal-badge db-soon" style="font-size:9px;padding:3px 8px">📅 공모 예정</span>
+            <div class="ds-name">강남 피트 스튜디오</div>
+            <div class="ds-meta">💪 피트니스 · 강남, 서울</div>
+            <div class="ds-bottom">
+              <span class="ds-price">$20,000 목표</span>
+              <button class="ds-btn">알림 받기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 예정 카드 3 -->
+        <div class="deal-small">
+          <div class="ds-bg" style="background:linear-gradient(160deg,#B08040,#7A5520)"></div>
+          <div class="ds-overlay"></div>
+          <div class="ds-wm">BBQ</div>
+          <div class="ds-content">
+            <span class="deal-badge db-soon" style="font-size:9px;padding:3px 8px">📅 공모 예정</span>
+            <div class="ds-name">을지로 참숯 BBQ</div>
+            <div class="ds-meta">🥩 식음료 · 을지로, 서울</div>
+            <div class="ds-bottom">
+              <span class="ds-price">$12,000 목표</span>
+              <button class="ds-btn">알림 받기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 모집 중 카드 -->
+        <div class="deal-small" style="border:2px dashed var(--g200);background:var(--g50);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--p300)';this.style.background='var(--p25)'" onmouseout="this.style.borderColor='var(--g200)';this.style.background='var(--g50)'">
+          <div style="text-align:center;padding:20px">
+            <div style="font-size:28px;margin-bottom:8px;opacity:.4">🏪</div>
+            <div style="font-size:13px;font-weight:700;color:var(--g600);margin-bottom:4px">내 상점도 등록하기</div>
+            <div style="font-size:11px;color:var(--g400);line-height:1.5">파트너 심사 후 런치패드<br>진행 가능합니다</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 마켓 테이블 -->
+  <div class="market-wrap">
+    <div class="section-hd-left" style="margin-bottom:0">
+      <div>
+        <div class="section-eyebrow">실시간 시세</div>
+        <div class="section-title" style="margin-bottom:0">마켓</div>
+      </div>
+    </div>
+    <div class="market-header" style="margin-top:16px">
+      <button class="mtab on" onclick="swMtab(this)">전체</button>
+      <button class="mtab" onclick="swMtab(this)">즐겨찾기 ★</button>
+      <button class="mtab" onclick="swMtab(this)">🆕 신규 상장</button>
+      <button class="mtab" onclick="swMtab(this)">🔥 Hot</button>
+      <button class="mtab" onclick="swMtab(this)">📈 상승</button>
+    </div>
+    <div class="market-toolbar">
+      <div class="mt-search"><span style="color:var(--g400);font-size:13px">🔍</span><input type="text" placeholder="상점명·토큰 심볼로 검색..."></div>
+      <button class="mt-chip on" onclick="togMc(this)">전체</button>
+      <button class="mt-chip" onclick="togMc(this)">☕ 카페</button>
+      <button class="mt-chip" onclick="togMc(this)">💄 뷰티</button>
+      <button class="mt-chip" onclick="togMc(this)">🍴 식음료</button>
+      <select class="mt-sort"><option>거래량 순</option><option>FDV 순</option><option>신규 순</option><option>상승률 순</option></select>
+    </div>
+    <table class="mkt-table">
+      <thead>
+        <tr>
+          <th class="mkt-th" style="width:40px">#</th>
+          <th class="mkt-th">상점 / 토큰</th>
+          <th class="mkt-th" style="text-align:right">가격</th>
+          <th class="mkt-th" style="text-align:right">24H 변동 ↕</th>
+          <th class="mkt-th" style="text-align:right">24H 거래량 ↕</th>
+          <th class="mkt-th" style="text-align:right">시가총액(FDV) ↕</th>
+          <th class="mkt-th" style="text-align:center">24H 차트</th>
+          <th class="mkt-th"></th>
+        </tr>
+      </thead>
+    </table>
+    <div class="mkt-empty">
+      <div class="me-icon">🏪</div>
+      <div class="me-title">아직 상장된 토큰이 없어요</div>
+      <div class="me-sub">런치패드를 통해 첫 번째 상점 토큰이 공모되고,<br>공모 종료 후 자동으로 이 마켓에 상장됩니다.</div>
+      <button class="me-btn">🚀 런치패드 참여하기</button>
+    </div>
+  </div>
+
+  <!-- 플랫폼 소개 (Magnolia Best Deals 레이아웃) -->
+  <div class="intro-grid">
+    <div class="intro-left">
+      <div class="tag">왜 Starzip인가요?</div>
+      <div class="intro-title">상점과 고객이 함께<br>만드는 새로운 경제</div>
+      <div class="intro-sub">기존 포인트는 쓰면 사라지지만, Starzip 토큰은 거래되고 성장합니다. 좋아하는 카페의 CAFE 토큰을 보유하면, 그 카페가 잘 될수록 함께 성장할 수 있습니다.</div>
+      <div class="intro-features">
+        <div class="intf"><div class="intf-ico">🏪</div><div class="intf-title">커뮤니티 자금 조달</div><div class="intf-desc">은행 없이 충성 고객에게 직접 운영 자금을 모집합니다.</div></div>
+        <div class="intf"><div class="intf-ico">💰</div><div class="intf-title">수수료 자동 분배</div><div class="intf-desc">토큰 거래 때마다 수수료의 3%가 해당 상점에 실시간 지급됩니다.</div></div>
+        <div class="intf"><div class="intf-ico">⚡</div><div class="intf-title">가스비 $0</div><div class="intf-desc">Paymaster가 대납합니다. 복잡한 설정 없이 바로 시작하세요.</div></div>
+        <div class="intf"><div class="intf-ico">🗳</div><div class="intf-title">Store DAO 투표</div><div class="intf-desc">토큰 보유자로서 상점 운영 정책에 직접 참여합니다.</div></div>
+      </div>
+    </div>
+    <div class="intro-right">
+      <div class="metric-card"><div class="mc-ico">⚡</div><div><div class="mc-val">$0</div><div class="mc-lbl">가스비 (Paymaster 대납)</div></div><span class="mc-badge mb-g">무료</span></div>
+      <div class="metric-card"><div class="mc-ico">💸</div><div><div class="mc-val">0.39%</div><div class="mc-lbl">거래 수수료 · STAR 할인 적용 시 0.351%</div></div><span class="mc-badge mb-b">할인 가능</span></div>
+      <div class="metric-card"><div class="mc-ico">🏪</div><div><div class="mc-val">3%</div><div class="mc-lbl">상점 자동 배분 (거래 수수료의)</div></div><span class="mc-badge mb-g">실시간</span></div>
+      <div class="metric-card"><div class="mc-ico">✦</div><div><div class="mc-val">DUST</div><div class="mc-lbl">거래·참여 시 적립 → TGE 후 STAR 전환</div></div><span class="mc-badge mb-w">적립 중</span></div>
+      <div class="metric-card"><div class="mc-ico">🌐</div><div><div class="mc-val">opBNB</div><div class="mc-lbl">초당 수천 건 처리 · 거래 확정 빠름</div></div><span class="mc-badge mb-b">메인넷</span></div>
+    </div>
+  </div>
+
+  <!-- 뉴스·가이드 -->
+  <div class="news-section">
+    <div class="section-hd-left">
+      <div>
+        <div class="section-eyebrow">공지·가이드</div>
+        <div class="section-title" style="margin-bottom:0">최신 소식</div>
+      </div>
+      <div class="see-all">전체 보기 →</div>
+    </div>
+    <div class="news-grid">
+      <div class="news-list">
+        <div class="ni"><div class="ni-idx">01</div><div><div class="ni-title">Starzip 베타 런치 — 지역 상점 DEX 첫 번째 파일럿 시작</div><div class="ni-meta"><span class="ni-badge nb-a">공지</span>2026.04.01</div></div></div>
+        <div class="ni"><div class="ni-idx">02</div><div><div class="ni-title">런치패드 완전 정복 — 비례 배정, STAR 부스트, OCT 희석까지</div><div class="ni-meta"><span class="ni-badge nb-g">가이드</span>2026.03.28</div></div></div>
+        <div class="ni"><div class="ni-idx">03</div><div><div class="ni-title">사업주 가이드 — 토큰 발행부터 DEX 상장까지 한 번에</div><div class="ni-meta"><span class="ni-badge nb-g">가이드</span>2026.03.25</div></div></div>
+        <div class="ni"><div class="ni-idx">04</div><div><div class="ni-title">DUST 포인트란? — 거래할수록 쌓이고, TGE 후 STAR로 전환</div><div class="ni-meta"><span class="ni-badge nb-u">업데이트</span>2026.03.20</div></div></div>
+        <div class="ni"><div class="ni-idx">05</div><div><div class="ni-title">Optimistic Compliance — 분기 공시, 어떻게 작동하나요?</div><div class="ni-meta"><span class="ni-badge nb-g">가이드</span>2026.03.18</div></div></div>
+      </div>
+      <div>
+        <div class="side-card">
+          <div class="sc-title">🏁 지금 바로 시작하기</div>
+          <div class="sc-step"><div class="sc-step-n">1</div><div><div class="sc-step-t">지갑 연결</div><div class="sc-step-s">MetaMask · WalletConnect</div></div></div>
+          <div class="sc-step"><div class="sc-step-n">2</div><div><div class="sc-step-t">USDT 입금</div><div class="sc-step-s">opBNB 네트워크로</div></div></div>
+          <div class="sc-step"><div class="sc-step-n">3</div><div><div class="sc-step-t">런치패드 참여</div><div class="sc-step-s">DUST 적립 + 배정 우선권</div></div></div>
+          <div class="sc-step"><div class="sc-step-n">4</div><div><div class="sc-step-t">클레임 & 거래</div><div class="sc-step-s">TGE 후 DEX 거래 시작</div></div></div>
+          <button class="sc-btn">시작하기 →</button>
+        </div>
+        <div class="side-card" style="background:var(--w50);border-color:var(--w200)">
+          <div class="sc-title" style="color:var(--w700)">⚡ STAR 스테이킹 부스트</div>
+          <div style="font-size:12px;color:var(--w700);line-height:1.6">STAR 스테이킹 시 런치패드 배정 배율 최대 <strong>2.0×</strong>까지 향상. 수수료 10% 할인도 함께 적용됩니다.</div>
+          <button style="width:100%;margin-top:12px;padding:9px 0;border-radius:8px;background:var(--w500);color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer">STAR 스테이킹 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- FAQ -->
+<div class="page">
+  <div class="faq-section" style="margin:0;border-radius:20px;padding:48px 0">
+    <div class="faq-inner">
+      <div style="text-align:center;margin-bottom:32px">
+        <div class="section-eyebrow">FAQ</div>
+        <div class="section-title">자주 묻는 질문</div>
+        <div class="section-sub">궁금한 것들을 빠르게 해결해드립니다</div>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="togFaq(this)"><span class="faq-q-text">Starzip은 어떤 플랫폼인가요?</span><span class="faq-ico">+</span></div><div class="faq-a">지역 상점(카페·음식점·헬스장 등)이 자신만의 토큰을 발행하고, 고객들이 그 토큰을 사고팔 수 있는 탈중앙화 거래소(DEX)입니다. 상점은 은행 없이 커뮤니티에서 자금을 모집하고, 고객은 좋아하는 상점의 성장에 참여할 수 있습니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="togFaq(this)"><span class="faq-q-text">런치패드란 무엇인가요?</span><span class="faq-ico">+</span></div><div class="faq-a">런치패드는 상점 토큰이 DEX에 상장되기 전에 공개 모집하는 과정입니다. USDT/USDC로 참여하면 공모가로 토큰을 배정받습니다. STAR 스테이킹 시 최대 2.0× 부스트가 적용됩니다. 소프트캡 미달 시 전액 자동 환불됩니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="togFaq(this)"><span class="faq-q-text">가스비가 정말 $0인가요?</span><span class="faq-ico">+</span></div><div class="faq-a">사업주 콘솔에서의 온체인 작업(토큰 발행·공시·투표)은 Paymaster가 가스비를 대납합니다(월 최대 $1 한도). opBNB 네트워크의 가스비가 건당 약 $0.001로 업계 최저 수준입니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="togFaq(this)"><span class="faq-q-text">상점은 어떻게 등록하나요?</span><span class="faq-ico">+</span></div><div class="faq-a">파트너를 통해 추천받거나 직접 신청할 수 있습니다. 최소 6개월 이상 운영 중인 오프라인 매장, 사업자등록증 보유 시 신청 가능합니다. 심사 기간은 2~4주입니다.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="togFaq(this)"><span class="faq-q-text">내 자산은 안전한가요?</span><span class="faq-ico">+</span></div><div class="faq-a">모든 자산은 opBNB 블록체인 스마트 컨트랙트에 보관됩니다. Starzip은 사용자 자산을 수탁하지 않습니다. 메인넷 배포 전 외부 보안 감사를 완료합니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA 배너 (Magnolia 하단 배너) -->
+<div class="page">
+  <div class="cta-banner">
+    <div class="cta-banner-bg"></div>
+    <div class="cta-banner-grid"></div>
+    <div class="cta-content">
+      <div class="cta-title">지금 바로<br>상점 투자를 시작하세요</div>
+      <div class="cta-sub">첫 번째 런치패드가 곧 열립니다.<br>사전 등록으로 DUST를 더 많이 적립하세요.</div>
+      <div class="cta-btns">
+        <button class="cta-btn-p">🚀 Get Started Now</button>
+        <button class="cta-btn-g">상점 등록 신청</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="ft-logo"><div class="ft-logo-m">SZ</div>Starzip</div>
+        <div class="ft-desc">지역 상점을 위한 탈중앙화 거래소.<br>상점과 고객이 함께 성장하는 경제.</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.15)">Built on opBNB · © 2026 Starzip</div>
+      </div>
+      <div><div class="ft-h">플랫폼</div><a class="ft-a">Market</a><a class="ft-a">Trade</a><a class="ft-a">Launchpad</a><a class="ft-a">Portfolio</a><a class="ft-a">DAO</a></div>
+      <div><div class="ft-h">상점·파트너</div><a class="ft-a">상점 등록 신청</a><a class="ft-a">파트너 신청</a><a class="ft-a">사업주 콘솔</a><a class="ft-a">교육 자료</a></div>
+      <div><div class="ft-h">알아보기</div><a class="ft-a">공지사항</a><a class="ft-a">가이드</a><a class="ft-a">FAQ</a><a class="ft-a">STAR 토큰</a><a class="ft-a">DUST 포인트</a></div>
+      <div>
+        <div class="ft-h">뉴스레터 구독</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;line-height:1.5">런치패드·상장 알림을<br>이메일로 받아보세요</div>
+        <div class="ft-subscribe">
+          <input class="ft-email" type="email" placeholder="이메일 주소">
+          <button class="ft-sub-btn">구독</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>투자에 따른 손실은 사용자 본인 책임입니다. Starzip은 투자 조언을 제공하지 않습니다.</span>
+      <div class="fb-links"><a class="fb-l">이용약관</a><a class="fb-l">개인정보처리방침</a><a class="fb-l">쿠키 설정</a></div>
+    </div>
+  </div>
+</footer>
+
+<!-- BOTTOM BAR -->
+<div class="bb">
+  <div class="bb-live"><div class="bb-ld"></div>Live</div>
+  <div class="bb-sep"></div>
+  <span class="bb-lnk">⚡ Aggregating</span>
+  <div class="bb-sep"></div>
+  <span class="bb-lnk">🔗 opBNB</span>
+  <div class="bb-sep"></div>
+  <span class="bb-lnk">Terms</span>
+  <span class="bb-lnk">Privacy</span>
+  <div class="bb-r">
+    <span style="font-size:11px;color:var(--g400);font-family:var(--mono)">Block #8,241,047</span>
+    <button style="padding:3px 10px;border-radius:20px;font-size:11px;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer">🌙 Dark</button>
+  </div>
+</div>
+
+<script>
+/* 검색 탭 */
+function swSbTab(btn){document.querySelectorAll('.sb-tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
+/* 검색 칩 */
+function togChip(btn){document.querySelectorAll('.sb-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
+/* 마켓 탭 */
+function swMtab(btn){document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
+/* 마켓 칩 */
+function togMc(btn){document.querySelectorAll('.mt-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
+/* FAQ */
+function togFaq(btn){btn.closest('.faq-item').classList.toggle('open')}
+/* 카운트다운 */
+let sec=7*86400+14*3600+32*60+8;
+setInterval(()=>{
+  sec=Math.max(0,sec-1);
+  const d=Math.floor(sec/86400),h=Math.floor((sec%86400)/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+  const el=document.getElementById('deal-dday');
+  if(el)el.textContent=d+'d '+String(h).padStart(2,'0')+'h';
+},1000);
+</script>
+</body>
+</html>
