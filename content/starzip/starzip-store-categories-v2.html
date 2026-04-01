@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 상점 카테고리 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g0:#fff;--g50:#F9FAFB;--g100:#F2F4F7;--g200:#EAECF0;
+  --g300:#D0D5DD;--g400:#98A2B3;--g500:#667085;--g600:#475467;
+  --g700:#344054;--g800:#1D2939;--g900:#101828;
+  --p25:#F5F8FF;--p50:#EFF4FF;--p100:#D1E0FF;--p500:#2970FF;--p600:#155EEF;--p700:#004EEB;
+  --s50:#ECFDF3;--s200:#A9EFC5;--s500:#12B76A;--s700:#027A48;
+  --e50:#FEF3F2;--e200:#FECDCA;--e500:#F04438;
+  --w50:#FFFAEB;--w200:#FEDF89;--w500:#F79009;--w700:#B54708;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--g50);color:var(--g900);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* ── 상단 네비 ── */
+.top-nav{background:var(--g0);border-bottom:1px solid var(--g200);padding:0 24px;display:flex;align-items:center;gap:0;height:52px;position:sticky;top:0;z-index:100}
+.nav-logo{font-size:15px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:7px;margin-right:20px}
+.nav-logo-mark{width:24px;height:24px;border-radius:6px;background:var(--p600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.nav-tabs{display:flex;height:100%}
+.nav-tab{padding:0 14px;font-size:13px;font-weight:500;color:var(--g400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nav-tab:hover{color:var(--g700)}
+.nav-tab.on{color:var(--g900);border-bottom-color:var(--g900);font-weight:600}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nav-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+
+/* ── 2패널 레이아웃 ── */
+.layout{display:flex;height:calc(100vh - 52px)}
+
+/* ── 왼쪽: 축 선택 ── */
+.axis-panel{width:200px;flex-shrink:0;background:var(--g0);border-right:1px solid var(--g200);padding:16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.axis-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);padding:8px 8px 5px;margin-top:8px}
+.axis-label:first-child{margin-top:0}
+.axis-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r8);font-size:13px;font-weight:500;color:var(--g600);border:none;background:none;cursor:pointer;transition:all .12s;width:100%;text-align:left}
+.axis-btn:hover{background:var(--g50);color:var(--g800)}
+.axis-btn.on{background:var(--g100);color:var(--g900);font-weight:600}
+.axis-ico{font-size:14px;flex-shrink:0}
+.axis-count{margin-left:auto;font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;background:var(--g100);color:var(--g500)}
+.axis-btn.on .axis-count{background:var(--p50);color:var(--p600)}
+.axis-divider{height:1px;background:var(--g100);margin:8px 0}
+
+/* ── 오른쪽: 콘텐츠 ── */
+.content-panel{flex:1;overflow-y:auto;padding:20px 24px 60px}
+
+/* 페이지 헤더 */
+.ph{margin-bottom:20px}
+.ph-row{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.ph-left{}
+.ph-title{font-size:18px;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.ph-sub{font-size:13px;color:var(--g500)}
+.ph-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* 툴바 */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--g0);border:1px solid var(--g200);border-radius:var(--r8);padding:8px 12px;flex:1;min-width:180px}
+.search-box:focus-within{border-color:var(--p500);box-shadow:0 0 0 3px rgba(41,112,255,.08)}
+.search-input{border:none;outline:none;font-size:13px;color:var(--g700);background:transparent;flex:1;font-family:var(--sans)}
+.search-input::placeholder{color:var(--g400)}
+.cnt-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--g100);color:var(--g500);white-space:nowrap}
+.view-toggle{display:flex;gap:3px;background:var(--g100);border-radius:var(--r8);padding:3px}
+.vt{width:30px;height:30px;border-radius:6px;border:none;background:none;cursor:pointer;color:var(--g400);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.vt.on{background:var(--g0);color:var(--g900);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+/* 필터 칩 */
+.chip-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--g200);background:var(--g0);color:var(--g600);cursor:pointer;transition:all .12s}
+.chip:hover{border-color:var(--g300)}
+.chip.on{background:var(--g900);color:#fff;border-color:var(--g900)}
+
+/* 선택 바 */
+.sel-bar{display:flex;align-items:center;gap:8px;background:var(--g900);color:#fff;border-radius:var(--r12);padding:9px 14px;margin-bottom:14px;flex-wrap:wrap}
+.sel-tags{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.sel-tag{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:12px}
+.sel-x{cursor:pointer;opacity:.6;font-size:13px;transition:opacity .12s}
+.sel-x:hover{opacity:1}
+.sel-clear{font-size:11px;color:rgba(255,255,255,.6);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.2);white-space:nowrap;transition:all .12s}
+.sel-clear:hover{background:rgba(255,255,255,.1)}
+
+/* 섹션 */
+.sec{margin-bottom:24px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--g200)}
+.sec-cnt{font-size:10px;color:var(--g400);font-family:var(--mono)}
+
+/* 그리드 카드 */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px}
+.cat-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:13px 11px;cursor:pointer;transition:all .14s;position:relative;overflow:hidden;user-select:none}
+.cat-card:hover{border-color:var(--g300);box-shadow:0 2px 8px rgba(0,0,0,.07);transform:translateY(-1px)}
+.cat-card.on{border-color:var(--p500);background:var(--p25)}
+.cc-icon{font-size:22px;margin-bottom:7px;display:block;line-height:1}
+.cc-name{font-size:12px;font-weight:600;color:var(--g800);margin-bottom:1px;line-height:1.3}
+.cc-en{font-size:10px;color:var(--g400);font-weight:400}
+.cc-count{font-size:10px;color:var(--g400);font-family:var(--mono);margin-top:6px;display:flex;align-items:center;gap:3px}
+.cc-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.cat-card.on .cc-name{color:var(--p700)}
+.cat-card.on .cc-en{color:var(--p500)}
+.cat-card.on .cc-count{color:var(--p500)}
+
+/* 리스트 행 */
+.cat-list{display:flex;flex-direction:column;gap:3px}
+.cl-row{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r8);padding:9px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .12s}
+.cl-row:hover{border-color:var(--g300);background:var(--g50)}
+.cl-row.on{border-color:var(--p500);background:var(--p25)}
+.cl-ico{font-size:17px;width:28px;text-align:center;flex-shrink:0}
+.cl-info{flex:1;min-width:0}
+.cl-name{font-size:13px;font-weight:600;color:var(--g800)}
+.cl-sub{font-size:11px;color:var(--g500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.cl-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.cl-n{font-size:11px;font-weight:600;color:var(--g400);font-family:var(--mono)}
+.cl-arr{color:var(--g300);font-size:11px}
+.cl-row.on .cl-name{color:var(--p700)}
+.cl-row.on .cl-n{color:var(--p500)}
+
+/* 국가 카드 (특별 스타일) */
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px}
+.country-card{background:var(--g0);border:1px solid var(--g200);border-radius:var(--r12);padding:12px 14px;cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:10px;user-select:none}
+.country-card:hover{border-color:var(--g300);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.country-card.on{border-color:var(--p500);background:var(--p25)}
+.c-flag{font-size:22px;flex-shrink:0;line-height:1}
+.c-info{min-width:0;flex:1}
+.c-name{font-size:13px;font-weight:600;color:var(--g800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-en{font-size:10px;color:var(--g400)}
+.c-n{font-size:10px;color:var(--g400);font-family:var(--mono);margin-top:3px}
+.country-card.on .c-name{color:var(--p700)}
+.country-card.on .c-n{color:var(--p500)}
+
+/* 지역 헤더 */
+.region-header{display:flex;align-items:center;gap:10px;margin:20px 0 10px}
+.rh-icon{font-size:18px}
+.rh-name{font-size:14px;font-weight:700;color:var(--g800)}
+.rh-sub{font-size:11px;color:var(--g500)}
+.rh-line{flex:1;height:1px;background:var(--g200)}
+.rh-count{font-size:11px;color:var(--g400);font-family:var(--mono);white-space:nowrap}
+.region-header:first-child{margin-top:0}
+
+/* 배너 */
+.info-banner{border-radius:var(--r8);padding:10px 14px;font-size:12px;display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;line-height:1.5}
+.ib-red{background:var(--e50);border:1px solid var(--e200);color:var(--e500)}
+.ib-blue{background:var(--p50);border:1px solid var(--p100);color:var(--p700)}
+.ib-yellow{background:var(--w50);border:1px solid var(--w200);color:var(--w700)}
+
+/* 빈 상태 */
+.empty{text-align:center;padding:48px 0;color:var(--g400)}
+.empty-ico{font-size:36px;margin-bottom:10px;opacity:.4}
+.empty-txt{font-size:13px}
+
+/* 반응형 */
+@media(max-width:768px){
+  .layout{flex-direction:column}
+  .axis-panel{width:100%;flex-direction:row;overflow-x:auto;height:auto;padding:8px 12px;gap:4px;flex-wrap:nowrap}
+  .axis-label{display:none}
+  .axis-divider{display:none}
+  .axis-btn{white-space:nowrap;padding:6px 10px}
+}
+@media(max-width:500px){.cat-grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr))}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="nav-logo"><div class="nav-logo-mark">SZ</div>Starzip</div>
+  <div class="nav-tabs">
+    <button class="nav-tab on" id="nav-cat" onclick="swAxis('cat-all',this)">🗂 업종 카테고리</button>
+    <button class="nav-tab" id="nav-geo" onclick="swAxis('geo-all',this)">🌍 지역·국가</button>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge" id="sel-count-badge" style="background:var(--p50);color:var(--p600);display:none">0개 선택</span>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- 왼쪽 축 패널 -->
+  <aside class="axis-panel" id="axis-panel"></aside>
+
+  <!-- 오른쪽 콘텐츠 -->
+  <main class="content-panel" id="content-panel">
+
+    <div class="ph">
+      <div class="ph-row">
+        <div class="ph-left">
+          <div class="ph-title" id="ph-title">🗂 업종 카테고리</div>
+          <div class="ph-sub" id="ph-sub">런치패드·Trade 필터 및 사업주 등록에 공통 적용</div>
+        </div>
+        <div class="ph-right">
+          <div class="view-toggle">
+            <button class="vt on" id="vt-g" onclick="setView('grid')" title="그리드">⊞</button>
+            <button class="vt" id="vt-l" onclick="setView('list')" title="리스트">☰</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span style="color:var(--g400);font-size:13px">🔍</span>
+          <input class="search-input" id="search" type="text" placeholder="검색..." oninput="doSearch()">
+        </div>
+        <span class="cnt-badge" id="cnt-badge">—</span>
+      </div>
+
+      <div class="chip-row" id="chip-row"></div>
+    </div>
+
+    <!-- 선택 바 -->
+    <div class="sel-bar" id="sel-bar" style="display:none">
+      <span style="font-size:13px;font-weight:600">선택됨</span>
+      <div class="sel-tags" id="sel-tags"></div>
+      <span class="sel-clear" onclick="clearAll()">전체 해제</span>
+    </div>
+
+    <!-- 배너 -->
+    <div class="info-banner ib-red" id="prohib-banner">
+      🚫 <span><strong>상장 불가 업종:</strong> 도박·성인·무기·가상자산 관련 업종. 금지 목록은 관리자 콘솔 DB에서 관리됩니다.</span>
+    </div>
+    <div class="info-banner ib-blue" id="geo-banner" style="display:none">
+      🌍 <span><strong>글로벌 확장 지원:</strong> Starzip은 opBNB 기반으로 국경 없이 운영됩니다. 국가·지역별 필터로 현지 상점을 탐색하세요.</span>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div id="main-content"></div>
+
+  </main>
+</div>
+
+<script>
+/* ══════════════════════════
+   데이터 정의
+══════════════════════════ */
+
+/* ── 업종 카테고리 ── */
+const CAT_GROUPS = [
+  {id:'all-cat', label:'전체', icon:'🗂'},
+  {id:'food',   label:'식음료',       icon:'🍴', color:'#F79009'},
+  {id:'beauty', label:'뷰티·웰니스',  icon:'💄', color:'#EE46BC'},
+  {id:'life',   label:'생활·서비스',  icon:'🏠', color:'#2E90FA'},
+  {id:'culture',label:'문화·엔터',    icon:'🎭', color:'#7A5AF8'},
+  {id:'edu',    label:'교육·전문직',  icon:'📚', color:'#12B76A'},
+  {id:'retail', label:'리테일·쇼핑',  icon:'🛍', color:'#F04438'},
+];
+const CAT_DATA = [
+  /* 식음료 */
+  {g:'food', id:'cafe',      icon:'☕', name:'카페·커피',       en:'Café & Coffee',      desc:'스페셜티·핸드드립·에스프레소',  n:47},
+  {g:'food', id:'restaurant',icon:'🍽', name:'음식점',          en:'Restaurant',         desc:'한식·중식·일식·양식·분식',      n:83},
+  {g:'food', id:'bakery',    icon:'🥐', name:'베이커리·디저트', en:'Bakery & Dessert',   desc:'빵집·케이크·마카롱',            n:34},
+  {g:'food', id:'bar',       icon:'🍺', name:'바·주점',         en:'Bar & Pub',          desc:'와인바·이자카야·맥주집',        n:21},
+  {g:'food', id:'fastfood',  icon:'🍔', name:'패스트푸드·분식', en:'Fast Food',          desc:'버거·분식·포케·도시락',         n:29},
+  {g:'food', id:'tearoom',   icon:'🫖', name:'티룸·음료',       en:'Tea Room & Drinks',  desc:'버블티·과일음료·전통차',        n:18},
+  {g:'food', id:'foodtruck', icon:'🚚', name:'푸드트럭',        en:'Food Truck',         desc:'이동식 음식 판매',              n:9},
+  {g:'food', id:'brunch',    icon:'🥗', name:'브런치·샐러드',   en:'Brunch & Salad',     desc:'건강식·비건·샐러드바',          n:15},
+  {g:'food', id:'bbq',       icon:'🥩', name:'고기·BBQ',        en:'BBQ & Grill',        desc:'삼겹살·갈비·스테이크',          n:26},
+  {g:'food', id:'seafood',   icon:'🦞', name:'해산물·횟집',     en:'Seafood',            desc:'회·해물탕·조개구이',            n:14},
+  /* 뷰티·웰니스 */
+  {g:'beauty',id:'hair',     icon:'💇', name:'헤어살롱',        en:'Hair Salon',         desc:'커트·염색·펌·케어',             n:62},
+  {g:'beauty',id:'nail',     icon:'💅', name:'네일샵',          en:'Nail Shop',          desc:'젤네일·네일아트·케어',          n:38},
+  {g:'beauty',id:'skincare', icon:'🧴', name:'피부관리실',      en:'Skin Care',          desc:'피부관리·클렌징·미용기기',      n:27},
+  {g:'beauty',id:'makeup',   icon:'💄', name:'메이크업·속눈썹', en:'Makeup & Lash',      desc:'반영구·속눈썹·메이크업',        n:19},
+  {g:'beauty',id:'massage',  icon:'🧘', name:'마사지·스파',     en:'Massage & Spa',      desc:'타이마사지·아로마·스파',        n:23},
+  {g:'beauty',id:'fitness',  icon:'💪', name:'피트니스·헬스',   en:'Fitness & Gym',      desc:'헬스장·PT·크로스핏',            n:41},
+  {g:'beauty',id:'yoga',     icon:'🤸', name:'요가·필라테스',   en:'Yoga & Pilates',     desc:'스튜디오·소그룹 수업',          n:30},
+  {g:'beauty',id:'barbershop',icon:'💈',name:'바버샵',          en:'Barber Shop',        desc:'남성 커트·면도·왁싱',           n:16},
+  {g:'beauty',id:'tanning',  icon:'☀️', name:'태닝·왁싱',       en:'Tanning & Waxing',   desc:'선탠·제모·왁싱',                n:11},
+  /* 생활·서비스 */
+  {g:'life',  id:'laundry',  icon:'👕', name:'세탁·수선',       en:'Laundry & Repair',   desc:'셀프세탁·드라이클리닝',         n:22},
+  {g:'life',  id:'pet',      icon:'🐾', name:'반려동물',        en:'Pet Care',           desc:'펫숍·미용·동물병원·호텔',       n:34},
+  {g:'life',  id:'pharmacy', icon:'💊', name:'약국·헬스케어',   en:'Pharmacy',           desc:'약국·건강기능식품',             n:18},
+  {g:'life',  id:'flowers',  icon:'🌸', name:'꽃집·인테리어',   en:'Flowers & Decor',    desc:'플라워샵·인테리어 소품',        n:14},
+  {g:'life',  id:'car',      icon:'🚗', name:'자동차 서비스',   en:'Auto Service',       desc:'세차·튜닝·수리·렌트',           n:19},
+  {g:'life',  id:'printing', icon:'🖨', name:'인쇄·출력',       en:'Print & Copy',       desc:'인쇄소·사진관·현상',            n:9},
+  {g:'life',  id:'cleaning', icon:'🧹', name:'청소·홈케어',     en:'Cleaning Service',   desc:'가사도우미·입주청소·방역',      n:12},
+  {g:'life',  id:'repair',   icon:'🔧', name:'수리·기술',       en:'Repair Service',     desc:'핸드폰·가전·자전거 수리',       n:16},
+  /* 문화·엔터 */
+  {g:'culture',id:'study',   icon:'📚', name:'독서실·스터디카페',en:'Study Café',        desc:'코인독서실·스터디룸',           n:28},
+  {g:'culture',id:'arcade',  icon:'🎮', name:'오락·게임',       en:'Arcade & Gaming',    desc:'PC방·오락실·보드게임카페',      n:17},
+  {g:'culture',id:'photozone',icon:'📸',name:'사진관·포토부스', en:'Photo Studio',       desc:'즉석사진·셀프스튜디오',         n:22},
+  {g:'culture',id:'karaoke', icon:'🎤', name:'노래방',          en:'Karaoke',            desc:'일반·코인·룸카라오케',          n:15},
+  {g:'culture',id:'escape',  icon:'🔐', name:'방탈출·VR체험',   en:'Escape Room & VR',   desc:'방탈출카페·VR체험·테마파크',    n:10},
+  {g:'culture',id:'billiards',icon:'🎱',name:'당구·볼링',       en:'Billiards & Bowl',   desc:'당구장·볼링장·탁구장',          n:9},
+  {g:'culture',id:'craft',   icon:'🎨', name:'공방·클래스',     en:'Workshop & Class',   desc:'도예·그림·플라워·공예',         n:24},
+  /* 교육·전문직 */
+  {g:'edu',   id:'tutoring', icon:'✏️', name:'학원·과외',        en:'Tutoring',           desc:'수학·영어·입시·예체능',         n:31},
+  {g:'edu',   id:'language', icon:'🌐', name:'어학원',           en:'Language School',    desc:'영어·중국어·일어 학원',         n:19},
+  {g:'edu',   id:'music',    icon:'🎵', name:'음악학원',         en:'Music School',       desc:'피아노·기타·드럼·보컬',         n:22},
+  {g:'edu',   id:'art',      icon:'🖼', name:'미술학원',         en:'Art School',         desc:'입시미술·취미·디자인',          n:14},
+  {g:'edu',   id:'sports_edu',icon:'⚽',name:'스포츠 교습소',   en:'Sports Coaching',    desc:'수영·태권도·골프·테니스',       n:18},
+  /* 리테일·쇼핑 */
+  {g:'retail',id:'fashion',  icon:'👗', name:'의류·패션',        en:'Fashion & Apparel',  desc:'옷가게·빈티지·편집숍',          n:29},
+  {g:'retail',id:'groceries',icon:'🛒', name:'식품·마트',        en:'Grocery & Market',   desc:'편의점·식품점·유기농마켓',      n:21},
+  {g:'retail',id:'gift',     icon:'🎁', name:'선물·잡화',        en:'Gift & General',     desc:'문구·선물가게·생활잡화',        n:17},
+];
+
+/* ── 지역·국가 ── */
+const GEO_REGIONS = [
+  {id:'all-geo', label:'전체 국가',  icon:'🌍'},
+  {id:'asia-east',   label:'동아시아',    icon:'🗾'},
+  {id:'asia-se',     label:'동남아시아',  icon:'🌴'},
+  {id:'asia-south',  label:'남아시아',    icon:'🕌'},
+  {id:'middle-east', label:'중동',        icon:'🕌'},
+  {id:'europe',      label:'유럽',        icon:'🏰'},
+  {id:'americas',    label:'아메리카',    icon:'🗽'},
+  {id:'oceania',     label:'오세아니아',  icon:'🦘'},
+  {id:'africa',      label:'아프리카',    icon:'🌍'},
+];
+const GEO_DATA = [
+  /* 동아시아 */
+  {r:'asia-east', id:'kr', flag:'🇰🇷', name:'대한민국',         en:'South Korea',   sub:'서울·부산·인천 외',      n:312, phase:'live'},
+  {r:'asia-east', id:'jp', flag:'🇯🇵', name:'일본',             en:'Japan',         sub:'도쿄·오사카·교토 외',    n:48,  phase:'beta'},
+  {r:'asia-east', id:'cn', flag:'🇨🇳', name:'중국',             en:'China',         sub:'상하이·베이징·선전 외',  n:31,  phase:'beta'},
+  {r:'asia-east', id:'tw', flag:'🇹🇼', name:'대만',             en:'Taiwan',        sub:'타이베이·타이중 외',     n:24,  phase:'beta'},
+  {r:'asia-east', id:'hk', flag:'🇭🇰', name:'홍콩',             en:'Hong Kong',     sub:'완차이·침사추이 외',     n:19,  phase:'soon'},
+  {r:'asia-east', id:'mn', flag:'🇲🇳', name:'몽골',             en:'Mongolia',      sub:'울란바토르',              n:3,   phase:'soon'},
+  /* 동남아시아 */
+  {r:'asia-se',   id:'sg', flag:'🇸🇬', name:'싱가포르',         en:'Singapore',     sub:'오차드·마리나 외',       n:27,  phase:'beta'},
+  {r:'asia-se',   id:'th', flag:'🇹🇭', name:'태국',             en:'Thailand',      sub:'방콕·치앙마이 외',       n:21,  phase:'soon'},
+  {r:'asia-se',   id:'vn', flag:'🇻🇳', name:'베트남',           en:'Vietnam',       sub:'하노이·호치민 외',       n:18,  phase:'soon'},
+  {r:'asia-se',   id:'ph', flag:'🇵🇭', name:'필리핀',           en:'Philippines',   sub:'마닐라·세부 외',         n:12,  phase:'soon'},
+  {r:'asia-se',   id:'my', flag:'🇲🇾', name:'말레이시아',       en:'Malaysia',      sub:'쿠알라룸푸르 외',        n:9,   phase:'soon'},
+  {r:'asia-se',   id:'id', flag:'🇮🇩', name:'인도네시아',       en:'Indonesia',     sub:'자카르타·발리 외',       n:11,  phase:'soon'},
+  {r:'asia-se',   id:'kh', flag:'🇰🇭', name:'캄보디아',         en:'Cambodia',      sub:'프놈펜·씨엠립 외',       n:5,   phase:'plan'},
+  {r:'asia-se',   id:'mm', flag:'🇲🇲', name:'미얀마',           en:'Myanmar',       sub:'양곤 외',                n:3,   phase:'plan'},
+  /* 남아시아 */
+  {r:'asia-south',id:'in', flag:'🇮🇳', name:'인도',             en:'India',         sub:'뭄바이·방갈로르·델리 외',n:14,  phase:'soon'},
+  {r:'asia-south',id:'bd', flag:'🇧🇩', name:'방글라데시',       en:'Bangladesh',    sub:'다카 외',                n:4,   phase:'plan'},
+  {r:'asia-south',id:'pk', flag:'🇵🇰', name:'파키스탄',         en:'Pakistan',      sub:'카라치·라호르 외',       n:3,   phase:'plan'},
+  {r:'asia-south',id:'lk', flag:'🇱🇰', name:'스리랑카',         en:'Sri Lanka',     sub:'콜롬보 외',              n:2,   phase:'plan'},
+  /* 중동 */
+  {r:'middle-east',id:'ae',flag:'🇦🇪', name:'UAE',              en:'United Arab Emirates',sub:'두바이·아부다비 외',n:16, phase:'soon'},
+  {r:'middle-east',id:'sa',flag:'🇸🇦', name:'사우디아라비아',   en:'Saudi Arabia',  sub:'리야드·제다 외',         n:8,   phase:'soon'},
+  {r:'middle-east',id:'il',flag:'🇮🇱', name:'이스라엘',         en:'Israel',        sub:'텔아비브·예루살렘 외',   n:5,   phase:'plan'},
+  {r:'middle-east',id:'tr',flag:'🇹🇷', name:'튀르키예',         en:'Turkey',        sub:'이스탄불·앙카라 외',     n:9,   phase:'soon'},
+  {r:'middle-east',id:'qa',flag:'🇶🇦', name:'카타르',           en:'Qatar',         sub:'도하 외',                n:4,   phase:'plan'},
+  /* 유럽 */
+  {r:'europe',    id:'gb', flag:'🇬🇧', name:'영국',             en:'United Kingdom',sub:'런던·맨체스터 외',       n:11,  phase:'soon'},
+  {r:'europe',    id:'de', flag:'🇩🇪', name:'독일',             en:'Germany',       sub:'베를린·뮌헨·함부르크 외',n:9,   phase:'soon'},
+  {r:'europe',    id:'fr', flag:'🇫🇷', name:'프랑스',           en:'France',        sub:'파리·리옹 외',           n:8,   phase:'soon'},
+  {r:'europe',    id:'nl', flag:'🇳🇱', name:'네덜란드',         en:'Netherlands',   sub:'암스테르담 외',          n:6,   phase:'plan'},
+  {r:'europe',    id:'es', flag:'🇪🇸', name:'스페인',           en:'Spain',         sub:'마드리드·바르셀로나 외', n:5,   phase:'plan'},
+  {r:'europe',    id:'it', flag:'🇮🇹', name:'이탈리아',         en:'Italy',         sub:'밀라노·로마 외',         n:5,   phase:'plan'},
+  {r:'europe',    id:'pt', flag:'🇵🇹', name:'포르투갈',         en:'Portugal',      sub:'리스본·포르투 외',       n:3,   phase:'plan'},
+  {r:'europe',    id:'pl', flag:'🇵🇱', name:'폴란드',           en:'Poland',        sub:'바르샤바·크라쿠프 외',   n:3,   phase:'plan'},
+  /* 아메리카 */
+  {r:'americas',  id:'us', flag:'🇺🇸', name:'미국',             en:'United States', sub:'LA·뉴욕·시애틀 외',      n:22,  phase:'soon'},
+  {r:'americas',  id:'ca', flag:'🇨🇦', name:'캐나다',           en:'Canada',        sub:'밴쿠버·토론토 외',       n:13,  phase:'soon'},
+  {r:'americas',  id:'br', flag:'🇧🇷', name:'브라질',           en:'Brazil',        sub:'상파울루·리우 외',       n:6,   phase:'plan'},
+  {r:'americas',  id:'mx', flag:'🇲🇽', name:'멕시코',           en:'Mexico',        sub:'멕시코시티 외',          n:4,   phase:'plan'},
+  {r:'americas',  id:'ar', flag:'🇦🇷', name:'아르헨티나',       en:'Argentina',     sub:'부에노스아이레스 외',    n:2,   phase:'plan'},
+  /* 오세아니아 */
+  {r:'oceania',   id:'au', flag:'🇦🇺', name:'호주',             en:'Australia',     sub:'시드니·멜버른 외',       n:11,  phase:'soon'},
+  {r:'oceania',   id:'nz', flag:'🇳🇿', name:'뉴질랜드',         en:'New Zealand',   sub:'오클랜드·웰링턴 외',     n:4,   phase:'plan'},
+  /* 아프리카 */
+  {r:'africa',    id:'ng', flag:'🇳🇬', name:'나이지리아',       en:'Nigeria',       sub:'라고스·아부자 외',       n:3,   phase:'plan'},
+  {r:'africa',    id:'ke', flag:'🇰🇪', name:'케냐',             en:'Kenya',         sub:'나이로비 외',            n:2,   phase:'plan'},
+  {r:'africa',    id:'za', flag:'🇿🇦', name:'남아프리카',       en:'South Africa',  sub:'요하네스버그·케이프타운', n:2,  phase:'plan'},
+  {r:'africa',    id:'gh', flag:'🇬🇭', name:'가나',             en:'Ghana',         sub:'아크라 외',              n:1,   phase:'plan'},
+];
+
+const PHASE_LABELS = {live:'🟢 서비스 중', beta:'🔵 베타', soon:'⏳ 준비 중', plan:'📋 계획'};
+const PHASE_COLORS = {live:'#027A48', beta:'#155EEF', soon:'#B54708', plan:'#667085'};
+
+/* ══════════════════════════
+   상태
+══════════════════════════ */
+let mode = 'cat'; // 'cat' | 'geo'
+let catGroup = 'all-cat';
+let geoRegion = 'all-geo';
+let viewMode = 'grid';
+let selected = new Set();
+let searchQ = '';
+let filterPhase = 'all'; // geo 전용
+
+/* ══════════════════════════
+   메인 전환
+══════════════════════════ */
+function swAxis(id, btn){
+  if(id.startsWith('cat')){
+    mode='cat'; catGroup=id;
+    document.getElementById('nav-cat').classList.add('on');
+    document.getElementById('nav-geo').classList.remove('on');
+    document.getElementById('prohib-banner').style.display='flex';
+    document.getElementById('geo-banner').style.display='none';
+    document.getElementById('ph-title').textContent='🗂 업종 카테고리';
+    document.getElementById('ph-sub').textContent='런치패드·Trade 필터 및 사업주 등록에 공통 적용 · 6개 대분류 / 42개 소분류';
+  } else {
+    mode='geo'; geoRegion=id;
+    document.getElementById('nav-geo').classList.add('on');
+    document.getElementById('nav-cat').classList.remove('on');
+    document.getElementById('prohib-banner').style.display='none';
+    document.getElementById('geo-banner').style.display='flex';
+    document.getElementById('ph-title').textContent='🌍 지역·국가';
+    document.getElementById('ph-sub').textContent='opBNB 기반 글로벌 확장 · 8개 지역 / 42개 국가';
+  }
+  searchQ='';
+  document.getElementById('search').value='';
+  renderAxisPanel();
+  renderChips();
+  render();
+}
+
+/* ══════════════════════════
+   축 패널
+══════════════════════════ */
+function renderAxisPanel(){
+  const items = mode==='cat' ? CAT_GROUPS : GEO_REGIONS;
+  const currentId = mode==='cat' ? catGroup : geoRegion;
+  let html='';
+  items.forEach((item,i)=>{
+    if(i===0) html+=`<div class="axis-label">${mode==='cat'?'업종 대분류':'지역'}</div>`;
+    const cnt = mode==='cat'
+      ? (item.id==='all-cat' ? CAT_DATA.length : CAT_DATA.filter(c=>c.g===item.id).length)
+      : (item.id==='all-geo' ? GEO_DATA.length : GEO_DATA.filter(c=>c.r===item.id).length);
+    html+=`<button class="axis-btn${currentId===item.id?' on':''}" onclick="axisClick('${item.id}',this)">
+      <span class="axis-ico">${item.icon}</span>${item.label}
+      <span class="axis-count">${cnt}</span>
+    </button>`;
+  });
+  document.getElementById('axis-panel').innerHTML=html;
+}
+
+function axisClick(id, btn){
+  if(mode==='cat') catGroup=id;
+  else geoRegion=id;
+  document.querySelectorAll('.axis-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  searchQ=''; document.getElementById('search').value='';
+  render();
+}
+
+/* ══════════════════════════
+   칩
+══════════════════════════ */
+function renderChips(){
+  const row = document.getElementById('chip-row');
+  if(mode==='cat'){
+    row.innerHTML = CAT_GROUPS.map(g=>
+      `<button class="chip${(catGroup===g.id||(!catGroup&&g.id==='all-cat'))?' on':''}" onclick="chipClickCat('${g.id}',this)">${g.icon} ${g.label}</button>`
+    ).join('');
+  } else {
+    const phases=['all','live','beta','soon','plan'];
+    const labels={all:'전체',live:'🟢 서비스 중',beta:'🔵 베타',soon:'⏳ 준비 중',plan:'📋 계획'};
+    row.innerHTML = phases.map(p=>
+      `<button class="chip${filterPhase===p?' on':''}" onclick="chipPhase('${p}',this)">${labels[p]}</button>`
+    ).join('');
+  }
+}
+
+function chipClickCat(id, btn){
+  catGroup=id;
+  document.querySelectorAll('.axis-btn').forEach(b=>{
+    if(b.textContent.trim().includes(id)||id==='all-cat') b.classList.remove('on');
+  });
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  searchQ=''; document.getElementById('search').value='';
+  // axis 패널도 동기화
+  renderAxisPanel();
+  document.querySelectorAll('.axis-btn').forEach(b=>{
+    // 비교
+  });
+  render();
+}
+
+function chipPhase(p, btn){
+  filterPhase=p;
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+/* ══════════════════════════
+   검색
+══════════════════════════ */
+function doSearch(){
+  searchQ = document.getElementById('search').value.trim().toLowerCase();
+  render();
+}
+
+/* ══════════════════════════
+   선택
+══════════════════════════ */
+function toggleItem(id){
+  if(selected.has(id)) selected.delete(id); else selected.add(id);
+  renderSelBar();
+  renderCountBadge();
+  render();
+}
+function clearAll(){
+  selected.clear(); renderSelBar(); renderCountBadge(); render();
+}
+function renderSelBar(){
+  const bar=document.getElementById('sel-bar');
+  const tags=document.getElementById('sel-tags');
+  if(selected.size===0){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const allItems=[...CAT_DATA,...GEO_DATA];
+  const items=allItems.filter(i=>selected.has(i.id));
+  tags.innerHTML=items.map(i=>
+    `<span class="sel-tag">${i.flag||i.icon} ${i.name}<span class="sel-x" onclick="toggleItem('${i.id}')">×</span></span>`
+  ).join('');
+}
+function renderCountBadge(){
+  const b=document.getElementById('sel-count-badge');
+  if(selected.size===0){b.style.display='none';}
+  else{b.style.display='inline-flex';b.textContent=selected.size+'개 선택';}
+}
+
+/* ══════════════════════════
+   렌더: 업종
+══════════════════════════ */
+function renderCat(){
+  const groups = catGroup==='all-cat'
+    ? CAT_GROUPS.filter(g=>g.id!=='all-cat')
+    : CAT_GROUPS.filter(g=>g.id===catGroup);
+
+  let total=0; let html='';
+  groups.forEach(g=>{
+    let cats = CAT_DATA.filter(c=>c.g===g.id);
+    if(searchQ) cats=cats.filter(c=>
+      c.name.includes(searchQ)||c.en.toLowerCase().includes(searchQ)||(c.desc&&c.desc.includes(searchQ))
+    );
+    if(!cats.length) return;
+    total+=cats.length;
+    const color = CAT_GROUPS.find(x=>x.id===g.id)?.color||'#667085';
+    html+=`<div class="sec">
+      <div class="sec-hd">
+        <span class="sec-lbl">${g.icon} ${g.label}</span>
+        <div class="sec-line"></div>
+        <span class="sec-cnt">${cats.length}개</span>
+      </div>`;
+    if(viewMode==='grid'){
+      html+=`<div class="cat-grid">`;
+      cats.forEach(c=>{
+        const on=selected.has(c.id)?' on':'';
+        html+=`<div class="cat-card${on}" onclick="toggleItem('${c.id}')">
+          <span class="cc-icon">${c.icon}</span>
+          <div class="cc-name">${c.name}</div>
+          <div class="cc-en">${c.en}</div>
+          <div class="cc-count"><div class="cc-dot" style="background:${color}"></div>${c.n}개 상점</div>
+        </div>`;
+      });
+      html+=`</div>`;
+    } else {
+      html+=`<div class="cat-list">`;
+      cats.forEach(c=>{
+        const on=selected.has(c.id)?' on':'';
+        html+=`<div class="cl-row${on}" onclick="toggleItem('${c.id}')">
+          <span class="cl-ico">${c.icon}</span>
+          <div class="cl-info"><div class="cl-name">${c.name} <span style="font-weight:400;font-size:11px;color:var(--g400)">${c.en}</span></div><div class="cl-sub">${c.desc}</div></div>
+          <div class="cl-right"><span class="cl-n">${c.n}개</span><span class="cl-arr">›</span></div>
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+  document.getElementById('cnt-badge').textContent=
+    selected.size>0 ? `${total}개 · ${selected.size}개 선택` : `${total}개 카테고리`;
+  return html || `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">"${searchQ}" 결과 없음</div></div>`;
+}
+
+/* ══════════════════════════
+   렌더: 지역·국가
+══════════════════════════ */
+function renderGeo(){
+  const regions = geoRegion==='all-geo'
+    ? GEO_REGIONS.filter(r=>r.id!=='all-geo')
+    : GEO_REGIONS.filter(r=>r.id===geoRegion);
+
+  let total=0; let html='';
+  regions.forEach(reg=>{
+    let countries=GEO_DATA.filter(c=>c.r===reg.id);
+    if(searchQ) countries=countries.filter(c=>
+      c.name.includes(searchQ)||c.en.toLowerCase().includes(searchQ)||(c.sub&&c.sub.includes(searchQ))
+    );
+    if(filterPhase!=='all') countries=countries.filter(c=>c.phase===filterPhase);
+    if(!countries.length) return;
+    total+=countries.length;
+    html+=`<div class="region-header">
+      <span class="rh-icon">${reg.icon}</span>
+      <span class="rh-name">${reg.label}</span>
+      <span class="rh-sub" style="margin-left:4px;font-size:11px;color:var(--g400)"></span>
+      <div class="rh-line"></div>
+      <span class="rh-count">${countries.length}개국</span>
+    </div>
+    <div class="country-grid" style="margin-bottom:20px">`;
+    countries.forEach(c=>{
+      const on=selected.has(c.id)?' on':'';
+      const pcolor=PHASE_COLORS[c.phase]||'#667085';
+      const plabel=PHASE_LABELS[c.phase]||'';
+      html+=`<div class="country-card${on}" onclick="toggleItem('${c.id}')">
+        <span class="c-flag">${c.flag}</span>
+        <div class="c-info">
+          <div class="c-name">${c.name}</div>
+          <div class="c-en">${c.en}</div>
+          <div class="c-n" style="display:flex;align-items:center;gap:4px;margin-top:4px">
+            <span style="color:${pcolor};font-size:9px;font-weight:700">${plabel}</span>
+          </div>
+          <div class="c-n">${c.n}개 상점</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+
+  // 통계 바
+  const live=GEO_DATA.filter(c=>c.phase==='live').length;
+  const beta=GEO_DATA.filter(c=>c.phase==='beta').length;
+  const soon=GEO_DATA.filter(c=>c.phase==='soon').length;
+  const plan=GEO_DATA.filter(c=>c.phase==='plan').length;
+  const summary=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+    ${[['🟢 서비스 중',live,'#027A48'],['🔵 베타',beta,'#155EEF'],['⏳ 준비 중',soon,'#B54708'],['📋 계획',plan,'#667085']].map(([l,n,c])=>
+      `<div style="display:flex;align-items:center;gap:5px;background:var(--g0);border:1px solid var(--g200);border-radius:var(--r8);padding:6px 12px">
+        <span style="font-size:11px;font-weight:700;color:${c}">${l}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--g900);font-family:var(--mono)">${n}</span>
+      </div>`
+    ).join('')}
+  </div>`;
+
+  document.getElementById('cnt-badge').textContent=
+    selected.size>0 ? `${total}개국 · ${selected.size}개 선택` : `${total}개국`;
+  return (summary+html) || `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">결과 없음</div></div>`;
+}
+
+/* ══════════════════════════
+   렌더 진입점
+══════════════════════════ */
+function render(){
+  document.getElementById('main-content').innerHTML =
+    mode==='cat' ? renderCat() : renderGeo();
+}
+
+function setView(v){
+  viewMode=v;
+  document.getElementById('vt-g').classList.toggle('on',v==='grid');
+  document.getElementById('vt-l').classList.toggle('on',v==='list');
+  render();
+}
+
+/* ══════════════════════════
+   초기화
+══════════════════════════ */
+swAxis('cat-all', document.getElementById('nav-cat'));
+</script>
+</body>
+</html>

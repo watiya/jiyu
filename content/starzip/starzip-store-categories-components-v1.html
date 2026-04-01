@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 상점 카테고리·국가 구성요소 v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+.zp{display:none}.zp.on{display:block}
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover,.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-st{background:#FFF4E3;color:#633806}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-g{color:#1B7A4A}
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+.insight{background:#EBF0FF;border-left:3px solid #1A4FDB;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#344054;line-height:1.5;margin-top:8px}
+.insight strong{color:#1A4FDB}
+.insight-g{background:#ECFDF3;border-left-color:#027A48}
+.insight-g strong{color:#027A48}
+.insight-w{background:#FFFAEB;border-left-color:#B54708}
+.insight-w strong{color:#B54708}
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+/* 미니 카테고리 테이블 */
+.mini-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+.mini-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b6a65;padding:5px 7px;text-align:left;border-bottom:.5px solid #e3e2dc;background:#f9f9f7}
+.mini-table td{padding:5px 7px;border-bottom:.5px solid #f2f1ed;color:#344054;vertical-align:top}
+.mini-table tr:last-child td{border-bottom:none}
+.mini-table tr:hover td{background:#f2f1ed}
+.phase-dot{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px}
+.ph-live{background:#ECFDF3;color:#027A48}
+.ph-beta{background:#EFF4FF;color:#155EEF}
+.ph-soon{background:#FFFAEB;color:#B54708}
+.ph-plan{background:#F2F4F7;color:#667085}
+.foot{display:flex;gap:5px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip 상점 카테고리·국가 구성요소 v1</h1>
+  <p>업종 분류 + 글로벌 지역·국가 분류 · A. 업종 카테고리 (5) · B. 지역·국가 (5) · C. 공통 UI (4) · 총 14개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on" onclick="sw('all',this)">전체 (14개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 업종 카테고리</button>
+  <button class="zt" onclick="sw('b',this)">B. 지역·국가</button>
+  <button class="zt" onclick="sw('c',this)">C. 공통 UI</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- ══ A. 업종 카테고리 ══ -->
+<div class="sec">A. 업종 카테고리 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">업종 대분류 6개 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">식음료·뷰티웰니스·생활서비스·문화엔터·교육전문직·리테일 — 상수 DB 관리</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>대분류 목록</h5>
+      <table class="mini-table">
+        <tr><th>ID</th><th>한국어</th><th>영문</th><th>색상</th></tr>
+        <tr><td>food</td><td>🍴 식음료</td><td>Food &amp; Beverage</td><td style="color:#F79009">■ #F79009</td></tr>
+        <tr><td>beauty</td><td>💄 뷰티·웰니스</td><td>Beauty &amp; Wellness</td><td style="color:#EE46BC">■ #EE46BC</td></tr>
+        <tr><td>life</td><td>🏠 생활·서비스</td><td>Life &amp; Services</td><td style="color:#2E90FA">■ #2E90FA</td></tr>
+        <tr><td>culture</td><td>🎭 문화·엔터</td><td>Culture &amp; Entertainment</td><td style="color:#7A5AF8">■ #7A5AF8</td></tr>
+        <tr><td>edu</td><td>📚 교육·전문직</td><td>Education &amp; Professional</td><td style="color:#12B76A">■ #12B76A</td></tr>
+        <tr><td>retail</td><td>🛍 리테일·쇼핑</td><td>Retail &amp; Shopping</td><td style="color:#F04438">■ #F04438</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용 위치</h5><ul>
+      <li>런치패드 목록 필터 칩</li>
+      <li>마켓 탐색 사이드바</li>
+      <li>사업주 등록 폼 (선택 필드)</li>
+      <li>Trade 상세 페이지 태그</li>
+      <li>관리자 콘솔 상점 관리</li>
+    </ul>
+    <h5 style="margin-top:10px">데이터 정책</h5><ul>
+      <li>DB 테이블로 관리 (하드코딩 금지)</li>
+      <li>관리자 콘솔에서 추가·수정 가능</li>
+      <li>삭제 시 기존 상점 대분류 null 처리</li>
+    </ul></div>
+    <div class="insight"><strong>설계 원칙:</strong> 업종 분류는 하드코딩하지 않고 DB 설정값으로 관리. 초기에는 6개로 시작하되, 데이터가 쌓이면 세분화 가능. 금지 업종 목록도 동일하게 DB로 관리.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">업종 소분류 42개 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">대분류별 소분류 목록. 각 소분류에 한국어명·영문명·설명·대분류 ID 포함</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>식음료 (10개)</h5><ul>
+      <li>☕ 카페·커피 · Café &amp; Coffee</li>
+      <li>🍽 음식점 · Restaurant</li>
+      <li>🥐 베이커리·디저트</li>
+      <li>🍺 바·주점 · Bar &amp; Pub</li>
+      <li>🍔 패스트푸드·분식</li>
+      <li>🫖 티룸·음료</li>
+      <li>🚚 푸드트럭</li>
+      <li>🥗 브런치·샐러드</li>
+      <li>🥩 고기·BBQ</li>
+      <li>🦞 해산물·횟집</li>
+    </ul></div>
+    <div class="dc"><h5>뷰티·웰니스 (9개)</h5><ul>
+      <li>💇 헤어살롱</li>
+      <li>💅 네일샵</li>
+      <li>🧴 피부관리실</li>
+      <li>💄 메이크업·속눈썹</li>
+      <li>🧘 마사지·스파</li>
+      <li>💪 피트니스·헬스</li>
+      <li>🤸 요가·필라테스</li>
+      <li>💈 바버샵</li>
+      <li>☀️ 태닝·왁싱</li>
+    </ul>
+    <h5 style="margin-top:8px">생활·서비스 (8개)</h5><ul>
+      <li>👕 세탁·수선</li>
+      <li>🐾 반려동물</li>
+      <li>💊 약국·헬스케어</li>
+      <li>🌸 꽃집·인테리어</li>
+      <li>🚗 자동차 서비스</li>
+      <li>🖨 인쇄·출력</li>
+      <li>🧹 청소·홈케어</li>
+      <li>🔧 수리·기술</li>
+    </ul></div>
+    <div class="dc"><h5>문화·엔터 (7개)</h5><ul>
+      <li>📚 독서실·스터디카페</li>
+      <li>🎮 오락·게임</li>
+      <li>📸 사진관·포토부스</li>
+      <li>🎤 노래방</li>
+      <li>🔐 방탈출·VR체험</li>
+      <li>🎱 당구·볼링</li>
+      <li>🎨 공방·클래스</li>
+    </ul>
+    <h5 style="margin-top:8px">교육·전문직 (5개)</h5><ul>
+      <li>✏️ 학원·과외</li>
+      <li>🌐 어학원</li>
+      <li>🎵 음악학원</li>
+      <li>🖼 미술학원</li>
+      <li>⚽ 스포츠 교습소</li>
+    </ul>
+    <h5 style="margin-top:8px">리테일·쇼핑 (3개)</h5><ul>
+      <li>👗 의류·패션</li>
+      <li>🛒 식품·마트</li>
+      <li>🎁 선물·잡화</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">금지 업종 목록 <span class="nb nb-st">정책</span></div>
+    <div class="desc">상장 불가 업종. DB 관리로 관리자가 콘솔에서 추가·제거 가능</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>초기 금지 목록</h5><ul>
+      <li>도박·카지노·복권</li>
+      <li>성인·음란물</li>
+      <li>무기·총기·폭발물</li>
+      <li>가상자산 거래소·투자업</li>
+      <li>마약·향정신성 물질</li>
+      <li>대부업·고금리 대출</li>
+      <li>다단계·유사수신</li>
+      <li>담배·전자담배 (국가별 별도)</li>
+    </ul></div>
+    <div class="dc"><h5>운영 방식</h5><ul>
+      <li>DB 테이블: prohibited_categories</li>
+      <li>관리자 콘솔에서 실시간 추가·제거</li>
+      <li>사업주 등록 시 실시간 검증</li>
+      <li>위반 시 등록 차단 (에러 메시지)</li>
+    </ul></div>
+    <div class="insight insight-w"><strong>운영 원칙:</strong> 금지 업종 목록은 법적 리스크·국가별 규제에 따라 변경될 수 있으므로 코드 수정 없이 DB에서 관리.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A4</div>
+    <div class="nm">업종 카드 (그리드 뷰) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">이모지 아이콘 + 한국어명 + 영문명 + 대분류 색상 dot + 등록 상점 수</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>카드 구성</h5><ul>
+      <li>이모지 아이콘 24px (상단)</li>
+      <li>한국어 소분류명 (bold 13px)</li>
+      <li>영문명 (10px gray-400)</li>
+      <li>대분류 색상 dot 5px + 등록 상점 수</li>
+    </ul></div>
+    <div class="dc"><h5>상태</h5><ul>
+      <li>기본: 흰 배경 + gray-200 테두리</li>
+      <li>hover: translateY(-1px) + shadow</li>
+      <li>선택(on): primary-500 테두리 + primary-25 배경</li>
+      <li>선택 시 텍스트 primary-700로 변경</li>
+    </ul></div>
+    <div class="dc"><h5>그리드 스펙</h5><ul>
+      <li>auto-fill minmax(130px, 1fr)</li>
+      <li>gap 7px</li>
+      <li>모바일: minmax(108px, 1fr)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A5</div>
+    <div class="nm">업종 행 (리스트 뷰) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">이모지 + 한국어명·영문명·업종 설명 텍스트 + 상점 수 + 화살표. 설명 표시 가능</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>행 구성</h5><ul>
+      <li>아이콘 col: 이모지 17px (w28 center)</li>
+      <li>정보 col: 이름 + 영문 인라인 + desc 1줄 ellipsis</li>
+      <li>우측: 상점 수 (monospace) + › 화살표</li>
+    </ul></div>
+    <div class="dc"><h5>차이점 (그리드 vs 리스트)</h5><ul>
+      <li>리스트: 업종 설명(desc) 표시</li>
+      <li>그리드: desc 숨김 (공간 제약)</li>
+      <li>리스트 행 높이: 약 52px</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid A -->
+
+<!-- ══ B. 지역·국가 ══ -->
+<div class="sec">B. 지역·국가 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B1</div>
+    <div class="nm">글로벌 지역 8개 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">동아시아·동남아시아·남아시아·중동·유럽·아메리카·오세아니아·아프리카</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>지역 목록</h5>
+      <table class="mini-table">
+        <tr><th>ID</th><th>지역명</th><th>국가 수</th></tr>
+        <tr><td>asia-east</td><td>🗾 동아시아</td><td>6개국</td></tr>
+        <tr><td>asia-se</td><td>🌴 동남아시아</td><td>8개국</td></tr>
+        <tr><td>asia-south</td><td>🕌 남아시아</td><td>4개국</td></tr>
+        <tr><td>middle-east</td><td>🕌 중동</td><td>5개국</td></tr>
+        <tr><td>europe</td><td>🏰 유럽</td><td>8개국</td></tr>
+        <tr><td>americas</td><td>🗽 아메리카</td><td>5개국</td></tr>
+        <tr><td>oceania</td><td>🦘 오세아니아</td><td>2개국</td></tr>
+        <tr><td>africa</td><td>🌍 아프리카</td><td>4개국</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용 위치</h5><ul>
+      <li>마켓·런치패드 지역 필터</li>
+      <li>사업주 등록 폼 (국가 선택)</li>
+      <li>관리자 콘솔 상점 지역 관리</li>
+      <li>지역별 통계 대시보드</li>
+    </ul>
+    <h5 style="margin-top:10px">설계</h5><ul>
+      <li>지역 → 국가 2단계 계층 구조</li>
+      <li>지역은 국가 그룹핑 용도</li>
+      <li>단독 필터링 가능 (지역만 선택)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B2</div>
+    <div class="nm">국가 목록 42개 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">국기·국가명·영문명·대표 도시·상점 수·서비스 단계(live/beta/soon/plan)</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>동아시아 (6개)</h5>
+      <table class="mini-table">
+        <tr><th>국가</th><th>단계</th><th>상점</th></tr>
+        <tr><td>🇰🇷 대한민국</td><td><span class="phase-dot ph-live">서비스 중</span></td><td>312</td></tr>
+        <tr><td>🇯🇵 일본</td><td><span class="phase-dot ph-beta">베타</span></td><td>48</td></tr>
+        <tr><td>🇨🇳 중국</td><td><span class="phase-dot ph-beta">베타</span></td><td>31</td></tr>
+        <tr><td>🇹🇼 대만</td><td><span class="phase-dot ph-beta">베타</span></td><td>24</td></tr>
+        <tr><td>🇭🇰 홍콩</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>19</td></tr>
+        <tr><td>🇲🇳 몽골</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>3</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>동남아시아 (8개)</h5>
+      <table class="mini-table">
+        <tr><th>국가</th><th>단계</th><th>상점</th></tr>
+        <tr><td>🇸🇬 싱가포르</td><td><span class="phase-dot ph-beta">베타</span></td><td>27</td></tr>
+        <tr><td>🇹🇭 태국</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>21</td></tr>
+        <tr><td>🇻🇳 베트남</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>18</td></tr>
+        <tr><td>🇵🇭 필리핀</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>12</td></tr>
+        <tr><td>🇲🇾 말레이시아</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>9</td></tr>
+        <tr><td>🇮🇩 인도네시아</td><td><span class="phase-dot ph-soon">준비 중</span></td><td>11</td></tr>
+        <tr><td>🇰🇭 캄보디아</td><td><span class="phase-dot ph-plan">계획</span></td><td>5</td></tr>
+        <tr><td>🇲🇲 미얀마</td><td><span class="phase-dot ph-plan">계획</span></td><td>3</td></tr>
+      </table>
+    </div>
+    <div class="dc">
+      <h5>남아시아 (4개)</h5>
+      <table class="mini-table" style="margin-bottom:8px">
+        <tr><th>국가</th><th>단계</th></tr>
+        <tr><td>🇮🇳 인도</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇧🇩 방글라데시</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇵🇰 파키스탄</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇱🇰 스리랑카</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+      </table>
+      <h5>중동 (5개)</h5>
+      <table class="mini-table" style="margin-bottom:8px">
+        <tr><th>국가</th><th>단계</th></tr>
+        <tr><td>🇦🇪 UAE</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇸🇦 사우디아라비아</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇹🇷 튀르키예</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇮🇱 이스라엘</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇶🇦 카타르</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+      </table>
+      <h5>유럽 (8개)</h5>
+      <table class="mini-table" style="margin-bottom:8px">
+        <tr><th>국가</th><th>단계</th></tr>
+        <tr><td>🇬🇧 영국</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇩🇪 독일</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇫🇷 프랑스</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇳🇱 네덜란드</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇪🇸 스페인</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇮🇹 이탈리아</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇵🇹 포르투갈</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇵🇱 폴란드</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+      </table>
+      <h5>아메리카 (5개)</h5>
+      <table class="mini-table" style="margin-bottom:8px">
+        <tr><th>국가</th><th>단계</th></tr>
+        <tr><td>🇺🇸 미국</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇨🇦 캐나다</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇧🇷 브라질</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇲🇽 멕시코</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇦🇷 아르헨티나</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+      </table>
+      <h5>오세아니아 (2개) · 아프리카 (4개)</h5>
+      <table class="mini-table">
+        <tr><th>국가</th><th>단계</th></tr>
+        <tr><td>🇦🇺 호주</td><td><span class="phase-dot ph-soon">준비 중</span></td></tr>
+        <tr><td>🇳🇿 뉴질랜드</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇳🇬 나이지리아</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇰🇪 케냐</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇿🇦 남아프리카</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+        <tr><td>🇬🇭 가나</td><td><span class="phase-dot ph-plan">계획</span></td></tr>
+      </table>
+    </div>
+    <div class="insight insight-g"><strong>총계:</strong> 8개 지역 / 42개 국가 · 서비스 중 1개국(🇰🇷) · 베타 4개국 · 준비 중 15개국 · 계획 22개국. opBNB 기반으로 추가 국가 온보딩 시 스마트 컨트랙트 재배포 불필요.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B3</div>
+    <div class="nm">서비스 단계 (Phase) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">live·beta·soon·plan 4단계로 국가별 진입 상태 표시. 필터 칩으로 연동</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>단계 정의</h5>
+      <table class="mini-table">
+        <tr><th>값</th><th>표시</th><th>설명</th></tr>
+        <tr><td>live</td><td><span class="phase-dot ph-live">🟢 서비스 중</span></td><td>정식 운영 중</td></tr>
+        <tr><td>beta</td><td><span class="phase-dot ph-beta">🔵 베타</span></td><td>제한 오픈 테스트</td></tr>
+        <tr><td>soon</td><td><span class="phase-dot ph-soon">⏳ 준비 중</span></td><td>파트너 모집 중</td></tr>
+        <tr><td>plan</td><td><span class="phase-dot ph-plan">📋 계획</span></td><td>로드맵에만 포함</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5><ul>
+      <li>국가 카드 하단에 phase 뱃지 표시</li>
+      <li>마켓 필터 칩으로 단계별 필터링</li>
+      <li>사업주 등록: live·beta 국가만 선택 가능</li>
+      <li>soon·plan 국가: 알림 신청 버튼 표시</li>
+    </ul></div>
+    <div class="insight"><strong>단계 전환:</strong> 관리자 콘솔 DB에서 국가별 phase를 변경하면 모든 UI에 즉시 반영. 코드 배포 없이 국가 확장 가능.</div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B4</div>
+    <div class="nm">국가 카드 (그리드 뷰) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">국기 이모지 + 국가명·영문명 + 서비스 단계 뱃지 + 상점 수 — 160px 최소폭</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>카드 구성</h5><ul>
+      <li>국기 이모지 22px (좌측)</li>
+      <li>국가명 (bold 13px)</li>
+      <li>영문명 (10px gray-400)</li>
+      <li>서비스 단계 뱃지 (phase_dot)</li>
+      <li>상점 수 (monospace 10px)</li>
+    </ul></div>
+    <div class="dc"><h5>그리드 스펙</h5><ul>
+      <li>auto-fill minmax(160px, 1fr)</li>
+      <li>gap 7px</li>
+      <li>업종 카드와 동일한 선택 스타일</li>
+    </ul></div>
+    <div class="dc"><h5>비활성 국가</h5><ul>
+      <li>plan 단계: opacity .6</li>
+      <li>선택 불가 (cursor not-allowed)</li>
+      <li>hover 시 "준비 중" 툴팁</li>
+      <li>soon: 선택 가능 (알림 신청)</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B5</div>
+    <div class="nm">지역 헤더 + 국가 그리드 섹션 <span class="nb nb-new">NEW</span></div>
+    <div class="desc">전체 뷰 시 지역 헤더 행으로 섹션 분리. 지역 아이콘·이름·국가 수·구분선</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>지역 헤더 구성</h5><ul>
+      <li>지역 아이콘 18px</li>
+      <li>지역명 (14px bold)</li>
+      <li>flex:1 구분선 (1px gray-200)</li>
+      <li>국가 수 (11px monospace)</li>
+    </ul></div>
+    <div class="dc"><h5>렌더 순서</h5><ul>
+      <li>서비스 중 국가 상단 정렬 (live > beta > soon > plan)</li>
+      <li>동아시아 최상단 (기본 시장)</li>
+      <li>전체 선택 시 지역 헤더 표시</li>
+      <li>특정 지역 선택 시 헤더 숨김</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid B -->
+
+<!-- ══ C. 공통 UI ══ -->
+<div class="sec">C. 공통 UI 컴포넌트 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C1</div>
+    <div class="nm">좌측 축 패널 (Sidebar) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">대분류·지역 전환 사이드바. 너비 200px · active 배경 · 아이템별 카운트 뱃지</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>섹션 라벨 (10px uppercase)</li>
+      <li>버튼 행: 아이콘 + 이름 + 카운트</li>
+      <li>active: bg gray-100 + bold</li>
+      <li>hover: bg gray-50</li>
+      <li>너비: 200px fixed</li>
+    </ul></div>
+    <div class="dc"><h5>동작</h5><ul>
+      <li>클릭 시 오른쪽 콘텐츠 필터링</li>
+      <li>검색 칩 행과 연동 (동기화)</li>
+      <li>모바일: 가로 스크롤 행으로 전환</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C2</div>
+    <div class="nm">검색 + 그리드/리스트 토글 툴바</div>
+    <div class="desc">검색 인풋 + 결과 수 뱃지 + ⊞/☰ 뷰 전환 버튼. 모든 분류 화면 공통 사용</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>검색</h5><ul>
+      <li>한국어·영문·설명 동시 검색</li>
+      <li>입력 즉시 결과 필터링 (debounce 불필요)</li>
+      <li>focus: primary 테두리 + shadow</li>
+    </ul></div>
+    <div class="dc"><h5>뷰 전환</h5><ul>
+      <li>⊞ 그리드 (기본)</li>
+      <li>☰ 리스트 (설명 표시)</li>
+      <li>active: white bg + subtle shadow</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C3</div>
+    <div class="nm">선택 상태 바 (다중 선택) <span class="nb nb-new">NEW</span></div>
+    <div class="desc">업종·국가 다중 선택 시 하단 고정 바. 태그 목록 + 개별 해제 × + 전체 해제</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구성</h5><ul>
+      <li>배경 gray-900 (검정)</li>
+      <li>"선택됨" 라벨</li>
+      <li>선택 태그: 이모지+이름+× (flex wrap)</li>
+      <li>× 클릭으로 개별 해제</li>
+      <li>"전체 해제" 버튼 (우측)</li>
+    </ul></div>
+    <div class="dc"><h5>표시 조건</h5><ul>
+      <li>선택 0개: display none</li>
+      <li>선택 1개+: display flex</li>
+      <li>상단 네비 우측에 "N개 선택" 뱃지 동기화</li>
+    </ul></div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">C4</div>
+    <div class="nm">상단 네비 탭 (업종 ↔ 지역 전환)</div>
+    <div class="desc">🗂 업종 카테고리 / 🌍 지역·국가 2개 탭. 선택된 항목 수 뱃지</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>탭 구성</h5><ul>
+      <li>🗂 업종 카테고리 (기본 active)</li>
+      <li>🌍 지역·국가</li>
+      <li>active: border-bottom 2px gray-900</li>
+      <li>height 52px sticky top:0</li>
+    </ul></div>
+    <div class="dc"><h5>전환 동작</h5><ul>
+      <li>탭 전환 시 배너·칩·사이드바 전환</li>
+      <li>금지 업종 배너: 업종 탭만 표시</li>
+      <li>글로벌 배너: 국가 탭만 표시</li>
+      <li>선택 상태는 탭 전환 시 유지</li>
+    </ul></div>
+  </div></div>
+</div>
+
+</div><!-- /grid C -->
+
+<!-- 하단 요약 -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 업종 카테고리<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1B7A4A"></div>B. 지역·국가<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#854F0B"></div>C. 공통 UI<span class="fc">4</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">13</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">1</span></div>
+  <div style="margin-left:8px;font-size:12px;color:#6b6a65">업종 6대분류 / 42소분류</div>
+  <div style="font-size:12px;color:#6b6a65;margin-left:4px">· 지역 8개 / 국가 42개</div>
+  <div class="ft">총 <strong>14개</strong> · 3개 영역</div>
+</div>
+
+</div><!-- /z-all -->
+
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+
+</div><!-- /root -->
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return;}
+  const pref={a:'A',b:'B',c:'C'}[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>

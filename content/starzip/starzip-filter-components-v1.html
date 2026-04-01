@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starzip — 필터 구성요소 v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;padding:24px;color:#1a1917;font-size:13px}
+.root{max-width:1020px;margin:0 auto}
+.page-heading{margin-bottom:20px}
+.page-heading h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-heading p{font-size:12px;color:#6b6a65}
+.tab-row{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.zt{padding:6px 13px;border-radius:16px;border:.5px solid #d0cfc8;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6b6a65;transition:all .12s}
+.zt.on{background:#1a1917;color:#fff;border-color:#1a1917}
+.zt:not(.on):hover{background:#f2f1ed}
+.zp{display:none}.zp.on{display:block}
+.grid{display:flex;flex-direction:column;gap:7px}
+.row{background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .12s}
+.row:hover,.row.open{border-color:#d0cfc8}
+.row.new-row{border:.5px solid #1A4FDB}
+.hd{display:grid;grid-template-columns:26px 174px 1fr 76px 70px;align-items:center;padding:10px 13px;gap:10px}
+.num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.nm{font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+.nb{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
+.nb-new{background:#E6F1FB;color:#0C447C}
+.nb-st{background:#FFF4E3;color:#633806}
+.nb-lp{background:#ECFDF3;color:#027A48}
+.nb-tr{background:#F9F5FF;color:#6941C6}
+.desc{font-size:12px;color:#6b6a65;line-height:1.4}
+.pri{font-size:10px;padding:2px 8px;border-radius:10px;text-align:center;font-weight:500;white-space:nowrap}
+.must{background:#FCEBEB;color:#A32D2D}
+.high{background:#FFF4E3;color:#633806}
+.med{background:#EAF3DE;color:#27500A}
+.src{font-size:10px;color:#a8a7a2;text-align:right;white-space:nowrap}
+.src-g{color:#1B7A4A}
+.bd{border-top:.5px solid #e3e2dc;padding:11px 13px 11px 48px;background:#f9f9f7;display:none}
+.row.open .bd{display:block}
+.dc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dc h5{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dc ul{list-style:none;padding:0}
+.dc li{font-size:12px;color:#6b6a65;padding:2px 0;line-height:1.4}
+.dc li::before{content:"·";margin-right:5px;color:#a8a7a2}
+.insight{background:#EBF0FF;border-left:3px solid #1A4FDB;border-radius:0 6px 6px 0;padding:7px 10px;font-size:11px;color:#344054;line-height:1.5;margin-top:8px}
+.insight strong{color:#1A4FDB}
+.insight-g{background:#ECFDF3;border-left-color:#027A48}
+.insight-g strong{color:#027A48}
+
+/* 화면 적용 행 */
+.apply-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.apply-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.at-mkt{background:#EFF4FF;color:#155EEF}
+.at-lp{background:#ECFDF3;color:#027A48}
+.at-trade{background:#F9F5FF;color:#6941C6}
+.at-port{background:#FFF4E3;color:#633806}
+.at-dao{background:#FEF3F2;color:#B42318}
+.at-admin{background:#F2F4F7;color:#344054}
+
+/* 값 목록 */
+.val-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+.val-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b6a65;padding:5px 7px;text-align:left;border-bottom:.5px solid #e3e2dc;background:#f9f9f7}
+.val-table td{padding:5px 7px;border-bottom:.5px solid #f2f1ed;color:#344054;vertical-align:middle}
+.val-table tr:last-child td{border-bottom:none}
+.val-table tr:hover td{background:#f2f1ed}
+
+.sec{font-size:10px;font-weight:500;color:#6b6a65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;margin-top:18px;display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+.sl{flex:1;height:.5px;background:#e3e2dc}
+.foot{display:flex;gap:5px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:.5px solid #e3e2dc;align-items:center}
+.fp{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:10px;border:.5px solid #e3e2dc;font-size:11px;cursor:pointer;background:#fff}
+.fp:hover{border-color:#d0cfc8}
+.fd{width:7px;height:7px;border-radius:50%}
+.fc{font-family:monospace;font-weight:500;margin-left:2px}
+.ft{margin-left:auto;font-size:12px;color:#6b6a65}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="page-heading">
+  <h1>Starzip 필터 목록 구성요소 v1</h1>
+  <p>마켓·런치패드·Trade·포트폴리오·DAO·관리자 화면에서 공통 사용되는 필터 정의 · A. 마켓·탐색 (6) · B. 런치패드 (6) · C. Trade (5) · D. 포트폴리오·내역 (5) · E. DAO (4) · F. 관리자 (4) · 총 30개</p>
+</div>
+
+<div class="tab-row">
+  <button class="zt on" onclick="sw('all',this)">전체 (30개)</button>
+  <button class="zt" onclick="sw('a',this)">A. 마켓·탐색</button>
+  <button class="zt" onclick="sw('b',this)">B. 런치패드</button>
+  <button class="zt" onclick="sw('c',this)">C. Trade</button>
+  <button class="zt" onclick="sw('d',this)">D. 포트폴리오</button>
+  <button class="zt" onclick="sw('e',this)">E. DAO</button>
+  <button class="zt" onclick="sw('f',this)">F. 관리자</button>
+</div>
+
+<div class="zp on" id="z-all">
+
+<!-- ══ A. 마켓·탐색 ══ -->
+<div class="sec">A. 마켓·탐색 필터 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A1</div>
+    <div class="nm">업종 카테고리 <span class="nb nb-new">기 정의</span></div>
+    <div class="desc">6개 대분류 / 42개 소분류 — 별도 구성요소 문서 참조</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5><ul>
+      <li>🍴 식음료 (10개 소분류)</li>
+      <li>💄 뷰티·웰니스 (9개)</li>
+      <li>🏠 생활·서비스 (8개)</li>
+      <li>🎭 문화·엔터테인먼트 (7개)</li>
+      <li>📚 교육·전문직 (5개)</li>
+      <li>🛍 리테일·쇼핑 (3개)</li>
+    </ul></div>
+    <div class="dc"><h5>적용 화면</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-lp">런치패드</span>
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-admin">관리자</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A2</div>
+    <div class="nm">지역·국가 <span class="nb nb-new">기 정의</span></div>
+    <div class="desc">8개 지역 / 42개 국가 — 별도 구성요소 문서 참조</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5><ul>
+      <li>🗾 동아시아 (6개국)</li>
+      <li>🌴 동남아시아 (8개국)</li>
+      <li>🕌 남아시아 (4개국)</li>
+      <li>🕌 중동 (5개국)</li>
+      <li>🏰 유럽 (8개국)</li>
+      <li>🗽 아메리카 (5개국)</li>
+      <li>🦘 오세아니아 (2개국)</li>
+      <li>🌍 아프리카 (4개국)</li>
+    </ul></div>
+    <div class="dc"><h5>적용 화면</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-lp">런치패드</span>
+        <span class="apply-tag at-admin">관리자</span>
+      </div>
+      <h5 style="margin-top:10px">동작</h5><ul>
+        <li>지역 선택 → 하위 국가 드롭다운</li>
+        <li>국가 선택 → 지역 자동 선택</li>
+        <li>내 위치 기반 기본값 (Phase 2)</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A3</div>
+    <div class="nm">상장 상태 (Token Status)</div>
+    <div class="desc">신규·거래중·런치패드중·상장폐지 — 토큰의 현재 라이프사이클 단계</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th><th>색상</th></tr>
+        <tr><td>all</td><td>전체</td><td>—</td></tr>
+        <tr><td>new</td><td>🆕 신규 상장 (30일 이내)</td><td style="color:#027A48">초록</td></tr>
+        <tr><td>active</td><td>🔵 거래 중</td><td style="color:#155EEF">파랑</td></tr>
+        <tr><td>launchpad</td><td>🚀 런치패드 진행중</td><td style="color:#F79009">주황</td></tr>
+        <tr><td>delisted</td><td>⛔ 상장폐지</td><td style="color:#667085">회색</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용 화면</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-admin">관리자</span>
+      </div>
+      <h5 style="margin-top:10px">기본값</h5><ul>
+        <li>마켓 홈: "거래중" 기본 선택</li>
+        <li>관리자: "전체" 기본</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A4</div>
+    <div class="nm">정렬 기준 (Sort By)</div>
+    <div class="desc">거래량·시가총액·가격변동·신규상장·즐겨찾기 — 마켓 목록 정렬</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>마켓 정렬</h5><ul>
+      <li>거래량 높은 순 (기본)</li>
+      <li>시가총액(FDV) 높은 순</li>
+      <li>가격 상승률 (24H %)</li>
+      <li>가격 하락률 (24H %)</li>
+      <li>신규 상장순</li>
+      <li>즐겨찾기 먼저</li>
+    </ul></div>
+    <div class="dc"><h5>런치패드 정렬</h5><ul>
+      <li>마감 임박순 (기본)</li>
+      <li>달성률 높은 순</li>
+      <li>참여금액 많은 순</li>
+      <li>신규 등록순</li>
+      <li>STAR 부스트 활성</li>
+    </ul></div>
+    <div class="dc"><h5>적용 화면</h5>
+      <div class="apply-row" style="margin-bottom:8px">
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-lp">런치패드</span>
+      </div>
+      <ul>
+        <li>드롭다운 또는 탭 형태</li>
+        <li>URL 파라미터로 상태 보존</li>
+        <li>로그인 시 마지막 선택 저장</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A5</div>
+    <div class="nm">시가총액(FDV) 범위</div>
+    <div class="desc">FDV 구간별 필터 — 소형·중형·대형 상점 탐색 지원</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>구간 정의</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>범위</th></tr>
+        <tr><td>micro</td><td>$0 ~ $10K (마이크로)</td></tr>
+        <tr><td>small</td><td>$10K ~ $100K (소형)</td></tr>
+        <tr><td>mid</td><td>$100K ~ $1M (중형)</td></tr>
+        <tr><td>large</td><td>$1M+ (대형)</td></tr>
+        <tr><td>custom</td><td>직접 입력 범위</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>UI 형태</h5><ul>
+      <li>칩 형태 (단일·다중 선택)</li>
+      <li>범위 슬라이더 (custom)</li>
+      <li>min/max 직접 입력 필드</li>
+    </ul>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-trade">Trade 탐색</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#E6F1FB;color:#0C447C">A6</div>
+    <div class="nm">파트너 검증 여부</div>
+    <div class="desc">파트너 심사 완료 상점만 표시 / 전체 표시 — 신뢰도 필터</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체 상점</td></tr>
+        <tr><td>verified</td><td>✓ 파트너 검증 완료만</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>표시</h5><ul>
+      <li>토글 스위치 또는 체크박스</li>
+      <li>검증 상점에 ✓ 뱃지 표시</li>
+      <li>기본값: 전체 (검증 무관)</li>
+    </ul>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-lp">런치패드</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- /grid A -->
+
+<!-- ══ B. 런치패드 필터 ══ -->
+<div class="sec">B. 런치패드 필터 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B1</div>
+    <div class="nm">공모 진행 상태</div>
+    <div class="desc">전체·사전예측·진행중·예정·종료 — 런치패드 목록 상태 탭</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>pre</td><td>⏰ 사전 수요 예측 (D-3 이전)</td></tr>
+        <tr><td>active</td><td>🔵 공모 진행중</td></tr>
+        <tr><td>upcoming</td><td>📅 공모 예정</td></tr>
+        <tr><td>ended</td><td>✅ 종료 (DEX 상장 완료)</td></tr>
+        <tr><td>canceled</td><td>❌ 취소 (소프트캡 미달)</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>UI 형태</h5><ul>
+      <li>탭 바 형태 (가로 스크롤)</li>
+      <li>각 탭에 카운트 뱃지</li>
+      <li>active·pre 탭: 파랑·주황 강조 뱃지</li>
+      <li>URL: /launchpad?status=active</li>
+    </ul>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-lp">런치패드 목록</span>
+        <span class="apply-tag at-port">포트폴리오</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B2</div>
+    <div class="nm">STAR 부스트 활성 여부</div>
+    <div class="desc">STAR 스테이킹 부스트 적용 중인 런치패드만 표시</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>boosted</td><td>⚡ STAR 부스트 적용 중</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>비고</h5><ul>
+      <li>토글 칩 or 체크박스</li>
+      <li>부스트 상점: 주황 ⚡ 배지 표시</li>
+      <li>내 부스트 배율 병기 (로그인 시)</li>
+    </ul>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-lp">런치패드 목록</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B3</div>
+    <div class="nm">공모 달성률 구간</div>
+    <div class="desc">소프트캡 달성 여부 및 달성률 구간 필터</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>softcap_ok</td><td>소프트캡(30%) 달성</td></tr>
+        <tr><td>oversubscribed</td><td>🔥 초과 청약 (100%+)</td></tr>
+        <tr><td>under_50</td><td>달성률 50% 미만</td></tr>
+        <tr><td>50_100</td><td>50%~100%</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-lp">런치패드 목록</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B4</div>
+    <div class="nm">공모 목표 금액 범위</div>
+    <div class="desc">$0~$5K · $5K~$20K · $20K~$100K · $100K+ 구간 필터</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>범위</th></tr>
+        <tr><td>tiny</td><td>$0 ~ $5,000</td></tr>
+        <tr><td>small</td><td>$5K ~ $20K</td></tr>
+        <tr><td>mid</td><td>$20K ~ $100K</td></tr>
+        <tr><td>large</td><td>$100K+</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-lp">런치패드 목록</span>
+        <span class="apply-tag at-admin">관리자</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B5</div>
+    <div class="nm">마감까지 남은 시간</div>
+    <div class="desc">D-1 이내·D-3 이내·D-7 이내·기간 여유 — 마감 임박 필터</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>d1</td><td>🔴 D-1 이내 (마감 임박)</td></tr>
+        <tr><td>d3</td><td>🟠 D-3 이내</td></tr>
+        <tr><td>d7</td><td>🟡 D-7 이내</td></tr>
+        <tr><td>more</td><td>🟢 7일 이상 여유</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-lp">런치패드 목록</span>
+      </div>
+      <ul style="margin-top:8px">
+        <li>정렬 "마감임박순"과 연동</li>
+        <li>D-1 이내: 빨강 타이머 강조</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#EAF3DE;color:#27500A">B6</div>
+    <div class="nm">내 참여 여부</div>
+    <div class="desc">내가 참여한·참여하지 않은·즐겨찾기 런치패드 필터 (로그인 필요)</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>participated</td><td>내가 참여한</td></tr>
+        <tr><td>watchlist</td><td>즐겨찾기 추가한</td></tr>
+        <tr><td>pre_registered</td><td>사전 등록한</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-lp">런치패드 목록</span>
+        <span class="apply-tag at-port">포트폴리오</span>
+      </div>
+      <ul style="margin-top:8px">
+        <li>비로그인 시 비활성 (로그인 유도)</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- /grid B -->
+
+<!-- ══ C. Trade 필터 ══ -->
+<div class="sec">C. Trade 탐색 필터 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F9F5FF;color:#6941C6">C1</div>
+    <div class="nm">거래량 (Volume) 구간</div>
+    <div class="desc">24H / 7D 거래량 기준 구간 필터 — 유동성 있는 페어 탐색</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>24H 거래량 구간</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>범위</th></tr>
+        <tr><td>v_low</td><td>$0 ~ $1K</td></tr>
+        <tr><td>v_mid</td><td>$1K ~ $10K</td></tr>
+        <tr><td>v_high</td><td>$10K ~ $100K</td></tr>
+        <tr><td>v_mega</td><td>$100K+</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-mkt">마켓 홈</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F9F5FF;color:#6941C6">C2</div>
+    <div class="nm">가격 변동률 (Price Change)</div>
+    <div class="desc">24H 가격 변동 기준 필터 — 상승·하락·보합 및 퍼센트 범위</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>방향</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>up</td><td>📈 상승 (0%+)</td></tr>
+        <tr><td>down</td><td>📉 하락 (0% 미만)</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>퍼센트 구간</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>범위</th></tr>
+        <tr><td>pump</td><td>+50%+ (펌핑)</td></tr>
+        <tr><td>up10</td><td>+10%~+50%</td></tr>
+        <tr><td>flat</td><td>-10%~+10%</td></tr>
+        <tr><td>down10</td><td>-10%~-50%</td></tr>
+        <tr><td>dump</td><td>-50% 이하</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-mkt">마켓 홈</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F9F5FF;color:#6941C6">C3</div>
+    <div class="nm">상장 경과 기간</div>
+    <div class="desc">DEX 상장 후 경과 기간 기준 — 신규 상장·단기·장기 운영 상점 구분</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>new7d</td><td>🆕 7일 이내 신규</td></tr>
+        <tr><td>new30d</td><td>30일 이내</td></tr>
+        <tr><td>mid</td><td>30일~180일</td></tr>
+        <tr><td>veteran</td><td>180일+ (베테랑)</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-mkt">마켓 홈</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F9F5FF;color:#6941C6">C4</div>
+    <div class="nm">공시 이행 상태 (Disclosure)</div>
+    <div class="desc">분기 매출 공시 정상·지연·미제출 기준 — Optimistic Compliance 신뢰도</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>ok</td><td>✅ 공시 정상 이행</td></tr>
+        <tr><td>late</td><td>⚠️ 최근 지연 이력</td></tr>
+        <tr><td>missing</td><td>❌ 미제출 (베스팅 중단)</td></tr>
+        <tr><td>challenged</td><td>🔍 챌린지 심사 중</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-admin">관리자</span>
+      </div>
+      <div class="insight insight-g" style="margin-top:8px"><strong>Starzip 고유:</strong> 매출 공시 이행 여부를 마켓 필터로 노출하는 것은 Starzip의 Optimistic Compliance 투명성을 UX로 구현한 차별화 요소.</div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F9F5FF;color:#6941C6">C5</div>
+    <div class="nm">즐겨찾기 / 내 보유 토큰</div>
+    <div class="desc">즐겨찾기 추가한 토큰·내가 보유한 토큰만 표시 (로그인 필요)</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>watchlist</td><td>⭐ 즐겨찾기</td></tr>
+        <tr><td>holdings</td><td>💼 내 보유 토큰</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-trade">Trade 탐색</span>
+        <span class="apply-tag at-mkt">마켓 홈</span>
+        <span class="apply-tag at-port">포트폴리오</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- /grid C -->
+
+<!-- ══ D. 포트폴리오·내역 필터 ══ -->
+<div class="sec">D. 포트폴리오·내역 필터 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D1</div>
+    <div class="nm">자산 유형 (Asset Type)</div>
+    <div class="desc">USDT·Store Token·DUST·런치패드 에스크로 — 보유 자산 유형별 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>stablecoin</td><td>USDT / USDC</td></tr>
+        <tr><td>store_token</td><td>Store Token (CAFE 등)</td></tr>
+        <tr><td>dust</td><td>✦ DUST 포인트</td></tr>
+        <tr><td>escrow</td><td>🔒 런치패드 에스크로</td></tr>
+        <tr><td>star</td><td>⭐ STAR (스테이킹 포함)</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-port">포트폴리오 잔액</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D2</div>
+    <div class="nm">거래 내역 유형 (Tx Type)</div>
+    <div class="desc">매수·매도·입금·출금·런치패드·DAO 투표 — 체결·활동 내역 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc3">
+    <div class="dc"><h5>거래 유형</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>buy</td><td>매수</td></tr>
+        <tr><td>sell</td><td>매도</td></tr>
+        <tr><td>deposit</td><td>입금</td></tr>
+        <tr><td>withdraw</td><td>출금</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>기타 유형</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>launchpad</td><td>🚀 런치패드 참여</td></tr>
+        <tr><td>claim</td><td>🎁 토큰 클레임</td></tr>
+        <tr><td>dao_vote</td><td>🗳 DAO 투표</td></tr>
+        <tr><td>refund</td><td>💸 환불</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-port">포트폴리오 내역</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D3</div>
+    <div class="nm">기간 (Date Range)</div>
+    <div class="desc">오늘·7일·30일·90일·1년·직접 입력 — 내역 조회 기간 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>today</td><td>오늘</td></tr>
+        <tr><td>7d</td><td>최근 7일</td></tr>
+        <tr><td>30d</td><td>최근 30일 (기본)</td></tr>
+        <tr><td>90d</td><td>최근 90일</td></tr>
+        <tr><td>1y</td><td>최근 1년</td></tr>
+        <tr><td>custom</td><td>직접 입력 (날짜 피커)</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-port">포트폴리오 내역</span>
+        <span class="apply-tag at-admin">관리자 내역</span>
+      </div>
+      <ul style="margin-top:8px">
+        <li>드롭다운 또는 칩 형태</li>
+        <li>custom 선택 시 날짜 피커 표시</li>
+        <li>기본값: 30일</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D4</div>
+    <div class="nm">거래 상태 (Order Status)</div>
+    <div class="desc">대기중·체결·취소·실패 — 주문 내역 상태 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>open</td><td>⏳ 대기중 (미체결)</td></tr>
+        <tr><td>filled</td><td>✅ 체결 완료</td></tr>
+        <tr><td>canceled</td><td>❌ 취소</td></tr>
+        <tr><td>failed</td><td>⚠️ 실패</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-port">포트폴리오 주문내역</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FAEEDA;color:#633806">D5</div>
+    <div class="nm">특정 토큰 (Token Symbol)</div>
+    <div class="desc">내역에서 특정 상점 토큰만 조회 — 검색 + 드롭다운</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 예시</h5>
+      <table class="val-table">
+        <tr><th>심볼</th><th>상점명</th></tr>
+        <tr><td>CAFE</td><td>브루밍 카페</td></tr>
+        <tr><td>HAIR</td><td>헤어살롱 아뜰리에</td></tr>
+        <tr><td>FIT</td><td>강남 피트 스튜디오</td></tr>
+        <tr><td>USDT</td><td>테더 달러</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>UI 형태</h5><ul>
+      <li>검색 인풋 + 드롭다운</li>
+      <li>내가 보유한 토큰 우선 표시</li>
+      <li>심볼 또는 상점명으로 검색</li>
+    </ul>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-port">포트폴리오 내역</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- /grid D -->
+
+<!-- ══ E. DAO 필터 ══ -->
+<div class="sec">E. DAO 필터 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FEF3F2;color:#B42318">E1</div>
+    <div class="nm">DAO 유형</div>
+    <div class="desc">DEX DAO (STAR) / Store DAO (상점별 토큰) — Starzip 이중 구조 핵심 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체 DAO</td></tr>
+        <tr><td>dex_dao</td><td>🏛 DEX DAO (STAR 홀더)</td></tr>
+        <tr><td>store_dao</td><td>🏪 Store DAO (상점별)</td></tr>
+        <tr><td>compliance</td><td>🔍 공시 챌린지·항소</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>Store DAO 하위 필터</h5><ul>
+      <li>보유 토큰별 상점 목록 자동 생성</li>
+      <li>투표권 있는 Store DAO만 표시 옵션</li>
+    </ul>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-dao">DAO 목록</span>
+        <span class="apply-tag at-port">포트폴리오 DAO 내역</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FEF3F2;color:#B42318">E2</div>
+    <div class="nm">안건 상태 (Proposal Status)</div>
+    <div class="desc">진행중·Timelock·가결·부결·취소 — 안건 라이프사이클 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>active</td><td>🔵 투표 진행중</td></tr>
+        <tr><td>timelock</td><td>⏳ Timelock 대기</td></tr>
+        <tr><td>passed</td><td>✅ 가결·실행 완료</td></tr>
+        <tr><td>failed</td><td>❌ 부결</td></tr>
+        <tr><td>canceled</td><td>🚫 취소</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-dao">DAO 안건 목록</span>
+        <span class="apply-tag at-port">포트폴리오 DAO</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FEF3F2;color:#B42318">E3</div>
+    <div class="nm">내 투표 참여 여부</div>
+    <div class="desc">내가 투표한·미투표·기권 — 로그인 사용자 참여 이력 필터</div>
+    <div class="pri high">높음</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>voted</td><td>내가 투표한</td></tr>
+        <tr><td>not_voted</td><td>미투표 (투표 가능)</td></tr>
+        <tr><td>for</td><td>찬성 투표한</td></tr>
+        <tr><td>against</td><td>반대 투표한</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-dao">DAO 안건 목록</span>
+        <span class="apply-tag at-port">포트폴리오 DAO</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#FEF3F2;color:#B42318">E4</div>
+    <div class="nm">안건 카테고리 (Proposal Category)</div>
+    <div class="desc">수수료·업그레이드·Treasury·토큰소각·가격·혜택 — 안건 주제별 필터</div>
+    <div class="pri med">중간</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>DEX DAO 카테고리</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>fee</td><td>💰 수수료·배분 정책</td></tr>
+        <tr><td>upgrade</td><td>⚙️ 컨트랙트 업그레이드</td></tr>
+        <tr><td>treasury</td><td>🏦 Treasury 지출</td></tr>
+        <tr><td>parameter</td><td>⚖️ 거버넌스 파라미터</td></tr>
+        <tr><td>listing</td><td>📋 상장 기준 변경</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>Store DAO 카테고리</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>burn</td><td>🔥 토큰 소각</td></tr>
+        <tr><td>price</td><td>💲 가격·메뉴 변경</td></tr>
+        <tr><td>benefit</td><td>🎁 토큰 보유 혜택</td></tr>
+        <tr><td>event</td><td>🎉 이벤트·프로모션</td></tr>
+      </table>
+      <div class="apply-row" style="margin-top:8px">
+        <span class="apply-tag at-dao">DAO 안건 목록</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- /grid E -->
+
+<!-- ══ F. 관리자 필터 ══ -->
+<div class="sec">F. 관리자 콘솔 필터 <div class="sl"></div></div>
+<div class="grid">
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F2F4F7;color:#344054">F1</div>
+    <div class="nm">상점 심사 상태 (KYC Status)</div>
+    <div class="desc">신청·파트너 심사중·최종 심사중·승인·반려·정지 — 온보딩 파이프라인</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>applied</td><td>📥 신청 접수</td></tr>
+        <tr><td>partner_review</td><td>🔍 파트너 1차 심사</td></tr>
+        <tr><td>final_review</td><td>⚖️ Starzip 최종 심사</td></tr>
+        <tr><td>approved</td><td>✅ 승인 완료</td></tr>
+        <tr><td>rejected</td><td>❌ 반려</td></tr>
+        <tr><td>suspended</td><td>🚫 정지 (거래중지)</td></tr>
+        <tr><td>delisted</td><td>⛔ 상장폐지</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-admin">관리자 콘솔</span>
+      </div>
+      <ul style="margin-top:8px">
+        <li>파트너 콘솔: partner_review·approved·rejected만</li>
+        <li>관리자 콘솔: 전체 상태 접근</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F2F4F7;color:#344054">F2</div>
+    <div class="nm">공시 이행 현황 (Disclosure Status)</div>
+    <div class="desc">정상·지연·미제출·챌린지중·베스팅중단 — Optimistic Compliance 모니터링</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>ok</td><td>✅ 정상 이행</td></tr>
+        <tr><td>due_soon</td><td>⏰ 마감 7일 이내</td></tr>
+        <tr><td>late</td><td>⚠️ 기한 초과</td></tr>
+        <tr><td>missing</td><td>❌ 미제출 (자동 베스팅 중단)</td></tr>
+        <tr><td>challenged</td><td>🔍 챌린지 진행중</td></tr>
+        <tr><td>appealing</td><td>⚖️ DAO 항소 중</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-admin">관리자 콘솔</span>
+        <span class="apply-tag at-trade">Trade (공개 필터)</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F2F4F7;color:#344054">F3</div>
+    <div class="nm">파트너 할당 여부</div>
+    <div class="desc">파트너 추천·직접 신청·파트너 미할당 — 상점 온보딩 경로 구분</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>partner_referred</td><td>파트너 추천</td></tr>
+        <tr><td>direct</td><td>직접 신청</td></tr>
+        <tr><td>unassigned</td><td>파트너 미할당</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-admin">관리자 콘솔</span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div class="row new-row" onclick="tog(this)">
+  <div class="hd">
+    <div class="num" style="background:#F2F4F7;color:#344054">F4</div>
+    <div class="nm">이상 거래 감지 (Market Surveillance)</div>
+    <div class="desc">정상·Wash Trading 의심·Spoofing 의심·자전거래 감지 — 시장감시 필터</div>
+    <div class="pri must">필수</div>
+    <div class="src src-g">고유</div>
+  </div>
+  <div class="bd"><div class="dc2">
+    <div class="dc"><h5>값 목록</h5>
+      <table class="val-table">
+        <tr><th>값</th><th>설명</th></tr>
+        <tr><td>all</td><td>전체</td></tr>
+        <tr><td>normal</td><td>✅ 정상</td></tr>
+        <tr><td>wash_suspect</td><td>⚠️ Wash Trading 의심</td></tr>
+        <tr><td>spoofing_suspect</td><td>⚠️ Spoofing 의심</td></tr>
+        <tr><td>self_trade_block</td><td>🚫 자전거래 차단 이력</td></tr>
+        <tr><td>insider_block</td><td>🔒 내부자 거래 제한</td></tr>
+      </table>
+    </div>
+    <div class="dc"><h5>적용</h5>
+      <div class="apply-row">
+        <span class="apply-tag at-admin">관리자 콘솔 시장감시</span>
+      </div>
+      <ul style="margin-top:8px">
+        <li>관리자 전용 (일반 사용자 비노출)</li>
+        <li>자전거래: 엔진 자동 차단 후 기록</li>
+        <li>나머지: 모니터링 알림 + 수동 조치</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- /grid F -->
+
+<!-- 화면별 필터 요약 -->
+<div class="sec" style="margin-top:28px">화면별 필터 적용 요약 <div class="sl"></div></div>
+<div style="background:#fff;border:.5px solid #e3e2dc;border-radius:12px;overflow:hidden">
+  <table class="val-table" style="font-size:11px">
+    <tr>
+      <th>필터</th>
+      <th><span class="apply-tag at-mkt">마켓</span></th>
+      <th><span class="apply-tag at-lp">런치패드</span></th>
+      <th><span class="apply-tag at-trade">Trade</span></th>
+      <th><span class="apply-tag at-port">포트폴리오</span></th>
+      <th><span class="apply-tag at-dao">DAO</span></th>
+      <th><span class="apply-tag at-admin">관리자</span></th>
+    </tr>
+    <tr><td>업종 카테고리</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>지역·국가</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>상장 상태</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>정렬 기준</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+    <tr><td>FDV 범위</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>파트너 검증</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>공모 상태</td><td>—</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>✓</td></tr>
+    <tr><td>STAR 부스트</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>달성률 구간</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>마감 D-day</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>거래량 구간</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>가격 변동률</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>상장 경과 기간</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>공시 이행 상태</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>즐겨찾기·보유</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+    <tr><td>자산 유형</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>—</td><td>—</td></tr>
+    <tr><td>거래 유형</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>—</td><td>✓</td></tr>
+    <tr><td>기간</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>✓</td></tr>
+    <tr><td>주문 상태</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>—</td><td>✓</td></tr>
+    <tr><td>DAO 유형</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>—</td></tr>
+    <tr><td>안건 상태</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>—</td></tr>
+    <tr><td>안건 카테고리</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>—</td></tr>
+    <tr><td>KYC 상태</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>공시 현황</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+    <tr><td>이상 거래 감지</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+  </table>
+</div>
+
+<!-- 하단 요약 -->
+<div class="foot">
+  <div class="fp" onclick="sw('a',document.querySelectorAll('.zt')[1])"><div class="fd" style="background:#378ADD"></div>A. 마켓·탐색<span class="fc">6</span></div>
+  <div class="fp" onclick="sw('b',document.querySelectorAll('.zt')[2])"><div class="fd" style="background:#1B7A4A"></div>B. 런치패드<span class="fc">6</span></div>
+  <div class="fp" onclick="sw('c',document.querySelectorAll('.zt')[3])"><div class="fd" style="background:#6941C6"></div>C. Trade<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('d',document.querySelectorAll('.zt')[4])"><div class="fd" style="background:#854F0B"></div>D. 포트폴리오<span class="fc">5</span></div>
+  <div class="fp" onclick="sw('e',document.querySelectorAll('.zt')[5])"><div class="fd" style="background:#B42318"></div>E. DAO<span class="fc">4</span></div>
+  <div class="fp" onclick="sw('f',document.querySelectorAll('.zt')[6])"><div class="fd" style="background:#344054"></div>F. 관리자<span class="fc">4</span></div>
+  <div class="fp" style="background:#FCEBEB;border-color:#F7C1C1"><span style="color:#A32D2D">필수</span><span class="fc" style="color:#A32D2D">20</span></div>
+  <div class="fp" style="background:#FFF4E3;border-color:#FAC775"><span style="color:#633806">높음</span><span class="fc" style="color:#633806">8</span></div>
+  <div class="fp" style="background:#EAF3DE;border-color:#A9EFC5"><span style="color:#27500A">중간</span><span class="fc" style="color:#27500A">2</span></div>
+  <div class="ft">총 <strong>30개</strong> · 6개 화면 영역</div>
+</div>
+
+</div><!-- /z-all -->
+
+<div class="zp" id="z-a"></div>
+<div class="zp" id="z-b"></div>
+<div class="zp" id="z-c"></div>
+<div class="zp" id="z-d"></div>
+<div class="zp" id="z-e"></div>
+<div class="zp" id="z-f"></div>
+
+</div>
+<script>
+function tog(r){r.classList.toggle('open')}
+function sw(id,btn){
+  document.querySelectorAll('.zp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.zt').forEach(t=>t.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(id==='all'){document.getElementById('z-all').classList.add('on');return;}
+  const pref={a:'A',b:'B',c:'C',d:'D',e:'E',f:'F'}[id];
+  const zp=document.getElementById('z-'+id);
+  let html='<div class="grid">';
+  document.getElementById('z-all').querySelectorAll('.row').forEach(r=>{
+    const n=r.querySelector('.num');
+    if(n&&n.textContent.trim().startsWith(pref))html+=r.outerHTML;
+  });
+  html+='</div>';
+  zp.innerHTML=html;
+  zp.querySelectorAll('.row').forEach(r=>{r.onclick=()=>tog(r);r.classList.remove('open')});
+  zp.classList.add('on');
+}
+</script>
+</body>
+</html>
